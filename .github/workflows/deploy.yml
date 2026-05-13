@@ -92,6 +92,18 @@ jobs:
           ref: ${{ env.PHOTO_REPOSITORY_BRANCH }}
           token: ${{ secrets.PHOTO_REPO_TOKEN }}
           path: photos
+          persist-credentials: false
+
+      - name: Reject symlinks in photo repository
+        shell: bash
+        run: |
+          first_symlink="$(find ./photos -path './photos/.git' -prune -o -type l -print -quit)"
+          if [ -n "$first_symlink" ]; then
+            echo "Symlinks are not allowed in the photo repository because photos are published to public storage."
+            echo "Found symlink entries:"
+            find ./photos -path './photos/.git' -prune -o -type l -print
+            exit 1
+          fi
 
       - name: Install pnpm
         uses: pnpm/action-setup@v6
@@ -206,6 +218,17 @@ jobs:
           token: ${{ secrets.PHOTO_REPO_TOKEN }}
           path: photos
 
+      - name: Reject symlinks in photo repository
+        shell: bash
+        run: |
+          first_symlink="$(find ./photos -path './photos/.git' -prune -o -type l -print -quit)"
+          if [ -n "$first_symlink" ]; then
+            echo "Symlinks are not allowed in the photo repository because photos are published to public storage."
+            echo "Found symlink entries:"
+            find ./photos -path './photos/.git' -prune -o -type l -print
+            exit 1
+          fi
+
       - name: Install pnpm
         uses: pnpm/action-setup@v6
         with:
@@ -254,6 +277,7 @@ jobs:
             --endpoint-url "${R2_ENDPOINT}" \
             --size-only \
             --delete \
+            --no-follow-symlinks \
             --exclude ".git/*" \
             --exclude ".github/*" \
             --exclude ".gitignore" \
