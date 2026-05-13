@@ -76,7 +76,7 @@ There is no `packages/components/` package in the current workspace.
 
 ### Configuration
 
-- `builder.config.ts` controls photo storage and builder behavior. The current project uses local storage:
+- `builder.config.ts` controls photo storage and builder behavior. The current project uses local storage from a private photo-repository checkout:
 
   ```ts
   storage: {
@@ -92,7 +92,7 @@ There is no `packages/components/` package in the current workspace.
 
 ### Photo Data Flow
 
-1. New files are staged in `photos/incoming/` or placed directly under `photos/<category>/`.
+1. New files are staged in the private `Jackyhq/Photography-Photos` repository under `incoming/` or placed directly under `<category>/`.
 2. `pnpm run photos:standardize` reads EXIF timestamps, renames files to `YYYYMMDDHHmmss.ext`, and moves them into category folders.
 3. `pnpm run build:manifest` scans configured storage, excludes `incoming`, processes images, detects Live Photos, extracts EXIF/GPS/Fujifilm metadata, generates thumbnails and hash placeholders, and saves the local `apps/web/src/data/photos-manifest.json`.
 4. `@afilmory/data` loads `__MANIFEST__` and exposes photos, cameras, and lenses to the web app.
@@ -109,10 +109,11 @@ There is no `packages/components/` package in the current workspace.
 
 ## Development Notes
 
-- Do not treat files under `photos/` as open-source assets; they are personal copyrighted works.
+- Do not treat files under `photos/` as open-source assets; it is a local checkout of the private `Jackyhq/Photography-Photos` repository and contains personal copyrighted works.
 - Avoid editing generated outputs unless the task explicitly involves generation or deployment output. Generated files include `apps/web/dist/`, root `web/`, and the Git-ignored `apps/web/src/data/photos-manifest.json`.
 - `pnpm dev` and `pnpm build` run `apps/web/scripts/precheck.ts`, which calls the builder CLI before Vite starts or builds.
 - GitHub Actions builds on Node.js 24 and pnpm 10.19.0.
+- GitHub Actions checks out `Jackyhq/Photography-Photos` into `./photos`, standardizes photos there, syncs published photos to Cloudflare R2, and deploys the web build.
 - When changing documentation content under `packages/docs/contents/`, keep frontmatter `lastModified` current.
 - Follow strict TypeScript and existing workspace import boundaries. Prefer workspace packages such as `@afilmory/ui`, `@afilmory/utils`, `@afilmory/hooks`, and `@afilmory/data` over duplicate local helpers.
 

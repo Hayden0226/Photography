@@ -2,7 +2,7 @@
 title: Storage providers
 description: Afilmory can work with multiple storage providers, including local file system, S3, GitHub, and Eagle
 createdAt: 2025-08-12T15:09:08+08:00
-lastModified: 2026-04-29T04:05:16+08:00
+lastModified: 2026-05-13T21:15:03+08:00
 ---
 
 # Storage Providers
@@ -11,7 +11,7 @@ Afilmory's flexible storage architecture allows you to store your photos across 
 
 ## Supported Providers
 
-Jacky's Photography currently uses the local provider:
+Jacky's Photography currently uses the local provider against a private photo-repository checkout:
 
 ```ts
 import { defineBuilderConfig } from '@afilmory/builder'
@@ -26,7 +26,7 @@ export default defineBuilderConfig(() => ({
 }))
 ```
 
-`excludeRegex` keeps staging files under `photos/incoming/` out of the published manifest until they have been standardized or moved into a real category folder.
+`excludeRegex` keeps staging files under `photos/incoming/` out of the published manifest until they have been standardized or moved into a real category folder. In CI, `./photos` is checked out from `Jackyhq/Photography-Photos`, and published files are synced to Cloudflare R2 behind `https://photos3.jackyw.cn/photos/`.
 
 ### S3-Compatible Storage
 

@@ -2,14 +2,14 @@
 title: Overview
 description: Project overview for Jacky's Photography, a customized Afilmory-powered photo gallery.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-10T05:45:29+08:00
+lastModified: 2026-05-13T21:15:03+08:00
 ---
 
 # Jacky's Photography
 
 Jacky's Photography is a customized personal photo gallery based on [Afilmory](https://github.com/Afilmory/afilmory). It keeps the core static-gallery workflow from Afilmory while adding project-specific automation, deployment, photo standardization, bilingual photo metadata, map exploration, and presentation refinements for [photo.jackyw.cn](https://photo.jackyw.cn).
 
-> Photos under `photos/` are Jackyhq's personal works and are not part of the open-source license. Do not reuse, redistribute, or publish them without explicit written permission.
+> Source photos live in the private `Jackyhq/Photography-Photos` repository. The local `photos/` directory is only a build-time checkout and is ignored by this public source repository. Do not reuse, redistribute, or publish Jackyhq's photos without explicit written permission.
 
 ## What It Builds
 
@@ -40,12 +40,12 @@ packages/sdk/             # Shared schemas/client helpers
 packages/ui/              # Shared UI primitives and glassmorphic components
 packages/utils/           # Shared utilities, RSS helpers, animation helpers
 packages/webgl-viewer/    # High-performance WebGL image viewer
-photos/                   # Private photo source files
+photos/                   # Local checkout of the private photo repository
 ```
 
 ## Storage Providers
 
-`@afilmory/builder` reads photos through a storage-provider abstraction. The current project uses the local provider:
+`@afilmory/builder` reads photos through a storage-provider abstraction. The current project uses the local provider against a private photo-repository checkout:
 
 ```ts
 import { defineBuilderConfig } from '@afilmory/builder'
@@ -62,7 +62,7 @@ export default defineBuilderConfig(() => ({
 
 Supported providers:
 
-- `local`: reads local photo directories; useful for this repository, development, and self-hosted deployments.
+- `local`: reads local photo directories; useful for the private photo checkout, development, and self-hosted deployments.
 - `s3`: reads S3-compatible object storage with optional custom domains and network tuning.
 - `github`: reads photos from a GitHub repository or subdirectory.
 - `eagle`: reads an Eagle 4 library and can filter by tags or folders.
@@ -71,6 +71,7 @@ Supported providers:
 
 ```bash
 pnpm install
+git clone git@github.com:Jackyhq/Photography-Photos.git photos
 pnpm run build:manifest
 pnpm dev
 ```
@@ -96,7 +97,7 @@ For manual photo descriptions, tag curation, and SEO metadata, see [Photo Metada
 
 ## Photo Workflow
 
-1. Put new photos in `photos/incoming/` or directly in a category folder under `photos/`.
+1. Put new photos in `incoming/` or directly in a category folder inside `Jackyhq/Photography-Photos`.
 2. Run `pnpm run photos:standardize` to rename incoming files from EXIF timestamps and move them into category folders.
 3. Run `pnpm run build:manifest` to scan photos, extract metadata, generate thumbnails, and merge any existing manual metadata from `photo-descriptions.json`.
 4. Run `pnpm run photos:descriptions:sync` when new manifest photos need sidecar entries, then fill in titles, `zh-CN`/`en` descriptions, and short editorial tags.
@@ -105,19 +106,18 @@ For manual photo descriptions, tag curation, and SEO metadata, see [Photo Metada
 
 ## Deployment
 
-The repository includes `.github/workflows/deploy.yml`. Pull requests run the same standardization, manifest, and web build validation without deploying. Pushes to `main` that touch photos, app code, packages, `config.json`, or project configuration run the deployment job:
+The repository includes `.github/workflows/deploy.yml`. Pull requests run the same standardization, manifest, and web build validation without deploying. Pushes to `main` that touch app code, packages, `config.json`, or project configuration run the deployment job. Pushes to `Jackyhq/Photography-Photos` dispatch the same deployment workflow through the `photos-updated` event:
 
 1. Installs pnpm and Node.js 24.
-2. Installs dependencies.
-3. Runs photo standardization.
-4. Builds the photo manifest.
-5. Builds the web app.
-6. Copies `sitemap.xml` to `googlesitemap.xml` when present.
-7. Syncs `apps/web/dist/` into the root `web/` directory and commits generated photo and `web/` output changes.
-8. Deploys `apps/web/dist/` to GitHub Pages.
-
-The committed `web/` directory is kept as the repository copy of the latest static output.
+2. Checks out `Jackyhq/Photography-Photos` into `./photos`.
+3. Installs dependencies.
+4. Runs photo standardization.
+5. Commits standardized photo changes back to the private photo repository on deploy events.
+6. Syncs published photos to Cloudflare R2 under the `photos/` prefix.
+7. Builds the photo manifest and web app.
+8. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
+9. Deploys `apps/web/dist/` to GitHub Pages.
 
 ## License
 
-Code is licensed under the repository license. Photos in `photos/` remain private copyrighted works owned by Jackyhq.
+Code is licensed under the repository license. Photos in the private photo repository remain copyrighted works owned by Jackyhq.

@@ -7,7 +7,7 @@
 > 在保留原项目核心优势的基础上，本项目包含了由 Jackyhq 独立开发的自动化部署、构建优化、照片标准化和交互体验增强。
 >
 > **版权声明：**
-> 仓库中 `photos/` 目录下的所有照片，以及由这些照片生成的缩略图、OG 图、README 预览图等媒体文件，均为 **Jackyhq 个人拍摄作品或其衍生媒体**。这些资产**不属于开源范围**，未经明确书面许可，严禁以任何形式（包括但不限于商业用途、二次分发、个人展示、公开展示等）进行转载、引用或使用。
+> 私有照片源文件存放在 `Jackyhq/Photography-Photos`，本仓库中的本地 `photos/` 目录仅作为构建时 checkout 使用，并已被 Git 忽略。照片以及由这些照片生成的缩略图、OG 图、README 预览图等媒体文件，均为 **Jackyhq 个人拍摄作品或其衍生媒体**。这些资产**不属于开源范围**，未经明确书面许可，严禁以任何形式（包括但不限于商业用途、二次分发、个人展示、公开展示等）进行转载、引用或使用。
 
 Afilmory (/əˈfɪlməri/) 是一个专为个人摄影网站创造的词汇，融合了自动对焦（AF）、光圈（Aperture，光影控制）、胶片（Film，复古媒介）和记忆（Memory，定格瞬间）。
 
@@ -63,7 +63,7 @@ packages/sdk/             # 轻量 SDK/schema
 packages/ui/              # 共享 UI 组件和设计系统基础件
 packages/utils/           # 通用工具、RSS、动画和数据处理工具
 packages/webgl-viewer/    # WebGL 图片查看器
-photos/                   # 个人照片源文件，不属于开源范围
+photos/                   # 私有照片仓库的本地 checkout，主仓库不追踪
 ```
 
 ## 快速开始
@@ -79,6 +79,9 @@ photos/                   # 个人照片源文件，不属于开源范围
 ```bash
 # 安装依赖
 pnpm install
+
+# 克隆私有照片源仓库到构建约定目录
+git clone git@github.com:Jackyhq/Photography-Photos.git photos
 
 # 可选：标准化 photos/incoming 中的新照片
 pnpm run photos:standardize
@@ -166,7 +169,7 @@ pnpm --filter web type-check
 
 ### 照片构建配置
 
-照片处理由 `builder.config.ts` 控制。当前项目使用本地照片目录作为源：
+照片处理由 `builder.config.ts` 控制。当前项目使用本地 `photos/` 目录作为源；该目录由私有仓库 `Jackyhq/Photography-Photos` checkout 得到，不由本公开源码仓库追踪：
 
 ```ts
 import { defineBuilderConfig } from '@afilmory/builder'
@@ -184,7 +187,7 @@ export default defineBuilderConfig(() => ({
 
 `storage.provider` 可选值：
 
-- `local`：读取本地目录，适合本仓库的照片源、开发和自托管。
+- `local`：读取本地目录，适合私有照片仓库 checkout、开发和自托管。
 - `s3`：读取 S3 兼容存储，适合生产级对象存储与 CDN。
 - `github`：读取 GitHub 仓库内容，适合小型图库或静态资源仓库。
 - `eagle`：读取 Eagle 4 资料库，可按标签或文件夹筛选并导出照片。
@@ -193,7 +196,7 @@ export default defineBuilderConfig(() => ({
 
 ## 照片工作流
 
-1. 将新照片放入 `photos/incoming/`，或直接放入 `photos/<分类>/`。
+1. 在私有照片仓库 `Jackyhq/Photography-Photos` 中，将新照片放入 `incoming/`，或直接放入 `<分类>/`。
 2. 运行 `pnpm run photos:standardize`。脚本会读取 EXIF 时间，将文件重命名为 `YYYYMMDDHHmmss.ext`，并移动到目标分类目录；直接放在 `incoming` 根目录的文件会进入 `photos/随手/`。
 3. 运行 `pnpm run build:manifest`。构建器会扫描照片、提取 EXIF、生成缩略图，并把 `photo-descriptions.json` 中匹配到的人工标题、双语描述和标签合并进 manifest。
 4. 需要补充新照片描述时，运行 `pnpm run photos:descriptions:sync` 根据当前 manifest 同步 `photo-descriptions.json`，填写 `title`、`descriptions.zh-CN`、`descriptions.en` 和精简标签后再次运行 `pnpm run build:manifest`。
@@ -215,19 +218,33 @@ pnpm build
 
 ## 自动部署
 
-`.github/workflows/deploy.yml` 在推送到 `main` 且相关路径变更时部署，也支持手动触发。Pull Request 会运行同一套标准化、manifest 和 web 构建校验，但不会发布 GitHub Pages 或提交构建产物。
+`.github/workflows/deploy.yml` 在推送到 `main` 且相关路径变更时部署，也支持手动触发。私有照片仓库 `Jackyhq/Photography-Photos` 的 push 会通过 `repository_dispatch` 触发同一套部署流程。Pull Request 会运行同一套标准化、manifest 和 web 构建校验，但不会发布 GitHub Pages、同步 R2 或提交照片变更。
 
-触发路径包括 `.github/workflows/deploy.yml`、`photos/**`、`apps/**`、`packages/**`、`package.json`、`pnpm-lock.yaml`、`config.json`、`builder.config.ts` 和 `site.config.ts`。部署流程包括：
+触发路径包括 `.github/workflows/deploy.yml`、`photo-descriptions.json`、`apps/**`、相关 `packages/**`、`plugins/builder/**`、`scripts/**`、`package.json`、`pnpm-lock.yaml`、`config.json`、`builder.config.ts` 和 `site.config.ts`。部署流程包括：
 
 1. 安装 pnpm 与 Node.js 24。
-2. 执行 `pnpm install`。
-3. 执行 `pnpm run photos:standardize`。
-4. 执行 `pnpm run build:manifest`。
-5. 执行 `pnpm run build`。
-6. 校验 `apps/web/dist/`，复制 sitemap 为 `googlesitemap.xml`。
-7. 将照片标准化产生的 `photos/**` 变更提交回源码仓库。
-8. 将构建产物同步到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web)。
-9. 上传 `apps/web/dist/` 到 GitHub Pages 并部署。
+2. 使用 `PHOTO_REPO_TOKEN` checkout 私有照片仓库到 `./photos`。
+3. 执行 `pnpm install`。
+4. 执行 `pnpm run photos:standardize`。
+5. 非 PR 部署时，将标准化产生的照片变更提交回 `Jackyhq/Photography-Photos`，并用 `[skip dispatch]` 避免循环触发。
+6. 非 PR 部署时，将 `./photos` 同步到 Cloudflare R2 的 `photos/` prefix，并排除 `.git/`、`.github/`、`incoming/` 和仓库元文件。
+7. 执行 `pnpm run build:manifest`。
+8. 执行 `pnpm run build`。
+9. 校验 `apps/web/dist/`，复制 sitemap 为 `googlesitemap.xml`。
+10. 将构建产物同步到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web)。
+11. 上传 `apps/web/dist/` 到 GitHub Pages 并部署。
+
+主仓库需要以下 GitHub Secrets：
+
+- `PHOTO_REPO_TOKEN`
+- `DEPLOY_REPO_TOKEN`
+- `CLOUDFLARE_R2_ACCESS_KEY_ID`
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
+- `CLOUDFLARE_R2_ENDPOINT`
+- `CLOUDFLARE_R2_BUCKET`
+- `INDEXNOW_KEY`（可选）
+
+照片仓库需要 `MAIN_REPO_DISPATCH_TOKEN`，用于向 `Jackyhq/Photography` 发送 `photos-updated` dispatch。
 
 源码仓库仍会在 `INDEXNOW_KEY` 存在时把验证文件写入 `apps/web/dist/`，但 IndexNow 通知已移动到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web) 的 `.github/workflows/notify-indexnow.yml`，由前端产物仓库在收到新 sitemap 后执行。
 
@@ -245,6 +262,6 @@ PR 校验会按 PR 编号设置并发分组并取消过期运行；部署任务�
 
 本项目代码遵循 [Attribution Network License (ANL) v1.0](LICENSE)。
 
-`photos/**`、`apps/web/public/thumbnails/**`、部署仓库中的缩略图、OG 图、README 预览图以及其他由个人照片生成的媒体资产不属于开源授权范围，详见 [LICENSE](LICENSE) 的 Documentation & Media 排除条款。
+私有照片仓库内容、`apps/web/public/thumbnails/**`、部署仓库中的缩略图、OG 图、README 预览图以及其他由个人照片生成的媒体资产不属于开源授权范围，详见 [LICENSE](LICENSE) 的 Documentation & Media 排除条款。
 
 Copyright (c) 2025-2026 Jackyhq. All rights reserved.

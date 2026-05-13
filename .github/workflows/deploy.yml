@@ -6,7 +6,6 @@ on:
       - main
     paths:
       - '.github/workflows/deploy.yml'
-      - 'photos/**'
       - 'photo-descriptions.json'
       - 'apps/web/**'
       - 'packages/builder/**'
@@ -30,7 +29,6 @@ on:
       - main
     paths:
       - '.github/workflows/deploy.yml'
-      - 'photos/**'
       - 'photo-descriptions.json'
       - 'apps/web/**'
       - 'packages/builder/**'
@@ -49,6 +47,9 @@ on:
       - 'config.json'
       - 'builder.config.ts'
       - 'site.config.ts'
+  repository_dispatch:
+    types:
+      - photos-updated
   workflow_dispatch:
 
 # Allow only one concurrent deployment while letting PR validation cancel stale runs.
@@ -63,15 +64,34 @@ env:
   NODE_VERSION: '24'
   PNPM_VERSION: '10.19.0'
   DEPLOY_REPOSITORY: Jackyhq/Photography-Web
+  PHOTO_REPOSITORY: Jackyhq/Photography-Photos
+  PHOTO_REPOSITORY_BRANCH: main
+  R2_PHOTOS_PREFIX: photos
 
 jobs:
   validate:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      HAS_PHOTO_REPO_TOKEN: ${{ secrets.PHOTO_REPO_TOKEN != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+
+      - name: Check photo repository token
+        if: env.HAS_PHOTO_REPO_TOKEN != 'true'
+        run: |
+          echo "PHOTO_REPO_TOKEN is required to read ${PHOTO_REPOSITORY} during PR validation."
+          exit 1
+
+      - name: Checkout photo repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.PHOTO_REPOSITORY }}
+          ref: ${{ env.PHOTO_REPOSITORY_BRANCH }}
+          token: ${{ secrets.PHOTO_REPO_TOKEN }}
+          path: photos
 
       - name: Install pnpm
         uses: pnpm/action-setup@v6
@@ -122,17 +142,50 @@ jobs:
     env:
       HAS_INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY != '' }}
       HAS_DEPLOY_REPO_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN != '' }}
+      HAS_PHOTO_REPO_TOKEN: ${{ secrets.PHOTO_REPO_TOKEN != '' }}
+      HAS_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID != '' }}
+      HAS_R2_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY != '' }}
+      HAS_R2_ENDPOINT: ${{ secrets.CLOUDFLARE_R2_ENDPOINT != '' }}
+      HAS_R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET != '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           ref: ${{ github.ref_name }}
 
-      - name: Check deployment repository token
-        if: env.HAS_DEPLOY_REPO_TOKEN != 'true'
+      - name: Check required deployment secrets
+        shell: bash
         run: |
-          echo "DEPLOY_REPO_TOKEN is required to push build output to ${DEPLOY_REPOSITORY}."
-          exit 1
+          missing=()
+
+          if [ "${HAS_DEPLOY_REPO_TOKEN}" != "true" ]; then
+            missing+=("DEPLOY_REPO_TOKEN")
+          fi
+
+          if [ "${HAS_PHOTO_REPO_TOKEN}" != "true" ]; then
+            missing+=("PHOTO_REPO_TOKEN")
+          fi
+
+          if [ "${HAS_R2_ACCESS_KEY_ID}" != "true" ]; then
+            missing+=("CLOUDFLARE_R2_ACCESS_KEY_ID")
+          fi
+
+          if [ "${HAS_R2_SECRET_ACCESS_KEY}" != "true" ]; then
+            missing+=("CLOUDFLARE_R2_SECRET_ACCESS_KEY")
+          fi
+
+          if [ "${HAS_R2_ENDPOINT}" != "true" ]; then
+            missing+=("CLOUDFLARE_R2_ENDPOINT")
+          fi
+
+          if [ "${HAS_R2_BUCKET}" != "true" ]; then
+            missing+=("CLOUDFLARE_R2_BUCKET")
+          fi
+
+          if [ "${#missing[@]}" -gt 0 ]; then
+            printf 'Missing required secrets: %s\n' "${missing[*]}"
+            exit 1
+          fi
 
       - name: Configure Git author
         run: |
@@ -144,6 +197,14 @@ jobs:
         run: |
           git fetch origin "${GITHUB_REF_NAME}"
           git merge --ff-only "origin/${GITHUB_REF_NAME}"
+
+      - name: Checkout photo repository
+        uses: actions/checkout@v6
+        with:
+          repository: ${{ env.PHOTO_REPOSITORY }}
+          ref: ${{ env.PHOTO_REPOSITORY_BRANCH }}
+          token: ${{ secrets.PHOTO_REPO_TOKEN }}
+          path: photos
 
       - name: Install pnpm
         uses: pnpm/action-setup@v6
@@ -162,6 +223,42 @@ jobs:
 
       - name: Standardize Photos
         run: pnpm run photos:standardize
+
+      - name: Commit standardized photos to photo repository
+        working-directory: photos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No standardized photo changes."
+          else
+            git commit -m "chore: update standardized photos [skip dispatch]"
+            git push origin "HEAD:${PHOTO_REPOSITORY_BRANCH}"
+          fi
+
+      - name: Sync photos to Cloudflare R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.CLOUDFLARE_R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+          R2_BUCKET: ${{ secrets.CLOUDFLARE_R2_BUCKET }}
+          R2_ENDPOINT: ${{ secrets.CLOUDFLARE_R2_ENDPOINT }}
+        run: |
+          if ! command -v aws >/dev/null 2>&1; then
+            echo "AWS CLI is required on the runner to sync photos to Cloudflare R2."
+            exit 1
+          fi
+
+          aws s3 sync ./photos "s3://${R2_BUCKET}/${R2_PHOTOS_PREFIX}/" \
+            --endpoint-url "${R2_ENDPOINT}" \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".gitignore" \
+            --exclude "README.md" \
+            --exclude "incoming/*" \
+            --exclude "incoming/**"
 
       - name: Build manifest
         run: pnpm run build:manifest
@@ -216,13 +313,6 @@ jobs:
 
           printf '%s' "$INDEXNOW_KEY" > "./apps/web/dist/${INDEXNOW_KEY}.txt"
           echo "Created IndexNow key file in apps/web/dist."
-
-      - name: Commit standardized photos
-        uses: stefanzweifel/git-auto-commit-action@v7
-        with:
-          commit_message: "chore: update standardized photos"
-          file_pattern: 'photos/**'
-          add_options: '-A'
 
       - name: Checkout deployment repository
         uses: actions/checkout@v6
