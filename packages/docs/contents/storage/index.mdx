@@ -2,7 +2,7 @@
 title: Storage providers
 description: Afilmory can work with multiple storage providers, including local file system, S3, GitHub, and Eagle
 createdAt: 2025-08-12T15:09:08+08:00
-lastModified: 2026-05-13T21:15:03+08:00
+lastModified: 2026-05-13T22:30:55+08:00
 ---
 
 # Storage Providers
@@ -27,6 +27,8 @@ export default defineBuilderConfig(() => ({
 ```
 
 `excludeRegex` keeps staging files under `photos/incoming/` out of the published manifest until they have been standardized or moved into a real category folder. In CI, `./photos` is checked out from `Jackyhq/Photography-Photos`, and published files are synced to Cloudflare R2 behind `https://photos3.jackyw.cn/photos/`.
+
+The production R2 layout uses a bucket plus a prefix rather than a separate bucket for photos. For example, the workflow sync target is `s3://<bucket>/photos/`, while `builder.config.ts` publishes URLs with the public base URL `https://photos3.jackyw.cn/photos/`. Keep the GitHub secret `CLOUDFLARE_R2_BUCKET` set to the bucket name only; the `photos/` folder is provided by the workflow prefix.
 
 ### S3-Compatible Storage
 

@@ -246,6 +246,15 @@ pnpm build
 
 照片仓库需要 `MAIN_REPO_DISPATCH_TOKEN`，用于向 `Jackyhq/Photography` 发送 `photos-updated` dispatch。
 
+R2 同步配置需要区分 bucket、prefix 和公开访问域名：
+
+- `CLOUDFLARE_R2_BUCKET` 只填写 bucket 名称，例如 `jackywhq`，不要填写 `photos`、URL 或 `s3://` 路径。
+- `CLOUDFLARE_R2_ENDPOINT` 使用 R2 S3 API endpoint，例如 `https://<account_id>.r2.cloudflarestorage.com`，不要使用 `https://photos3.jackyw.cn` 这类公开访问域名。
+- workflow 里的 `R2_PHOTOS_PREFIX=photos` 决定同步目标是 `s3://<bucket>/photos/`；前端仍通过 `https://photos3.jackyw.cn/photos/` 访问。
+- `CLOUDFLARE_R2_ACCESS_KEY_ID` 和 `CLOUDFLARE_R2_SECRET_ACCESS_KEY` 必须是 Cloudflare R2 的 S3 API credentials，并且对目标 bucket 具备 list/read/write object 权限。
+- R2 sync 使用 `--size-only --delete`：它会先列出 R2 上的对象，只上传本地存在且远端缺失或文件大小不同的对象，并删除远端多余对象。这样可以避免 GitHub Actions checkout 改变本地时间戳后重复上传未变化的照片。
+- 如果用同一路径替换了一张“字节大小完全相同”的照片，`--size-only` 可能不会发现内容变化；这种极少数情况可以先删除 R2 上对应对象，或换一个文件名后重新部署。
+
 源码仓库仍会在 `INDEXNOW_KEY` 存在时把验证文件写入 `apps/web/dist/`，但 IndexNow 通知已移动到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web) 的 `.github/workflows/notify-indexnow.yml`，由前端产物仓库在收到新 sitemap 后执行。
 
 PR 校验会按 PR 编号设置并发分组并取消过期运行；部署任务使用 Pages 权限，只在非 PR 事件中执行。

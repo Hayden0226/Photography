@@ -2,7 +2,7 @@
 title: GitHub Action
 description: Guide to the GitHub Actions deployment workflow used by Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-13T22:24:02+08:00
+lastModified: 2026-05-13T22:30:55+08:00
 ---
 
 # GitHub Action Deployment
@@ -68,13 +68,26 @@ The source repository requires these secrets:
 
 - `PHOTO_REPO_TOKEN`: fine-grained PAT with read/write Contents access to `Jackyhq/Photography-Photos`.
 - `DEPLOY_REPO_TOKEN`: token used to push static output to `Jackyhq/Photography-Web`.
-- `CLOUDFLARE_R2_ACCESS_KEY_ID`
-- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
-- `CLOUDFLARE_R2_ENDPOINT`
-- `CLOUDFLARE_R2_BUCKET`
+- `CLOUDFLARE_R2_ACCESS_KEY_ID`: Cloudflare R2 S3 API access key.
+- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`: Cloudflare R2 S3 API secret key.
+- `CLOUDFLARE_R2_ENDPOINT`: R2 S3 API endpoint, such as `https://<account_id>.r2.cloudflarestorage.com`.
+- `CLOUDFLARE_R2_BUCKET`: bucket name only, such as `jackywhq`.
 - `INDEXNOW_KEY` when IndexNow verification output is needed.
 
 The private photo repository requires `MAIN_REPO_DISPATCH_TOKEN`, a token that can send `repository_dispatch` events to `Jackyhq/Photography`.
+
+## Cloudflare R2 Sync
+
+The workflow treats the R2 bucket, object prefix, and public photo URL as separate pieces:
+
+- `CLOUDFLARE_R2_BUCKET` is the bucket name only. Do not include `s3://`, the `photos/` prefix, or a public URL.
+- `R2_PHOTOS_PREFIX=photos` makes the upload target `s3://<bucket>/photos/`.
+- `CLOUDFLARE_R2_ENDPOINT` must be the S3 API endpoint, not the public custom domain.
+- `https://photos3.jackyw.cn/photos/` is only the public URL used by the frontend manifest.
+
+The sync command uses `aws s3 sync ./photos "s3://${R2_BUCKET}/${R2_PHOTOS_PREFIX}/" --size-only --delete`. This still lists the remote objects first, but it only uploads objects that are missing or have a different byte size. That avoids re-uploading unchanged photos when GitHub Actions creates a fresh checkout with new local file timestamps.
+
+Because comparison is size-only, replacing an existing object with different content at the exact same byte size will not be detected. In that rare case, delete the affected object from R2 or change the file name before redeploying.
 
 ## Permissions
 
