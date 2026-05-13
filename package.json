@@ -23,7 +23,9 @@
     "photos:standardize": "tsx scripts/standardize-photos.ts",
     "preinstall": "sh scripts/preinstall.sh",
     "prepare": "simple-git-hooks",
-    "update:lastmodified": "tsx scripts/update-lastmodified.ts"
+    "update:lastmodified": "tsx scripts/update-lastmodified.ts",
+    "vercel:build": "pnpm run vercel:photos && pnpm run photos:standardize && pnpm run build",
+    "vercel:photos": "sh scripts/checkout-vercel-photos.sh"
   },
   "dependencies": {
     "@afilmory/builder": "workspace:*",

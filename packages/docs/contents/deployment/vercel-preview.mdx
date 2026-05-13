@@ -1,0 +1,54 @@
+---
+title: Vercel Preview
+description: Guide to Vercel Preview deployments that pull the private photo repository during the build.
+createdAt: 2026-05-13T22:45:00+08:00
+lastModified: 2026-05-13T22:42:49+08:00
+---
+
+# Vercel Preview Deployment
+
+Vercel Preview deployments can build the public source repository and pull the private photo repository during the build. This keeps photo source files out of `Jackyhq/Photography` while still allowing branch and pull request previews to generate a complete photo manifest.
+
+## Repository Configuration
+
+The root `vercel.json` configures Vercel to use:
+
+```json
+{
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm run vercel:build",
+  "outputDirectory": "apps/web/dist"
+}
+```
+
+`pnpm run vercel:build` performs three steps:
+
+1. `pnpm run vercel:photos`
+2. `pnpm run photos:standardize`
+3. `pnpm run build`
+
+The `vercel:photos` script runs `scripts/checkout-vercel-photos.sh`. In a clean Vercel build environment, it clones `Jackyhq/Photography-Photos` into `./photos`. If `./photos` already exists locally, the script leaves it alone.
+
+## Environment Variables
+
+Add this Vercel Preview environment variable:
+
+- `PHOTO_REPO_TOKEN`: fine-grained GitHub PAT with read-only Contents access to `Jackyhq/Photography-Photos`.
+
+Mark the variable as Sensitive in Vercel. The token is only needed at build time and should not be exposed to client-side code.
+
+## Behavior
+
+Vercel Preview builds do not push standardized photo changes back to `Jackyhq/Photography-Photos`, do not sync Cloudflare R2, and do not deploy GitHub Pages. They only build the static preview artifact in `apps/web/dist/`.
+
+The generated manifest still uses the configured public photo base URL:
+
+```plain
+https://photos3.jackyw.cn/photos/
+```
+
+That means the preview expects published photo objects to already be available in Cloudflare R2.
+
+## Pull Request Safety
+
+For trusted branches and trusted pull requests, Vercel can use `PHOTO_REPO_TOKEN` to build previews automatically. For public fork pull requests, only authorize Vercel deployments from people you trust. A fork PR can change build scripts, and any build that receives a private token should be treated as trusted code execution.

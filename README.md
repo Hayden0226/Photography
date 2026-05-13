@@ -259,6 +259,22 @@ R2 同步配置需要区分 bucket、prefix 和公开访问域名：
 
 PR 校验会按 PR 编号设置并发分组并取消过期运行；部署任务使用 Pages 权限，只在非 PR 事件中执行。
 
+### Vercel Preview
+
+`vercel.json` 配置了 Vercel Preview 构建：
+
+1. `pnpm install`
+2. `pnpm run vercel:build`
+3. 输出目录 `apps/web/dist`
+
+`pnpm run vercel:build` 会先执行 `pnpm run vercel:photos`。这个脚本会在构建环境没有 `./photos` 时，用 Vercel Preview 环境变量 `PHOTO_REPO_TOKEN` clone 私有照片仓库 `Jackyhq/Photography-Photos` 到 `./photos`，再运行 `pnpm run photos:standardize` 和 `pnpm run build`。
+
+Vercel 项目需要添加 Preview 环境变量：
+
+- `PHOTO_REPO_TOKEN`：fine-grained PAT，只需要 `Jackyhq/Photography-Photos` 的 `Contents: Read-only` 权限。建议在 Vercel 标记为 Sensitive。
+
+Vercel Preview 只负责生成 PR/branch 预览站点，不会同步 R2，也不会把标准化结果 push 回照片仓库。预览站点中的照片 URL 仍然来自 `https://photos3.jackyw.cn/photos/`。如果 public fork PR 需要 Vercel 授权部署，不要批准不可信 fork 的 Preview deployment，避免把私有照片仓库 token 暴露给不可信构建代码。
+
 ## 文档
 
 - 文档站源码位于 `packages/docs/contents/`。
