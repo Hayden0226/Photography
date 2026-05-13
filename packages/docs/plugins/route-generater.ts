@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { inspect } from 'node:util'
 
 import { glob } from 'glob'
 import type { Plugin } from 'vite'
@@ -211,17 +212,30 @@ function generateTitleFromPath(path: string): string {
 }
 
 function generateRouteFileContent(routes: RouteConfig[]): string {
-  const imports = routes.map((route, index) => `import Route${index} from '${route.component}'`).join('\n')
+  const routeEntries = routes.map((route, index) => ({
+    importName: `Route${index}`,
+    route,
+  }))
+  const imports = [...routeEntries]
+    .sort((a, b) => a.route.component.localeCompare(b.route.component))
+    .map(({ importName, route }) => `import ${importName} from '${route.component}'`)
+    .join('\n')
+  const importNameByRoute = new Map(routeEntries.map(({ route, importName }) => [route, importName]))
 
   const routeObjects = routes
-    .map(
-      (route, index) => `  {
+    .map((route) => {
+      const importName = importNameByRoute.get(route)
+      if (!importName) {
+        throw new Error(`Missing generated import for route: ${route.path}`)
+      }
+
+      return `  {
     path: '${route.path}',
-    component: Route${index},
+    component: ${importName},
     title: '${route.title}',
-    meta: ${JSON.stringify(route.meta, null, 4).replaceAll('\n', '\n    ')}
-  }`,
-    )
+    meta: ${formatTsValue(route.meta, 4)},
+  }`
+    })
     .join(',\n')
 
   return `// Auto-generated route configuration
@@ -252,7 +266,16 @@ function generateRoutesJson(routes: RouteConfig[]): string {
     meta: route.meta,
   }))
 
-  return JSON.stringify(routesData, null, 2)
+  return `${JSON.stringify(routesData, null, 2)}\n`
+}
+
+function formatTsValue(value: unknown, indentation: number): string {
+  return inspect(value, {
+    breakLength: 100,
+    compact: false,
+    depth: null,
+    sorted: false,
+  }).replaceAll('\n', `\n${' '.repeat(indentation)}`)
 }
 
 export default routeGenerator

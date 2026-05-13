@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
+import { inspect } from 'node:util'
 
 import { glob } from 'glob'
 import type { Plugin } from 'vite'
@@ -329,17 +330,17 @@ export interface FileToc {
   toc: TocItem[]
 }
 
-export const tocData: FileToc[] = ${JSON.stringify(tocData, null, 2)}
+export const tocData: FileToc[] = ${formatTsValue(tocData)}
 
 // Helper function to find TOC data by file path
 export function getTocByFile(filePath: string): TocItem[] | undefined {
-  const item = tocData.find(item => item.file === filePath)
+  const item = tocData.find((item) => item.file === filePath)
   return item?.toc
 }
 
 // Helper function to find TOC data by route path
 export function getTocByPath(routePath: string): TocItem[] | undefined {
-  const item = tocData.find(item => item.path === routePath)
+  const item = tocData.find((item) => item.path === routePath)
   return item?.toc
 }
 
@@ -383,6 +384,15 @@ export function getHeadingsByLevel(toc: TocItem[], level: number): TocItem[] {
   return result
 }
 `
+}
+
+function formatTsValue(value: unknown): string {
+  return inspect(value, {
+    breakLength: 100,
+    compact: false,
+    depth: null,
+    sorted: false,
+  })
 }
 
 export default tocExtractor

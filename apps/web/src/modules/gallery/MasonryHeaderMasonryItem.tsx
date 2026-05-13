@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { siteConfig } from '~/config'
 import { usePhotos } from '~/hooks/usePhotoViewer'
-import { useAppUpdate } from '~/providers/app-update-provider'
+import { useAppUpdate } from '~/providers/app-update-context'
 
 import { ActionGroup } from './ActionGroup'
 

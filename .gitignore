@@ -7,7 +7,7 @@ dist
 dist-ssr
 build
 out
-web/
+/web/
 apps/web/dist/
 .next
 .turbo

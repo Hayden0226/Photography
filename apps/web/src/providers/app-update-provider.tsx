@@ -1,17 +1,9 @@
 import type { PropsWithChildren } from 'react'
-import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-interface AppUpdateContextValue {
-  needRefresh: boolean
-  updateApp: () => void
-}
+import { AppUpdateContext } from './app-update-context'
 
 const UPDATE_CHECK_THROTTLE_MS = 60_000
-
-const AppUpdateContext = createContext<AppUpdateContextValue>({
-  needRefresh: false,
-  updateApp: () => {},
-})
 
 export const AppUpdateProvider = ({ children }: PropsWithChildren) => {
   const registrationRef = useRef<ServiceWorkerRegistration | undefined>(undefined)
@@ -48,13 +40,15 @@ export const AppUpdateProvider = ({ children }: PropsWithChildren) => {
 
     let cancelled = false
     let registration: ServiceWorkerRegistration | undefined
+    const installingWorkers: ServiceWorker[] = []
 
     const watchInstallingWorker = (worker: ServiceWorker) => {
-      worker.addEventListener('statechange', () => {
+      worker.onstatechange = () => {
         if (worker.state === 'installed' && navigator.serviceWorker.controller) {
           markUpdateReady(worker)
         }
-      })
+      }
+      installingWorkers.push(worker)
     }
 
     const handleUpdateFound = () => {
@@ -105,6 +99,9 @@ export const AppUpdateProvider = ({ children }: PropsWithChildren) => {
       window.removeEventListener('load', handleLoad)
       navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
       registration?.removeEventListener('updatefound', handleUpdateFound)
+      for (const worker of installingWorkers) {
+        worker.onstatechange = null
+      }
     }
   }, [checkForUpdate, markUpdateReady])
 
@@ -157,5 +154,3 @@ export const AppUpdateProvider = ({ children }: PropsWithChildren) => {
 
   return <AppUpdateContext value={value}>{children}</AppUpdateContext>
 }
-
-export const useAppUpdate = () => use(AppUpdateContext)

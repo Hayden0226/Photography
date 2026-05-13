@@ -115,6 +115,8 @@ export class LocalStorageProvider implements StorageProvider {
     const files: StorageObject[] = []
     const excludeRegex = this.config.excludeRegex ? new RegExp(this.config.excludeRegex) : null
 
+    await this.assertBasePathIsReadableDirectory()
+
     // 重置进度
     this.scanProgress = {
       currentPath: '',
@@ -130,6 +132,25 @@ export class LocalStorageProvider implements StorageProvider {
     }
 
     return files
+  }
+
+  private async assertBasePathIsReadableDirectory(): Promise<void> {
+    try {
+      const stats = await fs.stat(this.basePath)
+      if (!stats.isDirectory()) {
+        throw new Error(`LocalStorageProvider: basePath 不是目录：${this.basePath}`)
+      }
+
+      await fs.access(this.basePath)
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('LocalStorageProvider:')) {
+        throw error
+      }
+
+      const errorType = error instanceof Error ? error.name : 'UnknownError'
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      throw new Error(`LocalStorageProvider: 无法访问 basePath：${this.basePath} - [${errorType}] ${errorMessage}`)
+    }
   }
 
   private resolveSafePath(key: string): string {
@@ -258,7 +279,7 @@ export class LocalStorageProvider implements StorageProvider {
     } catch (error) {
       const errorType = error instanceof Error ? error.name : 'UnknownError'
       const errorMessage = error instanceof Error ? error.message : String(error)
-      logger.main.error(`[${errorType}] 扫描目录失败：${dirPath} - ${errorMessage}`)
+      throw new Error(`扫描目录失败：${dirPath} - [${errorType}] ${errorMessage}`)
     }
   }
 
