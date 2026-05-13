@@ -252,6 +252,7 @@ jobs:
 
           aws s3 sync ./photos "s3://${R2_BUCKET}/${R2_PHOTOS_PREFIX}/" \
             --endpoint-url "${R2_ENDPOINT}" \
+            --size-only \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \

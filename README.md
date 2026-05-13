@@ -227,7 +227,7 @@ pnpm build
 3. 执行 `pnpm install`。
 4. 执行 `pnpm run photos:standardize`。
 5. 非 PR 部署时，将标准化产生的照片变更提交回 `Jackyhq/Photography-Photos`，并用 `[skip dispatch]` 避免循环触发。
-6. 非 PR 部署时，将 `./photos` 同步到 Cloudflare R2 的 `photos/` prefix，并排除 `.git/`、`.github/`、`incoming/` 和仓库元文件。
+6. 非 PR 部署时，将 `./photos` 同步到 Cloudflare R2 的 `photos/` prefix，并排除 `.git/`、`.github/`、`incoming/` 和仓库元文件；同步使用 size-only 比较，避免 GitHub Actions checkout 造成的本地时间戳变化触发重复上传。
 7. 执行 `pnpm run build:manifest`。
 8. 执行 `pnpm run build`。
 9. 校验 `apps/web/dist/`，复制 sitemap 为 `googlesitemap.xml`。

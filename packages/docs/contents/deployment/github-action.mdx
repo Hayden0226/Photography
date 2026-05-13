@@ -2,7 +2,7 @@
 title: GitHub Action
 description: Guide to the GitHub Actions deployment workflow used by Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-13T21:15:03+08:00
+lastModified: 2026-05-13T22:24:02+08:00
 ---
 
 # GitHub Action Deployment
@@ -55,7 +55,7 @@ Both jobs perform the shared build steps:
 The deploy job then performs these additional steps:
 
 1. Commit standardized photo changes back to `Jackyhq/Photography-Photos` with `[skip dispatch]`.
-2. Sync `./photos` to Cloudflare R2, excluding `.git/`, `.github/`, `incoming/`, `README.md`, and `.gitignore`.
+2. Sync `./photos` to Cloudflare R2, excluding `.git/`, `.github/`, `incoming/`, `README.md`, and `.gitignore`. The sync uses size-only comparison so a fresh GitHub Actions checkout does not re-upload unchanged objects just because local file timestamps changed.
 3. Copy `sitemap.xml` to `googlesitemap.xml` when it exists.
 4. Publish the optional IndexNow verification key file.
 5. Sync `apps/web/dist/` into `Jackyhq/Photography-Web`.
