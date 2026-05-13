@@ -108,6 +108,18 @@ export const tocData: FileToc[] = [
             children: [],
           },
           {
+            id: 'heading-secrets',
+            level: 2,
+            text: 'Secrets',
+            children: [],
+          },
+          {
+            id: 'heading-cloudflare-r2-sync',
+            level: 2,
+            text: 'Cloudflare R2 Sync',
+            children: [],
+          },
+          {
             id: 'heading-permissions',
             level: 2,
             text: 'Permissions',
@@ -161,6 +173,44 @@ export const tocData: FileToc[] = [
             id: 'heading-custom-domain',
             level: 2,
             text: 'Custom Domain',
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    file: 'deployment/vercel-preview.mdx',
+    path: '/deployment/vercel-preview',
+    title: 'Vercel Preview',
+    toc: [
+      {
+        id: 'heading-vercel-preview-deployment',
+        level: 1,
+        text: 'Vercel Preview Deployment',
+        children: [
+          {
+            id: 'heading-repository-configuration',
+            level: 2,
+            text: 'Repository Configuration',
+            children: [],
+          },
+          {
+            id: 'heading-environment-variables',
+            level: 2,
+            text: 'Environment Variables',
+            children: [],
+          },
+          {
+            id: 'heading-behavior',
+            level: 2,
+            text: 'Behavior',
+            children: [],
+          },
+          {
+            id: 'heading-pull-request-safety',
+            level: 2,
+            text: 'Pull Request Safety',
             children: [],
           },
         ],

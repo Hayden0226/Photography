@@ -166,23 +166,7 @@ export class AfilmoryBuilder {
       logger.main.info(`存储中找到 ${videoObjects.length} 个独立视频`)
 
       if (imageObjects.length === 0 && videoObjects.length === 0) {
-        logger.main.error('❌ 没有找到需要处理的照片或视频')
-        const result: BuilderResult = {
-          hasUpdates: false,
-          newCount: 0,
-          processedCount: 0,
-          skippedCount: 0,
-          deletedCount: 0,
-          totalPhotos: 0,
-        }
-
-        await this.emitPluginEvent(runState, 'afterBuild', {
-          options,
-          result,
-          manifest,
-        })
-
-        return result
+        throw new Error('没有找到需要处理的照片或视频，请检查照片存储配置和源目录。')
       }
 
       // 创建存储中存在的媒体 key 集合，用于检测已删除的媒体

@@ -5,11 +5,12 @@
 import Route2 from '../contents/deployment/github-action.mdx'
 import Route3 from '../contents/deployment/github-pages.mdx'
 import Route1 from '../contents/deployment/index.mdx'
-import Route4 from '../contents/docs-site.mdx'
+import Route4 from '../contents/deployment/vercel-preview.mdx'
+import Route5 from '../contents/docs-site.mdx'
 import Route0 from '../contents/index.mdx'
-import Route5 from '../contents/performance/index.mdx'
-import Route6 from '../contents/photo-metadata/index.mdx'
-import Route7 from '../contents/storage/index.mdx'
+import Route6 from '../contents/performance/index.mdx'
+import Route7 from '../contents/photo-metadata/index.mdx'
+import Route8 from '../contents/storage/index.mdx'
 
 export interface RouteConfig {
   path: string
@@ -27,7 +28,7 @@ export const routes: RouteConfig[] = [
       title: 'Overview',
       description: "Project overview for Jacky's Photography, a customized Afilmory-powered photo gallery.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-05-09T00:00:00+01:00',
+      lastModified: '2026-05-13T21:15:03+08:00',
     },
   },
   {
@@ -38,7 +39,7 @@ export const routes: RouteConfig[] = [
       title: 'Deployment',
       description: "Guide to deploying Jacky's Photography in production environments.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-05-09T00:00:00+01:00',
+      lastModified: '2026-05-13T22:42:49+08:00',
     },
   },
   {
@@ -49,7 +50,7 @@ export const routes: RouteConfig[] = [
       title: 'GitHub Action',
       description: "Guide to the GitHub Actions deployment workflow used by Jacky's Photography.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-05-09T00:00:00+01:00',
+      lastModified: '2026-05-13T22:30:55+08:00',
     },
   },
   {
@@ -60,52 +61,63 @@ export const routes: RouteConfig[] = [
       title: 'GitHub Pages',
       description: "Guide to deploying Jacky's Photography via GitHub Pages.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-04-29T04:05:16+08:00',
+      lastModified: '2026-05-13T21:15:03+08:00',
+    },
+  },
+  {
+    path: '/deployment/vercel-preview',
+    component: Route4,
+    title: 'Vercel Preview',
+    meta: {
+      title: 'Vercel Preview',
+      description: 'Guide to Vercel Preview deployments that pull the private photo repository during the build.',
+      createdAt: '2026-05-13T22:45:00+08:00',
+      lastModified: '2026-05-13T22:42:49+08:00',
     },
   },
   {
     path: '/docs-site',
-    component: Route4,
+    component: Route5,
     title: 'Docs site',
     meta: {
       title: 'Docs site',
       description: "How to maintain the Jacky's Photography documentation site.",
       createdAt: '2025-09-11T17:05:55+08:00',
-      lastModified: '2026-05-09T00:00:00+01:00',
+      lastModified: '2026-05-10T05:45:29+08:00',
     },
   },
   {
     path: '/performance',
-    component: Route5,
+    component: Route6,
     title: 'Performance',
     meta: {
       title: 'Performance',
       description: "Mobile-first loading and image performance notes for Jacky's Photography.",
       createdAt: '2026-04-27T00:00:00+01:00',
-      lastModified: '2026-05-09T00:00:00+01:00',
+      lastModified: '2026-05-10T05:45:29+08:00',
     },
   },
   {
     path: '/photo-metadata',
-    component: Route6,
+    component: Route7,
     title: 'Photo Metadata',
     meta: {
       title: 'Photo Metadata',
       description: 'Manual photo descriptions, tags, manifest merge behavior, and SEO metadata workflow.',
       createdAt: '2026-05-09T00:00:00+01:00',
-      lastModified: '2026-05-09T00:00:00+01:00',
+      lastModified: '2026-05-10T05:45:29+08:00',
     },
   },
   {
     path: '/storage',
-    component: Route7,
+    component: Route8,
     title: 'Storage providers',
     meta: {
       title: 'Storage providers',
       description:
         'Afilmory can work with multiple storage providers, including local file system, S3, GitHub, and Eagle',
       createdAt: '2025-08-12T15:09:08+08:00',
-      lastModified: '2026-04-29T04:05:16+08:00',
+      lastModified: '2026-05-13T22:30:55+08:00',
     },
   },
 ]
