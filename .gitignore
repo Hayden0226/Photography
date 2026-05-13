@@ -7,6 +7,8 @@ dist
 dist-ssr
 build
 out
+web/
+apps/web/dist/
 .next
 .turbo
 .vercel
@@ -45,8 +47,8 @@ apps/web/assets-git
 .claude
 
 # Generated Data
-apps/web/public/thumbnails/
 apps/web/src/data/photos-manifest.json
+apps/web/public/thumbnails/
 
 # Others
 *.local
