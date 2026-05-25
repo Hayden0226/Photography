@@ -14,6 +14,7 @@ Jacky's Photography 是一个静态发布的个人摄影画廊。构建器会在
 线上站点：
 
 - [photo.jackyw.cn](https://photo.jackyw.cn)
+- [docs.photo.jackyw.cn](https://docs.photo.jackyw.cn/)
 
 ## 主要能力
 

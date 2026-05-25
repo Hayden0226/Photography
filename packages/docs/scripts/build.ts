@@ -6,6 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import type { RouteConfig } from '../src/routes'
 import routes from '../src/routes.json'
+import { docsSite, getDocsUrl } from '../src/site'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
 const docsRoot = join(__dirname, '..')
@@ -27,7 +28,7 @@ async function build() {
       // Replace placeholders in template
       const pageHtml = templateHtml
         .replace('<!--app-html-->', html)
-        .replace('<!--app-title-->', `${(route.meta?.title as string) || route.title || 'Docs'} | Afilmory Docs`)
+        .replace('<!--app-title-->', generatePageTitle(route))
         .replace('<!--app-head-->', generateMetaTags(route))
 
       // Determine output path
@@ -53,21 +54,70 @@ function generateMetaTags(route: Omit<RouteConfig, 'component'>): string {
   const meta = route.meta || {}
   const tags: string[] = []
 
-  const description = meta.description as string
-  const title = meta.title as string
+  const description = (meta.description as string) || docsSite.description
+  const pageTitle = generatePageTitle(route)
+  const routeTitle = (meta.title as string) || route.title || docsSite.name
+  const canonicalUrl = getDocsUrl(route.path)
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: pageTitle,
+    headline: routeTitle,
+    description,
+    url: canonicalUrl,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: docsSite.name,
+      url: `${docsSite.url}/`,
+    },
+    about: {
+      '@type': 'WebSite',
+      name: "Jacky's Photography",
+      url: docsSite.galleryUrl,
+    },
+    author: {
+      '@type': 'Person',
+      name: docsSite.authorName,
+      url: docsSite.homepageUrl,
+    },
+  }
 
   if (description) {
     tags.push(
-      `<meta name="description" content="${description}">`,
-      `<meta property="og:description" content="${description}">`,
+      `<meta name="description" content="${escapeHtml(description)}">`,
+      `<meta property="og:description" content="${escapeHtml(description)}">`,
+      `<meta name="twitter:description" content="${escapeHtml(description)}">`,
     )
   }
 
-  if (title) {
-    tags.push(`<meta property="og:title" content="${title}">`)
-  }
+  tags.push(
+    '<meta name="robots" content="index, follow">',
+    `<meta name="author" content="${escapeHtml(docsSite.authorName)}">`,
+    `<link rel="canonical" href="${escapeHtml(canonicalUrl)}">`,
+    `<meta property="og:type" content="website">`,
+    `<meta property="og:site_name" content="${escapeHtml(docsSite.name)}">`,
+    `<meta property="og:url" content="${escapeHtml(canonicalUrl)}">`,
+    `<meta property="og:title" content="${escapeHtml(pageTitle)}">`,
+    `<meta property="og:locale" content="en_US">`,
+    `<meta name="twitter:card" content="summary">`,
+    `<meta name="twitter:title" content="${escapeHtml(pageTitle)}">`,
+    `<script type="application/ld+json">${JSON.stringify(structuredData).replaceAll('<', '\\u003c')}</script>`,
+  )
 
   return tags.join('\n    ')
+}
+
+function generatePageTitle(route: Omit<RouteConfig, 'component'>): string {
+  const title = (route.meta?.title as string) || route.title
+  return title ? `${title} | ${docsSite.name}` : docsSite.name
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
 }
 
 function getOutputPath(routePath: string): string {

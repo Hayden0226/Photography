@@ -1,8 +1,9 @@
-import { ChevronRight } from 'lucide-react'
+import { Camera, ChevronRight, ExternalLink, Home } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
 import type { RouteConfig } from '../routes'
 import { routes } from '../routes'
+import { docsSite } from '../site'
 import { getMatchedRoute } from '../utils/routes'
 
 interface SidebarProps {
@@ -164,12 +165,12 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
       <div className="bg-material-thick border-border h-full w-full border-[1px] border-solid backdrop-blur-2xl md:border-none md:bg-transparent">
         <div className=" flex items-center px-4 py-6">
           <img
-            src="https://github.com/Afilmory/assets/blob/main/512-mac.png?raw=true"
-            alt="Afilmory"
-            className="h-14 w-14 rounded-t-lg"
+            src={docsSite.avatarUrl}
+            alt={docsSite.authorName}
+            className="h-14 w-14 rounded-xl object-cover"
           />
           <div className="ml-3 flex-1">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Afilmory</h2>
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Jacky's Photography</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">Documentation</p>
           </div>
         </div>
@@ -179,6 +180,25 @@ export function Sidebar({ currentPath, onNavigate }: SidebarProps) {
             <NavigationItemComponent key={item.path} item={item} currentPath={currentPath} onNavigate={onNavigate} />
           ))}
         </nav>
+
+        <div className="border-border mx-4 mt-6 space-y-1 border-t pt-4">
+          <a
+            href={docsSite.galleryUrl}
+            className="text-text-secondary hover:bg-background-tertiary/50 hover:text-text flex items-center gap-2 rounded-2xl px-3 py-2 text-sm transition-colors"
+          >
+            <Camera className="h-4 w-4" />
+            Gallery
+            <ExternalLink className="ml-auto h-3.5 w-3.5" />
+          </a>
+          <a
+            href={docsSite.homepageUrl}
+            className="text-text-secondary hover:bg-background-tertiary/50 hover:text-text flex items-center gap-2 rounded-2xl px-3 py-2 text-sm transition-colors"
+          >
+            <Home className="h-4 w-4" />
+            Homepage
+            <ExternalLink className="ml-auto h-3.5 w-3.5" />
+          </a>
+        </div>
       </div>
     </aside>
   )

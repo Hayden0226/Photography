@@ -6,6 +6,7 @@ import { DocumentFooter } from './components/DocumentFooter'
 import { MobileTableOfContents } from './components/MobileTableOfContents'
 import { Sidebar } from './components/Sidebar'
 import { TableOfContents } from './components/TableOfContents'
+import { docsSite } from './site'
 import { getRandomKaomoji } from './utils/kaomoji'
 import { getMatchedRoute } from './utils/routes'
 
@@ -43,9 +44,9 @@ function App({ url }: { url?: string }) {
 
   useEffect(() => {
     if (matchedRoute) {
-      document.title = `${matchedRoute.title || 'Docs'} | Afilmory Docs`
+      document.title = `${matchedRoute.title || 'Docs'} | ${docsSite.name}`
     } else {
-      document.title = '404 Page Not Found | Afilmory Docs'
+      document.title = `404 Page Not Found | ${docsSite.name}`
     }
   }, [matchedRoute])
 
@@ -84,7 +85,7 @@ function App({ url }: { url?: string }) {
                 </svg>
               </button>
               <div className="flex-1 text-center">
-                <h1 className="text-text-primary text-lg font-semibold">Afilmory Docs</h1>
+                <h1 className="text-text-primary text-lg font-semibold">{docsSite.name}</h1>
               </div>
               <div className="w-10" /> {/* 平衡按钮 */}
             </div>
@@ -155,7 +156,7 @@ function App({ url }: { url?: string }) {
             </button>
             <div className="flex-1 text-center">
               <a href="/" className="select-none">
-                <h1 className="text-text-primary text-lg font-semibold">Afilmory Docs</h1>
+                <h1 className="text-text-primary text-lg font-semibold">{docsSite.name}</h1>
               </a>
             </div>
             <div className="w-10" /> {/* 平衡按钮 */}

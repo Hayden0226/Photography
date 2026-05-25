@@ -27,6 +27,12 @@ export const tocData: FileToc[] = [
         text: "Jacky's Photography",
         children: [
           {
+            id: 'heading-public-links',
+            level: 2,
+            text: 'Public Links',
+            children: []
+          },
+          {
             id: 'heading-what-it-builds',
             level: 2,
             text: 'What It Builds',
@@ -239,6 +245,12 @@ export const tocData: FileToc[] = [
         level: 1,
         text: 'Docs Site',
         children: [
+          {
+            id: 'heading-public-urls',
+            level: 2,
+            text: 'Public URLs',
+            children: []
+          },
           {
             id: 'heading-content-structure',
             level: 2,

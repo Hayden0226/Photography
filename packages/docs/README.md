@@ -1,6 +1,6 @@
 # @afilmory/docs
 
-Documentation site for Jacky's Photography. It is a static Vite + React + MDX app that documents this repository's photo pipeline, storage setup, performance decisions, deployment workflow, and maintenance conventions.
+Documentation site for Jacky's Photography, published at [docs.photo.jackyw.cn](https://docs.photo.jackyw.cn/). It is a static Vite + React + MDX app that documents this repository's photo pipeline, storage setup, performance decisions, deployment workflow, and maintenance conventions.
 
 ## Commands
 

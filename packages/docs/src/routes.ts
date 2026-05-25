@@ -26,7 +26,7 @@ export const routes: RouteConfig[] = [
     title: 'Overview',
     meta: {
       title: 'Overview',
-      description: "Current architecture and maintenance overview for Jacky's Photography.",
+      description: "Documentation for Jacky's Photography at docs.photo.jackyw.cn, covering the gallery, photo pipeline, storage, performance, and deployment.",
       createdAt: '2025-07-20T22:35:03+08:00',
       lastModified: '2026-05-25T00:00:00+01:00'
     },
@@ -81,7 +81,7 @@ export const routes: RouteConfig[] = [
     title: 'Docs site',
     meta: {
       title: 'Docs site',
-      description: "How to maintain the Jacky's Photography documentation site.",
+      description: "How to maintain and publish the Jacky's Photography documentation site at docs.photo.jackyw.cn.",
       createdAt: '2025-09-11T17:05:55+08:00',
       lastModified: '2026-05-25T00:00:00+01:00'
     },
