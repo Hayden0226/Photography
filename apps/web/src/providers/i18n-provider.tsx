@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { I18nextProvider } from 'react-i18next'
 
 import { EventBus } from '~/lib/event-bus'
+import { toHtmlLanguage } from '~/lib/language'
 
 import { i18nAtom } from '../i18n'
 
@@ -34,15 +35,6 @@ export const I18nProvider: FC<PropsWithChildren> = ({ children }) => {
   }, [currentI18NInstance])
 
   return <I18nextProvider i18n={currentI18NInstance}>{children}</I18nextProvider>
-}
-
-function toHtmlLanguage(language: string): string {
-  const normalized = language.trim() || 'zh-CN'
-
-  if (normalized === 'jp') return 'ja'
-  if (normalized.startsWith('jp-')) return normalized.replace(/^jp/, 'ja')
-
-  return normalized
 }
 
 declare module '~/lib/event-bus' {

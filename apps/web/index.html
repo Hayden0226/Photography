@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="en" data-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -14,6 +14,55 @@
   <meta name="apple-mobile-web-app-title" content="<%- title %>" />
 
   <title><%- title %></title>
+  <script>
+    (() => {
+      const normalizeLanguage = (language) => {
+        if (!language) return null
+
+        const lower = language.trim().toLowerCase()
+        if (!lower) return null
+
+        if (lower === 'zh' || lower === 'zh-cn' || lower === 'zh-hans' || lower.startsWith('zh-hans-')) {
+          return 'zh-CN'
+        }
+
+        if (lower === 'zh-hk' || lower === 'zh-mo') {
+          return 'zh-HK'
+        }
+
+        if (lower === 'zh-tw' || lower === 'zh-hant' || lower.startsWith('zh-hant-')) {
+          return 'zh-TW'
+        }
+
+        if (lower === 'ja' || lower.startsWith('ja-') || lower === 'jp') {
+          return 'jp'
+        }
+
+        if (lower === 'ko' || lower.startsWith('ko-')) {
+          return 'ko'
+        }
+
+        if (lower === 'en' || lower.startsWith('en-')) {
+          return 'en'
+        }
+
+        return null
+      }
+
+      let storedLanguage = null
+      try {
+        storedLanguage = window.localStorage.getItem('i18nextLng')
+      } catch {}
+
+      const language = [storedLanguage, ...(navigator.languages || []), navigator.language]
+        .map(normalizeLanguage)
+        .find(Boolean)
+
+      if (language) {
+        document.documentElement.lang = language === 'jp' ? 'ja' : language
+      }
+    })()
+  </script>
   <script>
     (() => {
       const siteUrl = (<%- siteUrlJson %>).replace(/\/+$/, '')
