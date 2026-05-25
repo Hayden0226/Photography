@@ -80,6 +80,8 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const dialogTitleId = React.useId()
+  const listboxId = React.useId()
 
   const updateTagFilterMode = useCallback(
     (mode: 'union' | 'intersection') => {
@@ -246,7 +248,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
         id: 'clear-filters',
         type: 'action',
         title: t('action.search.clear'),
-        subtitle: 'Clear all active filters',
+        subtitle: t('action.search.clearActiveFilters'),
         icon: 'i-mingcute-close-line',
         action: () => {
           setGallerySetting((prev) => ({
@@ -271,7 +273,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
           id: `photo-${photo.id}`,
           type: 'photo',
           title: photo.title || photo.id,
-          subtitle: photoDescription || photo.cameraDisplayName || 'Photo',
+          subtitle: photoDescription || photo.cameraDisplayName || t('photo.fallback.title'),
           icon: (
             <img
               src={photo.thumbnailUrl}
@@ -328,6 +330,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
       })
       .slice(0, 20)
   }, [commands, query])
+  const activeOptionId = filteredOptionId(filteredCommands[selectedIndex]?.id)
 
   // Keyboard navigation
   const handleKeyDown = useCallback(
@@ -335,7 +338,9 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
       switch (e.key) {
         case 'ArrowDown': {
           e.preventDefault()
-          setSelectedIndex((prev) => Math.min(prev + 1, filteredCommands.length - 1))
+          setSelectedIndex((prev) =>
+            filteredCommands.length === 0 ? 0 : Math.min(prev + 1, filteredCommands.length - 1),
+          )
           break
         }
         case 'ArrowUp': {
@@ -371,7 +376,13 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-9999 flex items-end justify-center lg:items-start lg:pt-[15vh]" onClick={onClose}>
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={dialogTitleId}
+      className="fixed inset-0 z-9999 flex items-end justify-center lg:items-start lg:pt-[15vh]"
+      onClick={onClose}
+    >
       {/* Backdrop with blur */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-xl transition-all duration-200" />
 
@@ -386,6 +397,9 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        <h2 id={dialogTitleId} className="sr-only">
+          {t('action.search.unified.title')}
+        </h2>
         {/* Inner glow layer */}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl"
@@ -404,23 +418,28 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={t('action.search.placeholder')}
+            aria-label={t('action.search.placeholder')}
+            aria-controls={listboxId}
+            aria-activedescendant={activeOptionId}
             className="text-text placeholder-text-tertiary flex-1 bg-transparent text-base outline-none"
           />
           <button
             type="button"
             onClick={handleReset}
+            aria-label={t('action.search.reset')}
             className="glassmorphic-btn border-accent/20 text-text-secondary inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200"
           >
             <i className="i-mingcute-refresh-1-line text-sm" />
-            Reset
+            {t('action.search.reset')}
           </button>
           <button
             type="button"
             onClick={onClose}
+            aria-label={t('action.search.close')}
             className="glassmorphic-btn border-accent/20 text-text-secondary inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200"
           >
             <i className="i-mingcute-close-line text-sm" />
-            Close
+            {t('action.search.close')}
           </button>
         </div>
 
@@ -433,6 +452,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
             <button
               type="button"
               onClick={() => updateTagFilterMode('union')}
+              aria-pressed={gallerySetting.tagFilterMode === 'union'}
               className={clsxm(
                 'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
                 gallerySetting.tagFilterMode === 'union'
@@ -445,6 +465,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
             <button
               type="button"
               onClick={() => updateTagFilterMode('intersection')}
+              aria-pressed={gallerySetting.tagFilterMode === 'intersection'}
               className={clsxm(
                 'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
                 gallerySetting.tagFilterMode === 'intersection'
@@ -458,7 +479,13 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
         </div>
 
         {/* Commands List */}
-        <div ref={listRef} className="max-h-[60vh] overflow-y-auto overscroll-contain py-2">
+        <div
+          id={listboxId}
+          ref={listRef}
+          role="listbox"
+          aria-label={t('action.search.resultsList')}
+          className="max-h-[60vh] overflow-y-auto overscroll-contain py-2"
+        >
           {filteredCommands.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <i className="i-mingcute-search-line text-text-quaternary mb-3 text-4xl" />
@@ -467,8 +494,11 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
           ) : (
             filteredCommands.map((cmd, index) => (
               <button
+                id={filteredOptionId(cmd.id)}
                 key={cmd.id}
                 type="button"
+                role="option"
+                aria-selected={selectedIndex === index}
                 onClick={cmd.action}
                 onMouseEnter={() => setSelectedIndex(index)}
                 className={clsxm(
@@ -521,17 +551,21 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
             <div className="flex items-center gap-4">
               <span className="flex items-center gap-1">
                 <kbd className="border-accent/20 bg-accent/5 rounded border px-1.5 py-0.5 font-mono">↑↓</kbd>
-                Navigate
+                {t('action.search.navigate')}
               </span>
               <span className="flex items-center gap-1">
                 <kbd className="border-accent/20 bg-accent/5 rounded border px-1.5 py-0.5 font-mono">↵</kbd>
-                Select
+                {t('action.search.select')}
               </span>
             </div>
-            {filteredCommands.length > 0 && <span>{filteredCommands.length} results</span>}
+            {filteredCommands.length > 0 && (
+              <span>{t('action.search.command.results', { count: filteredCommands.length })}</span>
+            )}
           </div>
         </div>
       </div>
     </div>
   )
 }
+
+const filteredOptionId = (id: string | undefined) => (id ? `command-option-${encodeURIComponent(id)}` : undefined)

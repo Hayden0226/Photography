@@ -1,10 +1,9 @@
 import { clsxm, Spring } from '@afilmory/utils'
-import { FluentEmoji, getEmoji } from '@lobehub/fluent-emoji'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { produce } from 'immer'
 import { AnimatePresence, m } from 'motion/react'
 import type { CSSProperties, RefObject } from 'react'
-import { useCallback, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 import { tv } from 'tailwind-variants'
@@ -15,6 +14,32 @@ import { client } from '~/lib/client'
 import { useAnalysis } from './hooks/useAnalysis'
 
 const reactions = ['👍', '😍', '🔥', '👏', '🌟', '🙌'] as const
+
+interface EmojiIconProps {
+  emoji: string
+  size: number
+}
+
+const FluentEmojiIcon = lazy(async () => {
+  const { FluentEmoji, getEmoji } = await import('@lobehub/fluent-emoji')
+
+  return {
+    default: ({ emoji, size }: EmojiIconProps) => {
+      const emojiData = getEmoji(emoji)
+      if (!emojiData) {
+        return <span aria-hidden="true">{emoji}</span>
+      }
+
+      return <FluentEmoji cdn="aliyun" emoji={emojiData} size={size} type="anim" />
+    },
+  }
+})
+
+const EmojiFallback = ({ emoji }: Pick<EmojiIconProps, 'emoji'>) => (
+  <span aria-hidden="true" className="leading-none">
+    {emoji}
+  </span>
+)
 
 interface ReactionButtonProps {
   className?: string
@@ -128,7 +153,7 @@ export const ReactionButton = ({ className, disabled = false, photoId, style }: 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-expanded={isOpen}
-            aria-label="React to photo"
+            aria-label={t('photo.reaction.label')}
             initial="closed"
             onClick={() => {
               setIsOpen((prev) => !prev)
@@ -156,7 +181,9 @@ export const ReactionButton = ({ className, disabled = false, photoId, style }: 
                     }, 1000)
                   }}
                 >
-                  <FluentEmoji cdn="aliyun" emoji={getEmoji(currentAnimatingEmoji)!} size={24} type="anim" />
+                  <Suspense fallback={<EmojiFallback emoji={currentAnimatingEmoji} />}>
+                    <FluentEmojiIcon emoji={currentAnimatingEmoji} size={24} />
+                  </Suspense>
                 </m.span>
               ) : (
                 <m.div variants={iconVariants}>
@@ -198,6 +225,7 @@ export const ReactionButton = ({ className, disabled = false, photoId, style }: 
                     <m.button
                       className={styles.reactionItem()}
                       variants={emojiVariants}
+                      aria-label={t('photo.reaction.emoji', { emoji: reaction })}
                       onClick={() => {
                         if (animationTimeoutRef.current) {
                           clearTimeout(animationTimeoutRef.current)
@@ -208,7 +236,9 @@ export const ReactionButton = ({ className, disabled = false, photoId, style }: 
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.9 }}
                     >
-                      <FluentEmoji cdn="aliyun" emoji={getEmoji(reaction)!} size={24} type="anim" />
+                      <Suspense fallback={<EmojiFallback emoji={reaction} />}>
+                        <FluentEmojiIcon emoji={reaction} size={24} />
+                      </Suspense>
                       {!!data?.data.reactions[reaction] && (
                         <span className="bg-red/50 absolute top-0 right-0 rounded-full px-1.5 py-0.5 text-[8px] text-white tabular-nums backdrop-blur-2xl">
                           {data.data.reactions[reaction]}

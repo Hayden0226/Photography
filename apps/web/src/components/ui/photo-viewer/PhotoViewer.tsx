@@ -269,6 +269,8 @@ export const PhotoViewer = ({
                         <button
                           type="button"
                           className={`bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40 ${showExifPanel ? 'bg-accent' : ''}`}
+                          aria-pressed={showExifPanel}
+                          aria-label={t('photo.viewer.toggleInfo')}
                           onClick={() => setShowExifPanel(!showExifPanel)}
                         >
                           <i className="i-mingcute-information-line" />
@@ -286,6 +288,7 @@ export const PhotoViewer = ({
                           <button
                             type="button"
                             className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
+                            aria-label={t('photo.share.title')}
                             title={t('photo.share.title')}
                           >
                             <i className="i-mingcute-share-2-line" />
@@ -297,6 +300,7 @@ export const PhotoViewer = ({
                       <button
                         type="button"
                         className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
+                        aria-label={t('photo.viewer.close')}
                         onClick={onClose}
                       >
                         <i className="i-mingcute-close-line" />
@@ -415,6 +419,7 @@ export const PhotoViewer = ({
                         <button
                           type="button"
                           className={`bg-material-medium absolute top-1/2 left-4 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 group-hover:opacity-100 hover:bg-black/40`}
+                          aria-label={t('photo.viewer.previous')}
                           onClick={handlePrevious}
                         >
                           <i className={`i-mingcute-left-line text-xl`} />
@@ -425,6 +430,7 @@ export const PhotoViewer = ({
                         <button
                           type="button"
                           className={`bg-material-medium absolute top-1/2 right-4 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 group-hover:opacity-100 hover:bg-black/40`}
+                          aria-label={t('photo.viewer.next')}
                           onClick={handleNext}
                         >
                           <i className={`i-mingcute-right-line text-xl`} />

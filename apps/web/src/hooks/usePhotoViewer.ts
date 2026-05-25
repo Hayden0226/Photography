@@ -3,7 +3,9 @@ import { atom, useAtom, useAtomValue } from 'jotai'
 import { use, useCallback, useMemo } from 'react'
 
 import { gallerySettingAtom } from '~/atoms/app'
+import { lockBodyScroll, unlockBodyScroll } from '~/lib/body-scroll-lock'
 import { jotaiStore } from '~/lib/jotai'
+import { filterAndSortPhotoList } from '~/lib/photo-filter'
 import { trackView } from '~/lib/tracker'
 import { PhotosContext } from '~/providers/photos-context'
 
@@ -11,18 +13,6 @@ const openAtom = atom(false)
 const currentIndexAtom = atom(0)
 const triggerElementAtom = atom<HTMLElement | null>(null)
 const data = photoLoader.getPhotos()
-
-const parsePhotoTime = (value: string | undefined | null): number | null => {
-  if (!value) return null
-
-  const normalized = value.replace(/^(\d{4}):(\d{2}):(\d{2})/, '$1-$2-$3')
-  const timestamp = new Date(normalized).getTime()
-  return Number.isNaN(timestamp) ? null : timestamp
-}
-
-const getPhotoSortTime = (photo: (typeof data)[number]) => {
-  return photo.sortTime ?? parsePhotoTime(photo.dateTaken) ?? parsePhotoTime(photo.lastModified) ?? 0
-}
 
 // 抽取照片筛选和排序逻辑为独立函数
 const filterAndSortPhotos = (
@@ -33,55 +23,15 @@ const filterAndSortPhotos = (
   sortOrder: 'asc' | 'desc',
   tagFilterMode: 'union' | 'intersection' = 'union',
 ) => {
-  // 根据 tags、cameras、lenses 和 ratings 筛选
-  let filteredPhotos = data
-
-  // Tags 筛选：根据模式进行并集或交集筛选
-  if (selectedTags.length > 0) {
-    filteredPhotos = filteredPhotos.filter((photo) => {
-      if (tagFilterMode === 'intersection') {
-        // 交集模式：照片必须包含所有选中的标签
-        return selectedTags.every((tag) => photo.tags.includes(tag))
-      } else {
-        // 并集模式：照片必须包含至少一个选中的标签
-        return selectedTags.some((tag) => photo.tags.includes(tag))
-      }
-    })
-  }
-
-  // Cameras 筛选：照片的相机必须匹配选中的相机之一
-  if (selectedCameras.length > 0) {
-    filteredPhotos = filteredPhotos.filter((photo) => {
-      if (!photo.cameraDisplayName) return false
-      return selectedCameras.includes(photo.cameraDisplayName)
-    })
-  }
-
-  // Lenses 筛选：照片的镜头必须匹配选中的镜头之一
-  if (selectedLenses.length > 0) {
-    filteredPhotos = filteredPhotos.filter((photo) => {
-      if (!photo.lensDisplayName) return false
-      return selectedLenses.includes(photo.lensDisplayName)
-    })
-  }
-
-  // Ratings 筛选：照片的评分必须大于等于选中的最小阈值
-  if (selectedRatings !== null) {
-    filteredPhotos = filteredPhotos.filter((photo) => {
-      if (!photo.rating) return false
-      return photo.rating >= selectedRatings
-    })
-  }
-
-  // 然后排序
-  const sortedPhotos = filteredPhotos.toSorted((a, b) => {
-    const aTime = getPhotoSortTime(a)
-    const bTime = getPhotoSortTime(b)
-
-    return sortOrder === 'asc' ? aTime - bTime : bTime - aTime
-  })
-
-  return sortedPhotos
+  return filterAndSortPhotoList(
+    data,
+    selectedTags,
+    selectedCameras,
+    selectedLenses,
+    selectedRatings,
+    sortOrder,
+    tagFilterMode,
+  )
 }
 
 // 提供一个 getter 函数供非 UI 组件使用
@@ -128,20 +78,22 @@ export const usePhotoViewer = () => {
       setCurrentIndex(index)
       setTriggerElement(element || null)
       setIsOpen(true)
-      // 防止背景滚动
-      document.body.style.overflow = 'hidden'
+      if (!isOpen) {
+        lockBodyScroll()
+      }
 
       trackView(photos[index]?.id)
     },
-    [photos, setCurrentIndex, setIsOpen, setTriggerElement],
+    [isOpen, photos, setCurrentIndex, setIsOpen, setTriggerElement],
   )
 
   const closeViewer = useCallback(() => {
     setIsOpen(false)
     setTriggerElement(null)
-    // 恢复背景滚动
-    document.body.style.overflow = ''
-  }, [setIsOpen, setTriggerElement])
+    if (isOpen) {
+      unlockBodyScroll()
+    }
+  }, [isOpen, setIsOpen, setTriggerElement])
 
   const goToIndex = useCallback(
     (index: number) => {

@@ -120,6 +120,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        run: pnpm run lint:check
+
+      - name: Type check web app
+        run: pnpm --filter web type-check
+
+      - name: Unit tests
+        run: pnpm test
+
       - name: Standardize Photos
         run: pnpm run photos:standardize
 
@@ -131,6 +140,9 @@ jobs:
           AFILMORY_SKIP_MANIFEST_PRECHECK: 'true'
         run: pnpm run build
 
+      - name: Check bundle budget
+        run: pnpm run bundle:budget
+
       - name: Check build output
         run: |
           if [ -d "./apps/web/dist" ]; then
@@ -139,6 +151,14 @@ jobs:
             echo "Error: Build directory ./apps/web/dist not found!"
             exit 1
           fi
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: E2E tests
+        env:
+          AFILMORY_SKIP_MANIFEST_PRECHECK: 'true'
+        run: pnpm run test:e2e
 
   build-and-deploy:
     if: github.event_name != 'pull_request'
@@ -244,6 +264,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        run: pnpm run lint:check
+
+      - name: Type check web app
+        run: pnpm --filter web type-check
+
+      - name: Unit tests
+        run: pnpm test
+
       - name: Standardize Photos
         run: pnpm run photos:standardize
 
@@ -292,6 +321,9 @@ jobs:
         env:
           AFILMORY_SKIP_MANIFEST_PRECHECK: 'true'
         run: pnpm run build
+
+      - name: Check bundle budget
+        run: pnpm run bundle:budget
 
       - name: Check build output
         run: |

@@ -35,6 +35,8 @@ export const ActionGroup = () => {
         }}
         className="relative h-10 min-w-10 rounded-full border-0 bg-gray-100 px-3 transition-all duration-200 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
         title={t('action.search.unified.title')}
+        aria-label={t('action.search.unified.title')}
+        data-testid="command-palette-trigger"
       >
         <i className="i-mingcute-search-line text-base text-gray-600 dark:text-gray-300" />
         {filterCount > 0 && (
@@ -51,6 +53,7 @@ export const ActionGroup = () => {
         onClick={() => navigate('/explory')}
         className="h-10 w-10 rounded-full border-0 bg-gray-100 transition-all duration-200 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
         title={t('action.map.explore')}
+        aria-label={t('action.map.explore')}
       >
         <i className="i-mingcute-map-pin-line text-base text-gray-600 dark:text-gray-300" />
       </Button>

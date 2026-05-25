@@ -95,7 +95,7 @@ function compactObject<T extends Record<string, unknown>>(value: T): Partial<T> 
   return Object.fromEntries(Object.entries(value).filter(([, entryValue]) => entryValue !== undefined)) as Partial<T>
 }
 
-function createLightManifest(manifest: FullManifest) {
+export function createLightManifest(manifest: FullManifest) {
   return {
     version: manifest.version,
     data:
@@ -142,7 +142,7 @@ function createLightManifest(manifest: FullManifest) {
   }
 }
 
-function createThumbnailPreloadLinks(manifest: { data?: PreloadManifestItem[] }): string {
+export function createThumbnailPreloadLinks(manifest: { data?: PreloadManifestItem[] }): string {
   try {
     const items = manifest.data?.slice(0, PRELOAD_THUMBNAIL_COUNT) ?? []
 
@@ -186,7 +186,7 @@ function normalizeBase(base: string): string {
   return base.endsWith('/') ? base : `${base}/`
 }
 
-function serializeForInlineScript(value: unknown): string {
+export function serializeForInlineScript(value: unknown): string {
   return JSON.stringify(value)
     .replaceAll('<', '\\u003C')
     .replaceAll('>', '\\u003E')
