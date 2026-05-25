@@ -11,18 +11,38 @@ import { i18nAtom } from '../i18n'
 export const I18nProvider: FC<PropsWithChildren> = ({ children }) => {
   const [currentI18NInstance, update] = useAtom(i18nAtom)
 
-  if (import.meta.env.DEV)
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useEffect(
-      () =>
-        EventBus.subscribe('I18N_UPDATE', () => {
-          const nextI18n = i18next.cloneInstance({})
-          update(nextI18n)
-        }),
-      [update],
-    )
+  useEffect(() => {
+    if (!import.meta.env.DEV) return
+
+    return EventBus.subscribe('I18N_UPDATE', () => {
+      const nextI18n = i18next.cloneInstance({})
+      update(nextI18n)
+    })
+  }, [update])
+
+  useEffect(() => {
+    const updateDocumentLanguage = (language: string) => {
+      document.documentElement.lang = toHtmlLanguage(language)
+    }
+
+    updateDocumentLanguage(currentI18NInstance.resolvedLanguage || currentI18NInstance.language)
+    currentI18NInstance.on('languageChanged', updateDocumentLanguage)
+
+    return () => {
+      currentI18NInstance.off('languageChanged', updateDocumentLanguage)
+    }
+  }, [currentI18NInstance])
 
   return <I18nextProvider i18n={currentI18NInstance}>{children}</I18nextProvider>
+}
+
+function toHtmlLanguage(language: string): string {
+  const normalized = language.trim() || 'zh-CN'
+
+  if (normalized === 'jp') return 'ja'
+  if (normalized.startsWith('jp-')) return normalized.replace(/^jp/, 'ja')
+
+  return normalized
 }
 
 declare module '~/lib/event-bus' {

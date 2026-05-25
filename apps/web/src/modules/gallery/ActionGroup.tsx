@@ -9,7 +9,7 @@ import { ResponsiveActionButton } from './components/ActionButton'
 import { ViewPanel } from './panels/ViewPanel'
 
 export const ActionGroup = () => {
-  const { t } = useTranslation()
+  const { i18n, t } = useTranslation()
   const [gallerySetting] = useAtom(gallerySettingAtom)
   const setCommandPaletteOpen = useSetAtom(isCommandPaletteOpenAtom)
   const navigate = useNavigate()
@@ -23,6 +23,13 @@ export const ActionGroup = () => {
     gallerySetting.selectedCameras.length +
     gallerySetting.selectedLenses.length +
     (gallerySetting.selectedRatings !== null ? 1 : 0)
+
+  const isChineseLanguage = (i18n.resolvedLanguage || i18n.language).startsWith('zh')
+  const nextLanguage = isChineseLanguage ? 'en' : 'zh-CN'
+  const nextLanguageLabel = isChineseLanguage ? 'EN' : '中'
+  const languageToggleTitle = t(
+    isChineseLanguage ? 'action.language.switchToEnglish' : 'action.language.switchToChinese',
+  )
 
   return (
     <div className="flex items-center justify-center gap-3">
@@ -66,6 +73,20 @@ export const ActionGroup = () => {
       >
         <ViewPanel />
       </ResponsiveActionButton>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => {
+          void i18n.changeLanguage(nextLanguage)
+        }}
+        className="h-10 w-10 rounded-full border-0 bg-gray-100 px-0 transition-all duration-200 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+        title={languageToggleTitle}
+        aria-label={languageToggleTitle}
+        data-testid="language-toggle"
+      >
+        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">{nextLanguageLabel}</span>
+      </Button>
     </div>
   )
 }

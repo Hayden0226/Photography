@@ -10,8 +10,7 @@ import { useAppUpdate } from '~/providers/app-update-context'
 import { ActionGroup } from './ActionGroup'
 
 export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.CSSProperties; className?: string }) => {
-  const { t } = useTranslation()
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const visiblePhotoCount = usePhotos().length
   const { needRefresh, updateApp } = useAppUpdate()
   return (
@@ -28,7 +27,11 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
           <div className="relative">
             {siteConfig.author.avatar && (
               <AvatarPrimitive.Root>
-                <AvatarPrimitive.Image src={siteConfig.author.avatar} className="size-16 rounded-full" />
+                <AvatarPrimitive.Image
+                  src={siteConfig.author.avatar}
+                  alt={t('gallery.authorAvatar', { name: siteConfig.author.name })}
+                  className="size-16 rounded-full"
+                />
                 <AvatarPrimitive.Fallback>
                   <div className="bg-material-medium size-16 rounded-full" />
                 </AvatarPrimitive.Fallback>
@@ -45,7 +48,7 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
           </div>
         </div>
 
-        <h2 className="mt-1 mb-1 text-2xl font-semibold text-gray-900 dark:text-white">{siteConfig.name}</h2>
+        <h1 className="mt-1 mb-1 text-2xl font-semibold text-gray-900 dark:text-white">{siteConfig.name}</h1>
 
         {/* Social media links */}
         {siteConfig.social && (
@@ -57,8 +60,9 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
                 rel="noreferrer"
                 className="text-text-secondary flex items-center justify-center p-2 duration-200 hover:text-[#E1306C]"
                 title="Instagram"
+                aria-label="Instagram"
               >
-                <i className="i-mingcute-instagram-fill text-sm" />
+                <i className="i-mingcute-instagram-fill text-sm" aria-hidden="true" />
               </a>
             )}
             {siteConfig.social.github && (
@@ -68,8 +72,9 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
                 rel="noreferrer"
                 className="text-text-secondary flex items-center justify-center p-2 duration-200 hover:text-[#E7E8E8]"
                 title="GitHub"
+                aria-label="GitHub"
               >
-                <i className="i-mingcute-github-fill text-sm" />
+                <i className="i-mingcute-github-fill text-sm" aria-hidden="true" />
               </a>
             )}
             {siteConfig.social.twitter && (
@@ -79,8 +84,9 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
                 rel="noreferrer"
                 className="text-text-secondary flex items-center justify-center p-2 duration-200 hover:text-[#1da1f2]"
                 title="Twitter"
+                aria-label="Twitter"
               >
-                <i className="i-mingcute-twitter-fill text-sm" />
+                <i className="i-mingcute-twitter-fill text-sm" aria-hidden="true" />
               </a>
             )}
             {siteConfig.social.rss && (
@@ -89,8 +95,9 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
                 target="_blank"
                 className="text-text-secondary flex items-center justify-center p-2 duration-200 hover:text-[#ec672c]"
                 title="RSS"
+                aria-label="RSS"
               >
-                <i className="i-mingcute-rss-2-fill text-sm" />
+                <i className="i-mingcute-rss-2-fill text-sm" aria-hidden="true" />
               </a>
             )}
             {siteConfig.author.url && (
@@ -100,8 +107,9 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
                 rel="noreferrer"
                 className="text-text-secondary flex items-center justify-center p-2 duration-200 hover:text-[#007bff]"
                 title="Home"
+                aria-label={t('gallery.authorHome', { name: siteConfig.author.name })}
               >
-                <i className="i-mingcute-home-4-fill text-sm" />
+                <i className="i-mingcute-home-4-fill text-sm" aria-hidden="true" />
               </a>
             )}
           </div>
