@@ -3,173 +3,115 @@
 ![Jacky's Photography preview](https://photo.jackyw.cn/readme-og-image.png)
 
 > [!IMPORTANT]
-> 本项目由 [Jackyhq](https://github.com/Jackyhq) 基于原仓库 [Afilmory/afilmory](https://github.com/Afilmory/afilmory) 进行深度定制与二次开发。
-> 在保留原项目核心优势的基础上，本项目包含了由 Jackyhq 独立开发的自动化部署、构建优化、照片标准化和交互体验增强。
+> 本项目由 [Jackyhq](https://github.com/Jackyhq) 基于 [Afilmory](https://github.com/Afilmory/afilmory) 深度定制。源码仓库只开源应用、构建器、文档和工程配置；私有照片源文件位于 `Jackyhq/Photography-Photos`。
 >
-> **版权声明：**
-> 私有照片源文件存放在 `Jackyhq/Photography-Photos`，本仓库中的本地 `photos/` 目录仅作为构建时 checkout 使用，并已被 Git 忽略。照片以及由这些照片生成的缩略图、OG 图、README 预览图等媒体文件，均为 **Jackyhq 个人拍摄作品或其衍生媒体**。这些资产**不属于开源范围**，未经明确书面许可，严禁以任何形式（包括但不限于商业用途、二次分发、个人展示、公开展示等）进行转载、引用或使用。
+> 本地 `photos/` 目录只是构建时 checkout，已被 Git 忽略。照片原图、缩略图、OG 图、README 预览图和其他由个人照片生成的媒体资产均为 Jackyhq 个人作品或衍生媒体，不属于开源授权范围，未经明确书面许可不得转载、引用、分发或展示。
 
-Afilmory (/əˈfɪlməri/) 是一个专为个人摄影网站创造的词汇，融合了自动对焦（AF）、光圈（Aperture，光影控制）、胶片（Film，复古媒介）和记忆（Memory，定格瞬间）。
+## 项目概览
 
-这是一个基于 React、TypeScript、Vite 和 pnpm workspaces 构建的个人摄影画廊。项目以纯客户端 SPA 的形式发布，照片元数据由 `@afilmory/builder` 在构建前生成，前端通过静态 `photos-manifest.json` 提供瀑布流浏览、全屏查看、EXIF 展示、地图探索、Live Photo、HDR、双语描述和照片级 SEO 等体验。
+Jacky's Photography 是一个静态发布的个人摄影画廊。构建器会在前端构建前扫描 `photos/`，提取 EXIF/GPS/镜头/胶片模拟等信息，生成缩略图、Thumbhash、轻量索引和完整 manifest；React/Vite SPA 再通过 `@afilmory/data` 读取这些数据，提供瀑布流、全屏查看、地图探索、Live Photo、HDR、搜索筛选、双语描述和照片级 SEO 页面。
 
-演示画廊：
+线上站点：
 
-- **[photo.jackyw.cn](https://photo.jackyw.cn)**
+- [photo.jackyw.cn](https://photo.jackyw.cn)
 
-## 特性
+## 主要能力
 
-### 画廊体验
+- 响应式瀑布流：基于 Masonic，移动端和桌面端使用同一套照片索引。
+- 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，移动端可回退到 DOM 查看器。
+- 照片详情：展示 EXIF、直方图、相机、镜头、标签、GPS、Live Photo、HDR 和 Fujifilm 信息。
+- 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览。
+- 人工元数据：`photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
+- 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
+- 自动部署：GitHub Actions checkout 私有照片仓库、标准化照片、同步 Cloudflare R2、构建静态站点并发布到 GitHub Pages 与部署仓库。
 
-- **高性能图片查看器**：`@afilmory/webgl-viewer` 提供流畅的缩放和平移体验，移动端可回退到 DOM 查看器。
-- **响应式瀑布流布局**：基于 Masonic，适配桌面和移动端。
-- **全屏照片详情**：支持 EXIF、直方图、胶片模拟信息、Live Photo、HDR 标识和缩略图导航。
-- **命令面板与筛选**：支持按标题、双语描述、标签、相机和镜头信息检索照片，并支持标签并集/交集筛选。
-- **地图探索**：使用 MapLibre 展示带 GPS 信息的照片位置，并支持聚合与缩略图预览。
-- **国际化**：基于 i18next，支持多语言文案。
-- **本地化可访问性与分享信息**：照片 alt 文本、详情页描述和页面 meta 会按当前语言选择人工描述，并回退到标题或照片 ID。
-- **照片级静态 meta 页面**：生产构建会为 `/photos/:id` 生成带独立标题、描述、canonical、OpenGraph 和 Twitter Card 的 HTML。
-- **个人主页社交链接**：首页资料卡支持 GitHub、Instagram、Twitter、RSS 和作者主页链接。
-- **移动端首屏优化**：首页缩略图使用响应式 WebP 资源，关键首屏图片会在 HTML 阶段预加载，详情页、命令面板和特殊格式转换逻辑按需加载。
-
-### 构建与处理
-
-- **增量构建**：根据现有 manifest、文件大小和修改时间判断是否需要重新处理。
-- **多存储适配**：支持 `local`、`s3`、`github` 和 `eagle` 存储提供商。
-- **格式处理**：支持 JPEG、PNG、HEIC/HEIF、TIFF、BMP 等常见照片格式的读取与转换。
-- **缩略图与占位图**：生成 `360w`/`640w` WebP 缩略图、`640w` JPEG fallback、Thumbhash 和色调分析数据。
-- **照片标准化**：`photos/incoming` 中的照片可按 EXIF 时间自动重命名并移动到分类目录。
-- **人工照片描述合并**：`photo-descriptions.json` 可维护标题、`zh-CN`/`en` 描述和人工标签，构建时由 builder 插件合并进 manifest。
-- **轻量首屏 manifest**：构建时将首页所需的轻量 manifest 注入 HTML，并额外输出完整 manifest JSON，详情视图和 manifest 页面按需加载完整数据。
-- **并发处理**：支持 worker/cluster 模式，适合批量照片处理。
-
-## 技术栈
-
-- **前端**：React 19、React Router 7、TypeScript、Vite、Tailwind CSS 4、Radix UI、Jotai、TanStack Query、Motion。
-- **图像处理**：Sharp、exiftool-vendored、heic-to/heic-convert、Blurhash、Thumbhash。
-- **地图**：MapLibre GL、react-map-gl、MapLibre Geocoder。
-- **工程化**：pnpm workspace、ESLint、Prettier、simple-git-hooks、lint-staged。
-- **文档站**：`packages/docs` 使用 Vite、React 和 MDX 生成静态文档。
-
-## 项目结构
+## 工作区结构
 
 ```plain
-apps/web/                 # 主摄影画廊 SPA
-packages/builder/         # 照片处理、缩略图、EXIF 和 manifest 生成工具
-packages/data/            # manifest 数据访问层和 photoLoader
-packages/docs/            # MDX 文档站点
+apps/web/                 # React 19 + Vite 主画廊 SPA
+packages/builder/         # 照片扫描、EXIF、缩略图、manifest 和存储适配器
+packages/data/            # manifest 数据访问层；manifest JSON 通过 symlink 指向 web 生成物
+packages/docs/            # Vite + React + MDX 文档站
 packages/hooks/           # 共享 React hooks
-packages/sdk/             # 轻量 SDK/schema
-packages/ui/              # 共享 UI 组件和设计系统基础件
-packages/utils/           # 通用工具、RSS、动画和数据处理工具
+packages/sdk/             # 轻量 schema/client helper
+packages/ui/              # 共享 UI 基础组件
+packages/utils/           # 通用工具、RSS、动画、存储和二进制 helper
 packages/webgl-viewer/    # WebGL 图片查看器
-photos/                   # 私有照片仓库的本地 checkout，主仓库不追踪
+plugins/                  # builder、eslint、vite 自定义插件
+scripts/                  # 照片标准化、描述同步、OG、favicon、文档脚本
+photos/                   # 私有照片仓库 checkout，主仓库不追踪
 ```
+
+没有 `packages/components/` 包；应用级组件应保留在 `apps/web/src`，可复用基础件才放入 `packages/ui`。
+
+## 数据流
+
+1. 私有仓库 `Jackyhq/Photography-Photos` 提供照片源文件。
+2. `pnpm run photos:standardize` 读取 EXIF 时间，将 `photos/incoming/` 中的新文件重命名为 `YYYYMMDDHHmmss.ext` 并移动到分类目录。
+3. `pnpm run build:manifest` 读取 `builder.config.ts`，扫描 `photos/`，排除 `incoming`，生成缩略图、Thumbhash、EXIF/GPS/设备信息和 manifest。
+4. 构建器写入 `apps/web/src/data/photos-manifest.json`；`packages/data/src/photos-manifest.json` 是指向该文件的 symlink，供 `@afilmory/data` 和 Vite 插件读取。
+5. `pnpm build` 输出静态站点到 `apps/web/dist/`，并生成 sitemap、RSS、PWA 资源和照片级 HTML。
+6. CI 将发布照片同步到 Cloudflare R2 的 `photos/` prefix，并把 `apps/web/dist/` 同步到 `Jackyhq/Photography-Web` 与 GitHub Pages。
+
+## 环境要求
+
+- Node.js 24
+- pnpm 10.19.0
+- Perl，供 `exiftool-vendored` 运行
+- 本地开发需要可访问 `Jackyhq/Photography-Photos` 的 GitHub 权限
 
 ## 快速开始
 
-### 环境要求
-
-- Node.js 24（CI 使用 Node 24）
-- pnpm 10.19.0
-- Perl（`exiftool-vendored` 运行时需要）
-
-### 本地开发
-
 ```bash
-# 安装依赖
 pnpm install
-
-# 克隆私有照片源仓库到构建约定目录
 git clone git@github.com:Jackyhq/Photography-Photos.git photos
-
-# 可选：标准化 photos/incoming 中的新照片
-pnpm run photos:standardize
-
-# 生成或更新照片 manifest
 pnpm run build:manifest
-
-# 启动画廊开发服务器
 pnpm dev
 ```
 
-`pnpm dev` 会先执行 web precheck，并在 Vite 启动前调用 builder CLI 生成或更新 manifest。
-
-### 生产构建
-
-```bash
-# 构建生产版 SPA
-pnpm build
-
-# 构建文档站
-pnpm docs:build
-```
-
-构建产物位于 `apps/web/dist/`。GitHub Actions 会额外把该目录同步到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web)，用于保存当前静态输出。
+`pnpm dev` 和 `pnpm build` 都会先运行 `apps/web/scripts/precheck.ts`，默认调用 builder CLI 更新 manifest。CI 中已构建 manifest 后，会通过 `AFILMORY_SKIP_MANIFEST_PRECHECK=true` 跳过重复预检。
 
 ## 常用命令
 
 ```bash
-# Web 开发
+# Web
 pnpm dev
-
-# Web 生产构建
 pnpm build
+pnpm --filter web type-check
+pnpm --filter web analyze
 
-# 文档站开发/构建/预览
+# 文档站
 pnpm docs:dev
 pnpm docs:build
 pnpm docs:preview
+pnpm create:doc
 
-# 构建照片 manifest
+# 照片流水线
+pnpm run photos:standardize
 pnpm run build:manifest
 pnpm run build:manifest -- --force
 pnpm run build:manifest -- --force-thumbnails
 pnpm run build:manifest -- --force-manifest
 pnpm run build:manifest -- --config
 
-# 照片入库标准化
-pnpm run photos:standardize
-
-# 根据当前 manifest 同步人工照片描述 sidecar
+# 人工照片描述
 pnpm run photos:descriptions:sync
 pnpm run photos:descriptions:sync -- --prune
 
 # 质量检查
+pnpm run lint:check
 pnpm lint
 pnpm format
-pnpm --filter web type-check
+pnpm test
+pnpm run test:e2e
+pnpm run bundle:budget
 ```
 
 ## 配置
 
-### 站点配置
+站点品牌、作者、社交链接、地图配置和 canonical URL 来自 `config.json` 与 `site.config.ts`。
 
-站点品牌、作者、社交链接和地图配置由 `config.json` 与 `site.config.ts` 控制：
-
-```json
-{
-  "name": "Jacky's Photography",
-  "title": "Jackywhq's Photography",
-  "url": "https://photo.jackyw.cn",
-  "accentColor": "#007bff",
-  "social": {
-    "github": "Jackyhq",
-    "instagram": "https://www.instagram.com/jackywhq/",
-    "twitter": "",
-    "rss": false
-  },
-  "map": ["maplibre"],
-  "mapStyle": "builtin",
-  "mapProjection": "mercator"
-}
-```
-
-前端会在构建时读取默认配置，也支持运行时注入 `window.__SITE_CONFIG__` 覆盖部分字段。
-
-### 照片构建配置
-
-照片处理由 `builder.config.ts` 控制。当前项目使用本地 `photos/` 目录作为源；该目录由私有仓库 `Jackyhq/Photography-Photos` checkout 得到，不由本公开源码仓库追踪：
+当前照片源配置位于 `builder.config.ts`：
 
 ```ts
 import { defineBuilderConfig } from '@afilmory/builder'
@@ -185,30 +127,18 @@ export default defineBuilderConfig(() => ({
 }))
 ```
 
-`storage.provider` 可选值：
+`@afilmory/builder` 支持 `local`、`s3`、`github` 和 `eagle` 存储提供商。生产站点当前使用本地私有照片 checkout 生成 manifest，再由 CI 同步已发布照片到 Cloudflare R2。
 
-- `local`：读取本地目录，适合私有照片仓库 checkout、开发和自托管。
-- `s3`：读取 S3 兼容存储，适合生产级对象存储与 CDN。
-- `github`：读取 GitHub 仓库内容，适合小型图库或静态资源仓库。
-- `eagle`：读取 Eagle 4 资料库，可按标签或文件夹筛选并导出照片。
+## 照片维护流程
 
-常见系统参数位于 `system.processing` 和 `system.observability`，可配置默认并发数、Live Photo 检测、摘要后缀、日志级别、worker 数、cluster 模式和 worker 超时。
+1. 将新照片放入私有照片仓库的 `incoming/`，或直接放入目标分类目录。
+2. 运行 `pnpm run photos:standardize`。直接放在 `incoming` 根目录的文件会进入默认分类 `随手/`。
+3. 运行 `pnpm run build:manifest`，生成最新 manifest 和缩略图。
+4. 运行 `pnpm run photos:descriptions:sync` 创建或刷新 `photo-descriptions.json` 条目。
+5. 填写 `title`、`descriptions.zh-CN`、`descriptions.en` 和精简标签后，再运行 `pnpm run build:manifest` 合并人工元数据。
+6. 运行 `pnpm dev` 本地检查，或运行 `pnpm build` 生成生产产物。
 
-## 照片工作流
-
-1. 在私有照片仓库 `Jackyhq/Photography-Photos` 中，将新照片放入 `incoming/`，或直接放入 `<分类>/`。
-2. 运行 `pnpm run photos:standardize`。脚本会读取 EXIF 时间，将文件重命名为 `YYYYMMDDHHmmss.ext`，并移动到目标分类目录；直接放在 `incoming` 根目录的文件会进入 `photos/随手/`。
-3. 运行 `pnpm run build:manifest`。构建器会扫描照片、提取 EXIF、生成缩略图，并把 `photo-descriptions.json` 中匹配到的人工标题、双语描述和标签合并进 manifest。
-4. 需要补充新照片描述时，运行 `pnpm run photos:descriptions:sync` 根据当前 manifest 同步 `photo-descriptions.json`，填写 `title`、`descriptions.zh-CN`、`descriptions.en` 和精简标签后再次运行 `pnpm run build:manifest`。
-5. 运行 `pnpm dev` 预览，或运行 `pnpm build` 生成静态站点。
-
-`photo-descriptions.json` 使用照片存储路径作为 `key`。同步脚本会保留未匹配的旧条目；如需移除已经不在 manifest 中的旧照片条目，可运行：
-
-```bash
-pnpm run photos:descriptions:sync -- --prune
-```
-
-当缩略图策略或 manifest 结构变更时，使用完整重建命令确保生成物与前端代码一致：
+当缩略图策略、manifest 字段或照片处理逻辑变化时，建议完整刷新：
 
 ```bash
 pnpm run build:manifest -- --force-thumbnails --force-manifest
@@ -216,25 +146,33 @@ pnpm --filter web type-check
 pnpm build
 ```
 
-## 自动部署
+## 部署
 
-`.github/workflows/deploy.yml` 在推送到 `main` 且相关路径变更时部署，也支持手动触发。私有照片仓库 `Jackyhq/Photography-Photos` 的 push 会通过 `repository_dispatch` 触发同一套部署流程。Pull Request 会运行同一套标准化、manifest 和 web 构建校验，但不会发布 GitHub Pages、同步 R2 或提交照片变更。
+`.github/workflows/deploy.yml` 负责 PR 校验和生产部署。
 
-触发路径包括 `.github/workflows/deploy.yml`、`photo-descriptions.json`、`apps/**`、相关 `packages/**`、`plugins/builder/**`、`scripts/**`、`package.json`、`pnpm-lock.yaml`、`config.json`、`builder.config.ts` 和 `site.config.ts`。部署流程包括：
+PR 会执行：
 
-1. 安装 pnpm 与 Node.js 24。
-2. 使用 `PHOTO_REPO_TOKEN` checkout 私有照片仓库到 `./photos`。
-3. 执行 `pnpm install`。
-4. 执行 `pnpm run photos:standardize`。
-5. 非 PR 部署时，将标准化产生的照片变更提交回 `Jackyhq/Photography-Photos`，并用 `[skip dispatch]` 避免循环触发。
-6. 非 PR 部署时，将 `./photos` 同步到 Cloudflare R2 的 `photos/` prefix，并排除 `.git/`、`.github/`、`incoming/` 和仓库元文件；同步使用 size-only 比较，避免 GitHub Actions checkout 造成的本地时间戳变化触发重复上传。
-7. 执行 `pnpm run build:manifest`。
-8. 执行 `pnpm run build`。
-9. 校验 `apps/web/dist/`，复制 sitemap 为 `googlesitemap.xml`。
-10. 将构建产物同步到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web)。
-11. 上传 `apps/web/dist/` 到 GitHub Pages 并部署。
+- checkout 私有照片仓库到 `./photos`
+- 拒绝照片仓库中的 symlink
+- `pnpm install --frozen-lockfile`
+- `pnpm run lint:check`
+- `pnpm --filter web type-check`
+- `pnpm test`
+- `pnpm run photos:standardize`
+- `pnpm run build:manifest`
+- `pnpm run build`
+- `pnpm run bundle:budget`
+- Playwright Chromium E2E
 
-主仓库需要以下 GitHub Secrets：
+非 PR 部署还会：
+
+- 将标准化后的照片变更 push 回 `Jackyhq/Photography-Photos`
+- 使用 `aws s3 sync --size-only --delete` 同步 `./photos` 到 Cloudflare R2 的 `photos/` prefix
+- 生成 `googlesitemap.xml`、`.nojekyll`、README 预览图和可选 IndexNow 验证文件
+- 同步 `apps/web/dist/` 到 `Jackyhq/Photography-Web`
+- 上传 GitHub Pages artifact 并部署
+
+主仓库需要这些 secrets：
 
 - `PHOTO_REPO_TOKEN`
 - `DEPLOY_REPO_TOKEN`
@@ -242,51 +180,21 @@ pnpm build
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
 - `CLOUDFLARE_R2_ENDPOINT`
 - `CLOUDFLARE_R2_BUCKET`
-- `INDEXNOW_KEY`（可选）
+- `INDEXNOW_KEY`，可选
 
-照片仓库需要 `MAIN_REPO_DISPATCH_TOKEN`，用于向 `Jackyhq/Photography` 发送 `photos-updated` dispatch。
+Vercel Preview 使用 `vercel.json` 中的 `pnpm run vercel:build`。Preview 只拉取私有照片仓库并构建静态预览，不同步 R2、不回写照片仓库、不发布 GitHub Pages。不要授权不可信 fork 使用带私有 token 的 Preview 构建。
 
-R2 同步配置需要区分 bucket、prefix 和公开访问域名：
+## 仓库维护约定
 
-- `CLOUDFLARE_R2_BUCKET` 只填写 bucket 名称，例如 `jackywhq`，不要填写 `photos`、URL 或 `s3://` 路径。
-- `CLOUDFLARE_R2_ENDPOINT` 使用 R2 S3 API endpoint，例如 `https://<account_id>.r2.cloudflarestorage.com`，不要使用 `https://photos3.jackyw.cn` 这类公开访问域名。
-- workflow 里的 `R2_PHOTOS_PREFIX=photos` 决定同步目标是 `s3://<bucket>/photos/`；前端仍通过 `https://photos3.jackyw.cn/photos/` 访问。
-- `CLOUDFLARE_R2_ACCESS_KEY_ID` 和 `CLOUDFLARE_R2_SECRET_ACCESS_KEY` 必须是 Cloudflare R2 的 S3 API credentials，并且对目标 bucket 具备 list/read/write object 权限。
-- R2 sync 使用 `--size-only --delete`：它会先列出 R2 上的对象，只上传本地存在且远端缺失或文件大小不同的对象，并删除远端多余对象。这样可以避免 GitHub Actions checkout 改变本地时间戳后重复上传未变化的照片。
-- 如果用同一路径替换了一张“字节大小完全相同”的照片，`--size-only` 可能不会发现内容变化；这种极少数情况可以先删除 R2 上对应对象，或换一个文件名后重新部署。
-
-源码仓库仍会在 `INDEXNOW_KEY` 存在时把验证文件写入 `apps/web/dist/`，但 IndexNow 通知已移动到 [`Jackyhq/Photography-Web`](https://github.com/Jackyhq/Photography-Web) 的 `.github/workflows/notify-indexnow.yml`，由前端产物仓库在收到新 sitemap 后执行。
-
-PR 校验会按 PR 编号设置并发分组并取消过期运行；部署任务使用 Pages 权限，只在非 PR 事件中执行。
-
-### Vercel Preview
-
-`vercel.json` 配置了 Vercel Preview 构建：
-
-1. `pnpm install`
-2. `pnpm run vercel:build`
-3. 输出目录 `apps/web/dist`
-
-`pnpm run vercel:build` 会先执行 `pnpm run vercel:photos`。这个脚本会在构建环境没有 `./photos` 时，用 Vercel Preview 环境变量 `PHOTO_REPO_TOKEN` clone 私有照片仓库 `Jackyhq/Photography-Photos` 到 `./photos`，再运行 `pnpm run photos:standardize` 和 `pnpm run build`。
-
-Vercel 项目需要添加 Preview 环境变量：
-
-- `PHOTO_REPO_TOKEN`：fine-grained PAT，只需要 `Jackyhq/Photography-Photos` 的 `Contents: Read-only` 权限。建议在 Vercel 标记为 Sensitive。
-
-Vercel Preview 只负责生成 PR/branch 预览站点，不会同步 R2，也不会把标准化结果 push 回照片仓库。预览站点中的照片 URL 仍然来自 `https://photos3.jackyw.cn/photos/`。如果 public fork PR 需要 Vercel 授权部署，不要批准不可信 fork 的 Preview deployment，避免把私有照片仓库 token 暴露给不可信构建代码。
-
-## 文档
-
-- 文档站源码位于 `packages/docs/contents/`。
-- 新建文档可运行 `pnpm create:doc`。
-- 文档站开发命令为 `pnpm docs:dev`，生产构建为 `pnpm docs:build`。
-- 照片描述、人工标签和照片级 SEO 工作流记录在 `packages/docs/contents/photo-metadata/index.mdx`。
-- 移动端性能、响应式缩略图和分包策略记录在 `packages/docs/contents/performance/index.mdx`。
+- 不要编辑 `photos/`、`apps/web/dist/`、`web/`、`apps/web/public/thumbnails/` 或 `apps/web/src/data/photos-manifest.json`，除非任务明确涉及生成产物。
+- 不要把 `.DS_Store`、本地 `dist`、调试日志或工具会话历史提交进仓库。
+- 文档内容位于 `packages/docs/contents/`；修改 MDX 时保持 frontmatter `lastModified` 当前。
+- 代码修改遵循 workspace import 边界，优先复用 `@afilmory/ui`、`@afilmory/utils`、`@afilmory/hooks` 和 `@afilmory/data`。
 
 ## 许可证
 
 本项目代码遵循 [Attribution Network License (ANL) v1.0](LICENSE)。
 
-私有照片仓库内容、`apps/web/public/thumbnails/**`、部署仓库中的缩略图、OG 图、README 预览图以及其他由个人照片生成的媒体资产不属于开源授权范围，详见 [LICENSE](LICENSE) 的 Documentation & Media 排除条款。
+私有照片仓库内容、生成缩略图、OG 图、README 预览图以及其他由个人照片生成的媒体资产不属于开源授权范围，详见 [LICENSE](LICENSE) 的 Documentation & Media 排除条款。
 
 Copyright (c) 2025-2026 Jackyhq. All rights reserved.

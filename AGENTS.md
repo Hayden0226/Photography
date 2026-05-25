@@ -58,7 +58,7 @@ pnpm --filter web type-check
 
 ## Architecture
 
-The production site is a pure client-side SPA. The builder runs before the web build, scans the configured photo storage, extracts metadata, generates thumbnails and hashes, and writes `apps/web/src/data/photos-manifest.json`. The frontend imports that manifest through `@afilmory/data` and deploys as static files from `apps/web/dist/`.
+The production site is a pure client-side SPA. The builder runs before the web build, scans the configured photo storage, extracts metadata, generates thumbnails and hashes, and writes `apps/web/src/data/photos-manifest.json`. The frontend imports that manifest through `@afilmory/data` and deploys as static files from `apps/web/dist/`; CI mirrors that output to `Jackyhq/Photography-Web`.
 
 ### Workspace Packages
 
@@ -96,7 +96,7 @@ There is no `packages/components/` package in the current workspace.
 2. `pnpm run photos:standardize` reads EXIF timestamps, renames files to `YYYYMMDDHHmmss.ext`, and moves them into category folders.
 3. `pnpm run build:manifest` scans configured storage, excludes `incoming`, processes images, detects Live Photos, extracts EXIF/GPS/Fujifilm metadata, generates thumbnails and hash placeholders, and saves the local `apps/web/src/data/photos-manifest.json`.
 4. `@afilmory/data` loads `__MANIFEST__` and exposes photos, cameras, and lenses to the web app.
-5. `pnpm build` builds `apps/web/dist/`; CI also mirrors this output into root `web/`.
+5. `pnpm build` builds `apps/web/dist/`; CI also mirrors this output into `Jackyhq/Photography-Web`.
 
 ### Storage Providers
 

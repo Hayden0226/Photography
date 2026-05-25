@@ -2,7 +2,7 @@
 title: GitHub Pages
 description: Guide to deploying Jacky's Photography via GitHub Pages.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-13T21:15:03+08:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 
 # GitHub Pages Deployment
@@ -39,13 +39,15 @@ apps/web/dist/
 
 ## Workflow Output
 
-During CI, the workflow also copies the build output into:
+During CI, the workflow uploads:
 
 ```plain
-web/
+apps/web/dist/
 ```
 
-This directory is mirrored into `Jackyhq/Photography-Web`. Photo source files stay in the private `Jackyhq/Photography-Photos` repository, and the photo manifest is generated during the build instead of being committed, which avoids repeated merge conflicts from environment-specific metadata.
+The same directory is mirrored into the external deployment repository `Jackyhq/Photography-Web`. The root `web/` directory is ignored in this source repository and should not be treated as the canonical build output.
+
+Photo source files stay in the private `Jackyhq/Photography-Photos` repository. The generated manifest lives at `apps/web/src/data/photos-manifest.json` during local builds and CI; `packages/data/src/photos-manifest.json` is a tracked symlink to that generated file.
 
 ## Custom Domain
 

@@ -30,47 +30,53 @@ export const tocData: FileToc[] = [
             id: 'heading-what-it-builds',
             level: 2,
             text: 'What It Builds',
-            children: [],
+            children: []
           },
           {
             id: 'heading-repository-layout',
             level: 2,
             text: 'Repository Layout',
-            children: [],
+            children: []
           },
           {
-            id: 'heading-storage-providers',
+            id: 'heading-manifest-flow',
             level: 2,
-            text: 'Storage Providers',
-            children: [],
+            text: 'Manifest Flow',
+            children: []
           },
           {
-            id: 'heading-development',
+            id: 'heading-current-configuration',
             level: 2,
-            text: 'Development',
-            children: [],
+            text: 'Current Configuration',
+            children: []
           },
           {
-            id: 'heading-photo-workflow',
+            id: 'heading-common-commands',
             level: 2,
-            text: 'Photo Workflow',
-            children: [],
+            text: 'Common Commands',
+            children: []
           },
           {
-            id: 'heading-deployment',
+            id: 'heading-deployment-summary',
             level: 2,
-            text: 'Deployment',
-            children: [],
+            text: 'Deployment Summary',
+            children: []
+          },
+          {
+            id: 'heading-maintenance-notes',
+            level: 2,
+            text: 'Maintenance Notes',
+            children: []
           },
           {
             id: 'heading-license',
             level: 2,
             text: 'License',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'deployment/index.mdx',
@@ -81,9 +87,9 @@ export const tocData: FileToc[] = [
         id: 'heading-deployment',
         level: 1,
         text: 'Deployment',
-        children: [],
-      },
-    ],
+        children: []
+      }
+    ]
   },
   {
     file: 'deployment/github-action.mdx',
@@ -96,50 +102,56 @@ export const tocData: FileToc[] = [
         text: 'GitHub Action Deployment',
         children: [
           {
-            id: 'heading-jobs',
+            id: 'heading-triggers',
             level: 2,
-            text: 'Jobs',
-            children: [],
+            text: 'Triggers',
+            children: []
           },
           {
-            id: 'heading-build-steps',
+            id: 'heading-shared-validation-steps',
             level: 2,
-            text: 'Build Steps',
-            children: [],
+            text: 'Shared Validation Steps',
+            children: []
           },
           {
-            id: 'heading-secrets',
+            id: 'heading-deployment-only-steps',
             level: 2,
-            text: 'Secrets',
-            children: [],
+            text: 'Deployment-Only Steps',
+            children: []
+          },
+          {
+            id: 'heading-required-secrets',
+            level: 2,
+            text: 'Required Secrets',
+            children: []
           },
           {
             id: 'heading-cloudflare-r2-sync',
             level: 2,
             text: 'Cloudflare R2 Sync',
-            children: [],
+            children: []
           },
           {
             id: 'heading-permissions',
             level: 2,
             text: 'Permissions',
-            children: [],
+            children: []
           },
           {
             id: 'heading-output-targets',
             level: 2,
             text: 'Output Targets',
-            children: [],
+            children: []
           },
           {
             id: 'heading-notes',
             level: 2,
             text: 'Notes',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'deployment/github-pages.mdx',
@@ -155,29 +167,29 @@ export const tocData: FileToc[] = [
             id: 'heading-repository-settings',
             level: 2,
             text: 'Repository Settings',
-            children: [],
+            children: []
           },
           {
             id: 'heading-local-build-equivalent',
             level: 2,
             text: 'Local Build Equivalent',
-            children: [],
+            children: []
           },
           {
             id: 'heading-workflow-output',
             level: 2,
             text: 'Workflow Output',
-            children: [],
+            children: []
           },
           {
             id: 'heading-custom-domain',
             level: 2,
             text: 'Custom Domain',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'deployment/vercel-preview.mdx',
@@ -193,29 +205,29 @@ export const tocData: FileToc[] = [
             id: 'heading-repository-configuration',
             level: 2,
             text: 'Repository Configuration',
-            children: [],
+            children: []
           },
           {
             id: 'heading-environment-variables',
             level: 2,
             text: 'Environment Variables',
-            children: [],
+            children: []
           },
           {
             id: 'heading-behavior',
             level: 2,
             text: 'Behavior',
-            children: [],
+            children: []
           },
           {
             id: 'heading-pull-request-safety',
             level: 2,
             text: 'Pull Request Safety',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'docs-site.mdx',
@@ -231,35 +243,35 @@ export const tocData: FileToc[] = [
             id: 'heading-content-structure',
             level: 2,
             text: 'Content Structure',
-            children: [],
+            children: []
           },
           {
             id: 'heading-commands',
             level: 2,
             text: 'Commands',
-            children: [],
+            children: []
           },
           {
             id: 'heading-writing-pages',
             level: 2,
             text: 'Writing Pages',
-            children: [],
+            children: []
           },
           {
             id: 'heading-style-notes',
             level: 2,
             text: 'Style Notes',
-            children: [],
+            children: []
           },
           {
             id: 'heading-verification',
             level: 2,
             text: 'Verification',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'performance/index.mdx',
@@ -275,47 +287,47 @@ export const tocData: FileToc[] = [
             id: 'heading-image-pipeline',
             level: 2,
             text: 'Image Pipeline',
-            children: [],
+            children: []
           },
           {
             id: 'heading-gallery-loading',
             level: 2,
             text: 'Gallery Loading',
-            children: [],
+            children: []
           },
           {
             id: 'heading-manifest-loading',
             level: 2,
             text: 'Manifest Loading',
-            children: [],
+            children: []
           },
           {
             id: 'heading-static-photo-metadata',
             level: 2,
             text: 'Static Photo Metadata',
-            children: [],
+            children: []
           },
           {
             id: 'heading-javascript-loading',
             level: 2,
             text: 'JavaScript Loading',
-            children: [],
+            children: []
           },
           {
             id: 'heading-regeneration',
             level: 2,
             text: 'Regeneration',
-            children: [],
+            children: []
           },
           {
             id: 'heading-validation-checklist',
             level: 2,
             text: 'Validation Checklist',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'photo-metadata/index.mdx',
@@ -331,35 +343,35 @@ export const tocData: FileToc[] = [
             id: 'heading-sidecar-shape',
             level: 2,
             text: 'Sidecar Shape',
-            children: [],
+            children: []
           },
           {
             id: 'heading-sync-workflow',
             level: 2,
             text: 'Sync Workflow',
-            children: [],
+            children: []
           },
           {
             id: 'heading-manifest-merge',
             level: 2,
             text: 'Manifest Merge',
-            children: [],
+            children: []
           },
           {
             id: 'heading-frontend-usage',
             level: 2,
             text: 'Frontend Usage',
-            children: [],
+            children: []
           },
           {
             id: 'heading-seo-output',
             level: 2,
             text: 'SEO Output',
-            children: [],
-          },
-        ],
-      },
-    ],
+            children: []
+          }
+        ]
+      }
+    ]
   },
   {
     file: 'storage/index.mdx',
@@ -372,128 +384,76 @@ export const tocData: FileToc[] = [
         text: 'Storage Providers',
         children: [
           {
+            id: 'heading-current-setup',
+            level: 2,
+            text: 'Current Setup',
+            children: []
+          },
+          {
+            id: 'heading-manifest-and-thumbnails',
+            level: 2,
+            text: 'Manifest And Thumbnails',
+            children: []
+          },
+          {
+            id: 'heading-cloudflare-r2-layout',
+            level: 2,
+            text: 'Cloudflare R2 Layout',
+            children: []
+          },
+          {
             id: 'heading-supported-providers',
             level: 2,
             text: 'Supported Providers',
             children: [
               {
-                id: 'heading-s3-compatible-storage',
+                id: 'heading-local',
                 level: 3,
-                text: 'S3-Compatible Storage',
-                children: [],
+                text: 'Local',
+                children: []
               },
               {
-                id: 'heading-github-storage',
+                id: 'heading-s3-compatible',
                 level: 3,
-                text: 'GitHub Storage',
-                children: [],
+                text: 'S3-Compatible',
+                children: []
               },
               {
-                id: 'heading-eagle-storage',
+                id: 'heading-github',
                 level: 3,
-                text: 'Eagle Storage',
-                children: [],
+                text: 'GitHub',
+                children: []
               },
               {
-                id: 'heading-local-file-system',
+                id: 'heading-eagle',
                 level: 3,
-                text: 'Local File System',
-                children: [],
-              },
-            ],
+                text: 'Eagle',
+                children: []
+              }
+            ]
           },
           {
-            id: 'heading-photo-processing-workflow',
+            id: 'heading-processing-pipeline',
             level: 2,
-            text: 'Photo Processing Workflow',
-            children: [
-              {
-                id: 'heading-image-processing-pipeline',
-                level: 3,
-                text: 'Image Processing Pipeline',
-                children: [],
-              },
-              {
-                id: 'heading-storage-organization',
-                level: 3,
-                text: 'Storage Organization',
-                children: [],
-              },
-              {
-                id: 'heading-processing-commands',
-                level: 3,
-                text: 'Processing Commands',
-                children: [],
-              },
-            ],
+            text: 'Processing Pipeline',
+            children: []
           },
           {
-            id: 'heading-environment-specific-configurations',
+            id: 'heading-provider-comparison',
             level: 2,
-            text: 'Environment-Specific Configurations',
-            children: [
-              {
-                id: 'heading-development-setup',
-                level: 3,
-                text: 'Development Setup',
-                children: [],
-              },
-              {
-                id: 'heading-production-setup',
-                level: 3,
-                text: 'Production Setup',
-                children: [],
-              },
-            ],
+            text: 'Provider Comparison',
+            children: []
           },
           {
-            id: 'heading-api-limitations',
+            id: 'heading-security-notes',
             level: 2,
-            text: 'API Limitations',
-            children: [
-              {
-                id: 'heading-github-storage-limits',
-                level: 3,
-                text: 'GitHub Storage Limits',
-                children: [],
-              },
-              {
-                id: 'heading-storage-provider-comparison',
-                level: 3,
-                text: 'Storage Provider Comparison',
-                children: [],
-              },
-            ],
-          },
-          {
-            id: 'heading-security-considerations',
-            level: 2,
-            text: 'Security Considerations',
-            children: [
-              {
-                id: 'heading-s3-bucket-policies',
-                level: 3,
-                text: 'S3 Bucket Policies',
-                children: [],
-              },
-              {
-                id: 'heading-github-repository-settings',
-                level: 3,
-                text: 'GitHub Repository Settings',
-                children: [],
-              },
-              {
-                id: 'heading-environment-variables',
-                level: 3,
-                text: 'Environment Variables',
-                children: [],
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
+            text: 'Security Notes',
+            children: []
+          }
+        ]
+      }
+    ]
+  }
 ]
 
 // Helper function to find TOC data by file path

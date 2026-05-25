@@ -49,6 +49,7 @@ thomas-x2d-xcd-25v-1.jpg
 thomas-x2d-xcd-25v-1.webp
 apps/web/assets-git
 .claude
+.specstory/history/
 
 # Generated Data
 apps/web/src/data/photos-manifest.json

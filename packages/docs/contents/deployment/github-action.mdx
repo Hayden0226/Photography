@@ -1,120 +1,127 @@
 ---
 title: GitHub Action
-description: Guide to the GitHub Actions deployment workflow used by Jacky's Photography.
+description: Current GitHub Actions validation and deployment workflow for Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-13T22:30:55+08:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 
 # GitHub Action Deployment
 
-This repository includes a deployment and validation workflow at `.github/workflows/deploy.yml`. It is designed for a static SPA deployment, validates pull requests, checks out the private photo source repository during builds, syncs published photos to Cloudflare R2, and publishes `apps/web/dist/` to GitHub Pages on non-PR events.
+This repository uses `.github/workflows/deploy.yml` for pull-request validation and production deployment. The workflow is designed for a static SPA that depends on a private photo source repository during build time.
 
-The workflow runs on pushes and pull requests targeting `main` when these paths change:
+## Triggers
 
-- `.github/workflows/deploy.yml`
-- `photo-descriptions.json`
-- `apps/web/**`
-- `packages/builder/**`
-- `packages/data/**`
-- `packages/hooks/**`
-- `packages/sdk/**`
-- `packages/ui/**`
-- `packages/utils/**`
-- `packages/webgl-viewer/**`
-- `plugins/builder/**`
-- `scripts/**`
-- project config files such as `package.json`, `pnpm-lock.yaml`, `config.json`, `builder.config.ts`, and `site.config.ts`
+The workflow runs on:
 
-It can also be started manually through `workflow_dispatch` or by the private photo repository through the `repository_dispatch` event type `photos-updated`.
+- pull requests targeting `main`
+- pushes to `main` that touch app, package, script, workflow, or project configuration paths
+- `workflow_dispatch`
+- `repository_dispatch` with type `photos-updated`, sent by `Jackyhq/Photography-Photos`
 
-## Jobs
+Pull requests use a `pr-<number>` concurrency group and cancel stale runs. Non-PR deployments use the `pages` concurrency group.
 
-Pull requests run the `validate` job only. It checks out `Jackyhq/Photography-Photos` into `./photos`, standardizes photos locally, builds the manifest, builds the web app, and checks that `apps/web/dist/` exists. It does not push photo changes, sync Cloudflare R2, copy output into the deployment repository, upload a Pages artifact, or deploy.
+## Shared Validation Steps
 
-Pushes to `main`, manual runs, and photo-repository dispatches use the `build-and-deploy` job. This job performs the same build validation, commits standardized photo changes back to `Jackyhq/Photography-Photos`, syncs the published photo tree to Cloudflare R2 under the `photos/` prefix, mirrors the web output into `Jackyhq/Photography-Web`, uploads the Pages artifact, and deploys it.
+Both PR validation and production deployment perform the core build checks:
 
-The workflow uses separate concurrency groups:
-
-- Pull requests use `pr-<number>` and cancel stale runs for that PR.
-- Non-PR deployment events use the `pages` group.
-
-## Build Steps
-
-Both jobs perform the shared build steps:
-
-1. Check out the source repository.
+1. Check out this source repository.
 2. Check out `Jackyhq/Photography-Photos` into `./photos` with `PHOTO_REPO_TOKEN`.
-3. Install pnpm `10.19.0`.
-4. Set up Node.js `24` with pnpm cache.
-5. Install dependencies with `pnpm install`.
-6. Run `pnpm run photos:standardize`.
-7. Run `pnpm run build:manifest`.
-8. Run `pnpm run build`.
-9. Verify that `apps/web/dist/` exists.
+3. Reject symlinks inside the photo repository.
+4. Install pnpm `10.19.0`.
+5. Set up Node.js `24` with pnpm cache.
+6. Install dependencies with `pnpm install --frozen-lockfile`.
+7. Run `pnpm run lint:check`.
+8. Run `pnpm --filter web type-check`.
+9. Run `pnpm test`.
+10. Run `pnpm run photos:standardize`.
+11. Run `pnpm run build:manifest`.
+12. Run `pnpm run build` with `AFILMORY_SKIP_MANIFEST_PRECHECK=true`.
+13. Run `pnpm run bundle:budget`.
+14. Verify `apps/web/dist/`.
 
-The deploy job then performs these additional steps:
+Pull requests additionally install the Chromium browser and run:
 
-1. Commit standardized photo changes back to `Jackyhq/Photography-Photos` with `[skip dispatch]`.
-2. Sync `./photos` to Cloudflare R2, excluding `.git/`, `.github/`, `incoming/`, `README.md`, and `.gitignore`. The sync uses size-only comparison so a fresh GitHub Actions checkout does not re-upload unchanged objects just because local file timestamps changed.
-3. Copy `sitemap.xml` to `googlesitemap.xml` when it exists.
-4. Publish the optional IndexNow verification key file.
-5. Sync `apps/web/dist/` into `Jackyhq/Photography-Web`.
-6. Upload `apps/web/dist/` as a GitHub Pages artifact.
-7. Deploy the artifact to GitHub Pages.
+```bash
+pnpm run test:e2e
+```
 
-## Secrets
+PRs do not push photo changes, sync R2, mirror deployment output, upload Pages artifacts, or deploy.
 
-The source repository requires these secrets:
+## Deployment-Only Steps
 
-- `PHOTO_REPO_TOKEN`: fine-grained PAT with read/write Contents access to `Jackyhq/Photography-Photos`.
+Pushes to `main`, manual runs, and photo-repository dispatches run the `build-and-deploy` job. After the shared checks, the job:
+
+1. Commits standardized photo changes back to `Jackyhq/Photography-Photos` with `[skip dispatch]`.
+2. Syncs `./photos` to Cloudflare R2 under the `photos/` prefix.
+3. Builds the manifest and web app.
+4. Prepares `googlesitemap.xml`, `.nojekyll`, and the README preview image.
+5. Publishes the optional IndexNow verification file.
+6. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
+7. Uploads `apps/web/dist/` as a GitHub Pages artifact.
+8. Deploys the artifact to GitHub Pages.
+
+## Required Secrets
+
+The source repository requires:
+
+- `PHOTO_REPO_TOKEN`: fine-grained PAT with Contents access to `Jackyhq/Photography-Photos`.
 - `DEPLOY_REPO_TOKEN`: token used to push static output to `Jackyhq/Photography-Web`.
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`: Cloudflare R2 S3 API access key.
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`: Cloudflare R2 S3 API secret key.
 - `CLOUDFLARE_R2_ENDPOINT`: R2 S3 API endpoint, such as `https://<account_id>.r2.cloudflarestorage.com`.
 - `CLOUDFLARE_R2_BUCKET`: bucket name only, such as `jackywhq`.
-- `INDEXNOW_KEY` when IndexNow verification output is needed.
+- `INDEXNOW_KEY`: optional key for IndexNow verification output.
 
 The private photo repository requires `MAIN_REPO_DISPATCH_TOKEN`, a token that can send `repository_dispatch` events to `Jackyhq/Photography`.
 
 ## Cloudflare R2 Sync
 
-The workflow treats the R2 bucket, object prefix, and public photo URL as separate pieces:
+The workflow separates bucket name, object prefix, and public URL:
 
-- `CLOUDFLARE_R2_BUCKET` is the bucket name only. Do not include `s3://`, the `photos/` prefix, or a public URL.
+- `CLOUDFLARE_R2_BUCKET` is the bucket name only.
 - `R2_PHOTOS_PREFIX=photos` makes the upload target `s3://<bucket>/photos/`.
-- `CLOUDFLARE_R2_ENDPOINT` must be the S3 API endpoint, not the public custom domain.
-- `https://photos3.jackyw.cn/photos/` is only the public URL used by the frontend manifest.
+- `CLOUDFLARE_R2_ENDPOINT` is the S3 API endpoint.
+- `https://photos3.jackyw.cn/photos/` is the public URL used in the manifest.
 
-The sync command uses `aws s3 sync ./photos "s3://${R2_BUCKET}/${R2_PHOTOS_PREFIX}/" --size-only --delete`. This still lists the remote objects first, but it only uploads objects that are missing or have a different byte size. That avoids re-uploading unchanged photos when GitHub Actions creates a fresh checkout with new local file timestamps.
+The sync command uses `aws s3 sync ./photos "s3://${R2_BUCKET}/${R2_PHOTOS_PREFIX}/" --size-only --delete --no-follow-symlinks`.
 
-Because comparison is size-only, replacing an existing object with different content at the exact same byte size will not be detected. In that rare case, delete the affected object from R2 or change the file name before redeploying.
+It excludes:
+
+- `.git/`
+- `.github/`
+- `.gitignore`
+- `README.md`
+- `incoming/`
+
+`--size-only` avoids re-uploading unchanged photos when GitHub Actions creates a fresh checkout with new local timestamps. If a same-path replacement has a different file body but the exact same byte size, delete the affected object from R2 or change the file name before redeploying.
 
 ## Permissions
 
-The workflow defaults to `contents: read`. The deploy job expands permissions only when it needs to publish:
+The workflow defaults to `contents: read`. The deploy job expands permissions only when publishing:
 
-- `contents: write` to support repository checkout and deploy-side Git operations.
-- `pages: write` to publish GitHub Pages.
-- `id-token: write` for GitHub Pages deployment authentication.
+- `contents: write`
+- `pages: write`
+- `id-token: write`
 
 ## Output Targets
 
-The primary deployment artifact is:
+The primary build output is:
 
 ```plain
 apps/web/dist/
 ```
 
-The workflow also mirrors that static output to:
+The deploy job mirrors that output to:
 
 ```plain
 Jackyhq/Photography-Web
 ```
 
-Photo source files are not tracked in this public source repository. The public site loads photos from `https://photos3.jackyw.cn/photos/`, backed by Cloudflare R2.
+Photo source files are not tracked in this public repository. The public site loads original photos from `https://photos3.jackyw.cn/photos/`, backed by Cloudflare R2.
 
 ## Notes
 
-- `photos/incoming/` is excluded from the manifest and from R2 sync; run `pnpm run photos:standardize` or move files into a real category before publishing.
-- Photo-repository commits made by the deploy workflow use `[skip dispatch]` so they do not trigger a deployment loop.
-- `pnpm run build` runs the web precheck, which calls the builder CLI before Vite builds.
+- `photos/incoming/` is excluded from the manifest and R2 sync.
+- Photo-repository commits made by CI include `[skip dispatch]` to avoid deployment loops.
+- `pnpm run build` normally runs the web precheck; CI sets `AFILMORY_SKIP_MANIFEST_PRECHECK=true` after explicitly running the builder.
+- Keep workflow documentation synchronized with `.github/workflows/deploy.yml`.

@@ -1,51 +1,71 @@
 ---
 title: Overview
-description: Project overview for Jacky's Photography, a customized Afilmory-powered photo gallery.
+description: Current architecture and maintenance overview for Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-13T21:15:03+08:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 
 # Jacky's Photography
 
-Jacky's Photography is a customized personal photo gallery based on [Afilmory](https://github.com/Afilmory/afilmory). It keeps the core static-gallery workflow from Afilmory while adding project-specific automation, deployment, photo standardization, bilingual photo metadata, map exploration, and presentation refinements for [photo.jackyw.cn](https://photo.jackyw.cn).
+Jacky's Photography is a customized static photo gallery based on [Afilmory](https://github.com/Afilmory/afilmory). This repository contains the public source code for the React/Vite gallery, the photo-manifest builder, shared workspace packages, and this MDX documentation site. The source photos live in the private `Jackyhq/Photography-Photos` repository and are checked out locally as `photos/` only during builds.
 
-> Source photos live in the private `Jackyhq/Photography-Photos` repository. The local `photos/` directory is only a build-time checkout and is ignored by this public source repository. Do not reuse, redistribute, or publish Jackyhq's photos without explicit written permission.
+Do not treat `photos/` as reusable sample media. The originals, generated thumbnails, generated OG images, README preview image, and other media derived from Jackyhq's photos remain copyrighted personal works and are outside the open-source license.
 
 ## What It Builds
 
-The project builds a pure client-side React SPA. Photo metadata is generated before the frontend build and embedded as `photos-manifest.json`, so the deployed gallery can run on static hosting without an application server.
+The production output is a pure client-side SPA in `apps/web/dist/`. The site can run on static hosting because all photo data is generated before the frontend build.
 
-Core user-facing features:
+The user-facing gallery includes:
 
-- Responsive masonry photo gallery.
-- Responsive WebP thumbnails with JPEG fallback and first-screen image preloads.
-- Fullscreen photo viewer with WebGL zoom and pan.
-- EXIF, histogram, camera, lens, tag, Live Photo, HDR, and Fujifilm recipe display.
-- Command palette and gallery controls for searching by title, localized description, tag, camera, and lens.
-- MapLibre-based location explorer for photos with GPS metadata.
-- Localized photo alt text, description fallback, and photo detail page metadata.
-- Static per-photo HTML pages for `/photos/:id` with canonical, OpenGraph, and Twitter Card metadata.
-- Profile links for GitHub, Instagram, Twitter, RSS, and the author homepage.
-- RSS, sitemap, PWA assets, and static deployment output.
+- responsive masonry browsing
+- WebGL photo viewing with DOM fallback
+- EXIF, histogram, camera, lens, GPS, HDR, Live Photo, and Fujifilm metadata
+- command palette search across titles, localized descriptions, tags, camera, and lens data
+- MapLibre location exploration for geotagged photos
+- localized alt text and photo descriptions
+- static per-photo HTML for `/photos/:id`
+- RSS, sitemap, PWA assets, and share metadata
 
 ## Repository Layout
 
 ```plain
-apps/web/                 # Main React 19 + Vite gallery SPA
-packages/builder/         # Photo processing, EXIF, thumbnails, manifest generation
-packages/data/            # Manifest access layer and photoLoader singleton
+apps/web/                 # React 19 + Vite gallery SPA
+packages/builder/         # Photo scanning, EXIF, thumbnails, manifest generation
+packages/data/            # Runtime data loader and manifest symlink export
 packages/docs/            # This Vite + React + MDX documentation site
 packages/hooks/           # Shared React hooks
 packages/sdk/             # Shared schemas/client helpers
-packages/ui/              # Shared UI primitives and glassmorphic components
-packages/utils/           # Shared utilities, RSS helpers, animation helpers
-packages/webgl-viewer/    # High-performance WebGL image viewer
-photos/                   # Local checkout of the private photo repository
+packages/ui/              # Shared UI primitives
+packages/utils/           # Shared utilities, RSS helpers, storage helpers
+packages/webgl-viewer/    # WebGL image viewer
+plugins/                  # Builder, ESLint, and Vite plugins
+scripts/                  # Photo, docs, OG, favicon, and maintenance scripts
+photos/                   # Local private photo checkout, ignored by Git
 ```
 
-## Storage Providers
+There is no `packages/components/` package. App-specific UI should stay in `apps/web/src`; only broadly reusable primitives belong in `packages/ui`.
 
-`@afilmory/builder` reads photos through a storage-provider abstraction. The current project uses the local provider against a private photo-repository checkout:
+## Manifest Flow
+
+The builder writes the generated manifest to:
+
+```plain
+apps/web/src/data/photos-manifest.json
+```
+
+That file is ignored by Git. `packages/data/src/photos-manifest.json` is a tracked symlink to the generated file, so `@afilmory/data` and Vite build plugins read the same manifest without duplicating data.
+
+The normal flow is:
+
+1. Check out `Jackyhq/Photography-Photos` into `./photos`.
+2. Run `pnpm run photos:standardize` to rename and move incoming files.
+3. Run `pnpm run build:manifest` to scan photos, extract metadata, generate thumbnails, and write the manifest.
+4. Build the web app with `pnpm build`.
+5. Deploy `apps/web/dist/`.
+
+## Current Configuration
+
+`builder.config.ts` uses the local storage provider against the private checkout:
 
 ```ts
 import { defineBuilderConfig } from '@afilmory/builder'
@@ -57,67 +77,45 @@ export default defineBuilderConfig(() => ({
     baseUrl: 'https://photos3.jackyw.cn/photos/',
     excludeRegex: '^incoming($|/.*)',
   },
+  plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],
 }))
 ```
 
-Supported providers:
+The `photo-descriptions` plugin merges human-written titles, `zh-CN`/`en` descriptions, and editorial tags from `photo-descriptions.json`.
 
-- `local`: reads local photo directories; useful for the private photo checkout, development, and self-hosted deployments.
-- `s3`: reads S3-compatible object storage with optional custom domains and network tuning.
-- `github`: reads photos from a GitHub repository or subdirectory.
-- `eagle`: reads an Eagle 4 library and can filter by tags or folders.
-
-## Development
+## Common Commands
 
 ```bash
-pnpm install
-git clone git@github.com:Jackyhq/Photography-Photos.git photos
-pnpm run build:manifest
 pnpm dev
-```
-
-Useful commands:
-
-```bash
-pnpm run photos:standardize
-pnpm run photos:descriptions:sync
-pnpm run build:manifest -- --force
-pnpm run build:manifest -- --force-thumbnails
-pnpm run build:manifest -- --force-manifest
-pnpm run build:manifest -- --config
 pnpm build
 pnpm docs:dev
 pnpm docs:build
+pnpm run photos:standardize
+pnpm run build:manifest
+pnpm run photos:descriptions:sync
+pnpm run lint:check
 pnpm --filter web type-check
+pnpm test
+pnpm run test:e2e
 ```
 
-`pnpm dev` and `pnpm build` run the web precheck, which calls the builder CLI before Vite starts or builds.
+`pnpm dev` and `pnpm build` run the web precheck, which calls the builder CLI before Vite starts or builds. CI can set `AFILMORY_SKIP_MANIFEST_PRECHECK=true` after an explicit manifest build to avoid doing the same work twice.
 
-For manual photo descriptions, tag curation, and SEO metadata, see [Photo Metadata](/photo-metadata). For mobile loading details, responsive thumbnails, and chunk-splitting expectations, see [Performance](/performance).
+## Deployment Summary
 
-## Photo Workflow
+The GitHub Actions workflow checks out the private photo repository, rejects symlinks in that checkout, installs dependencies, runs linting, type checking, unit tests, photo standardization, manifest generation, web build, bundle budget checks, and Playwright E2E tests.
 
-1. Put new photos in `incoming/` or directly in a category folder inside `Jackyhq/Photography-Photos`.
-2. Run `pnpm run photos:standardize` to rename incoming files from EXIF timestamps and move them into category folders.
-3. Run `pnpm run build:manifest` to scan photos, extract metadata, generate thumbnails, and merge any existing manual metadata from `photo-descriptions.json`.
-4. Run `pnpm run photos:descriptions:sync` when new manifest photos need sidecar entries, then fill in titles, `zh-CN`/`en` descriptions, and short editorial tags.
-5. Run `pnpm run build:manifest` again after editing `photo-descriptions.json` so the builder plugin can merge those values into the manifest.
-6. Run `pnpm dev` for local preview or `pnpm build` for static production output.
+Non-PR deployments also commit standardized photo changes back to the private photo repository, sync published photos to Cloudflare R2 under the `photos/` prefix, mirror `apps/web/dist/` into `Jackyhq/Photography-Web`, and deploy the same output to GitHub Pages.
 
-## Deployment
+For manual metadata curation, see [Photo Metadata](/photo-metadata). For loading and build performance details, see [Performance](/performance). For storage-provider options, see [Storage Providers](/storage).
 
-The repository includes `.github/workflows/deploy.yml`. Pull requests run the same standardization, manifest, and web build validation without deploying. Pushes to `main` that touch app code, packages, `config.json`, or project configuration run the deployment job. Pushes to `Jackyhq/Photography-Photos` dispatch the same deployment workflow through the `photos-updated` event:
+## Maintenance Notes
 
-1. Installs pnpm and Node.js 24.
-2. Checks out `Jackyhq/Photography-Photos` into `./photos`.
-3. Installs dependencies.
-4. Runs photo standardization.
-5. Commits standardized photo changes back to the private photo repository on deploy events.
-6. Syncs published photos to Cloudflare R2 under the `photos/` prefix.
-7. Builds the photo manifest and web app.
-8. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
-9. Deploys `apps/web/dist/` to GitHub Pages.
+- Do not hand-edit generated outputs such as `apps/web/dist/`, `apps/web/public/thumbnails/`, and `apps/web/src/data/photos-manifest.json`.
+- Keep `.specstory/history/`, `.DS_Store`, local `dist/`, and tool logs out of Git.
+- Keep docs `lastModified` values current when editing files under `packages/docs/contents/`.
+- Prefer existing workspace packages and local helper APIs over duplicate utilities.
 
 ## License
 
-Code is licensed under the repository license. Photos in the private photo repository remain copyrighted works owned by Jackyhq.
+Code is licensed under the repository license. Photo media and generated media derivatives remain copyrighted works owned by Jackyhq.

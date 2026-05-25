@@ -1,17 +1,17 @@
 ---
 title: Storage providers
-description: Afilmory can work with multiple storage providers, including local file system, S3, GitHub, and Eagle
+description: Current storage-provider setup and supported alternatives for Jacky's Photography.
 createdAt: 2025-08-12T15:09:08+08:00
-lastModified: 2026-05-13T22:30:55+08:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 
 # Storage Providers
 
-Afilmory's flexible storage architecture allows you to store your photos across different platforms. The photo processing engine (`@afilmory/builder`) abstracts storage operations through a unified interface, making it easy to switch between providers such as S3, GitHub, Eagle, and the local file system.
+`@afilmory/builder` reads photos through a storage-provider abstraction. Jacky's Photography currently uses the local provider against a private photo-repository checkout during builds, then syncs the published photo tree to Cloudflare R2 for public delivery.
 
-## Supported Providers
+## Current Setup
 
-Jacky's Photography currently uses the local provider against a private photo-repository checkout:
+The active `builder.config.ts` is:
 
 ```ts
 import { defineBuilderConfig } from '@afilmory/builder'
@@ -23,56 +23,114 @@ export default defineBuilderConfig(() => ({
     baseUrl: 'https://photos3.jackyw.cn/photos/',
     excludeRegex: '^incoming($|/.*)',
   },
+  plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],
 }))
 ```
 
-`excludeRegex` keeps staging files under `photos/incoming/` out of the published manifest until they have been standardized or moved into a real category folder. In CI, `./photos` is checked out from `Jackyhq/Photography-Photos`, and published files are synced to Cloudflare R2 behind `https://photos3.jackyw.cn/photos/`.
+In local development, `./photos` is a checkout of `Jackyhq/Photography-Photos`. In GitHub Actions, the workflow checks out the same private repository into `./photos`, rejects symlinks, standardizes incoming files, builds the manifest, and syncs published files to Cloudflare R2.
 
-The production R2 layout uses a bucket plus a prefix rather than a separate bucket for photos. For example, the workflow sync target is `s3://<bucket>/photos/`, while `builder.config.ts` publishes URLs with the public base URL `https://photos3.jackyw.cn/photos/`. Keep the GitHub secret `CLOUDFLARE_R2_BUCKET` set to the bucket name only; the `photos/` folder is provided by the workflow prefix.
+`excludeRegex` keeps `photos/incoming/` out of the public manifest until files have been standardized or moved into a real category folder.
 
-### S3-Compatible Storage
+## Manifest And Thumbnails
 
-S3-compatible storage is the recommended option for production deployments, offering scalability, CDN integration, and reliable performance.
+The builder writes generated data to the web app:
 
-**Configuration in `builder.config.ts`:**
+```plain
+apps/web/src/data/photos-manifest.json
+apps/web/public/thumbnails/
+```
+
+`packages/data/src/photos-manifest.json` is a symlink to the generated manifest. The symlink is tracked so `@afilmory/data` can expose the manifest path without copying a large JSON file into two packages.
+
+Generated data is not source code. Do not hand-edit it; regenerate it with:
+
+```bash
+pnpm run build:manifest
+```
+
+When thumbnail fields or image variants change:
+
+```bash
+pnpm run build:manifest -- --force-thumbnails --force-manifest
+```
+
+## Cloudflare R2 Layout
+
+The production R2 sync uses one bucket plus a prefix:
+
+```plain
+s3://<CLOUDFLARE_R2_BUCKET>/photos/
+```
+
+The public URLs in the manifest use:
+
+```plain
+https://photos3.jackyw.cn/photos/
+```
+
+Keep these values separate:
+
+- `CLOUDFLARE_R2_BUCKET` is the bucket name only.
+- `R2_PHOTOS_PREFIX=photos` is set in the workflow.
+- `CLOUDFLARE_R2_ENDPOINT` is the S3 API endpoint, not the public custom domain.
+- `baseUrl` in `builder.config.ts` is the browser-facing public URL.
+
+The workflow uses `aws s3 sync --size-only --delete`. This avoids re-uploading unchanged photos after a fresh checkout changes local file timestamps. If a file is replaced with different bytes but the exact same byte size, delete the object from R2 or change the file name before redeploying.
+
+## Supported Providers
+
+### Local
+
+Use local storage for this project, local development, and self-hosted workflows.
 
 ```ts
-import { defineBuilderConfig } from '@afilmory/builder'
+export default defineBuilderConfig(() => ({
+  storage: {
+    provider: 'local',
+    basePath: './photos',
+    baseUrl: 'https://cdn.example.com/photos/',
+    excludeRegex: '^incoming($|/.*)',
+  },
+}))
+```
 
+You can also copy originals into the frontend static directory:
+
+```ts
+export default defineBuilderConfig(() => ({
+  storage: {
+    provider: 'local',
+    basePath: './photos',
+    distPath: './apps/web/public/originals',
+    baseUrl: '/originals/',
+  },
+}))
+```
+
+### S3-Compatible
+
+Use S3-compatible storage when the builder should read directly from object storage.
+
+```ts
 export default defineBuilderConfig(() => ({
   storage: {
     provider: 's3',
     bucket: 'your-photos-bucket',
     region: 'us-east-1',
+    endpoint: process.env.S3_ENDPOINT,
     accessKeyId: process.env.S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
     prefix: 'photos/',
-    customDomain: 'cdn.yourdomain.com',
+    customDomain: 'cdn.example.com',
   },
 }))
 ```
 
-Because `builder.config.ts` is TypeScript, you can read secrets from environment variables instead of committing them:
+Store credentials in environment variables, never in committed config.
 
-```bash
-S3_ACCESS_KEY_ID=your_access_key_id
-S3_SECRET_ACCESS_KEY=your_secret_access_key
-```
+### GitHub
 
-### GitHub Storage
-
-GitHub storage leverages Git repositories for photo storage, ideal for static sites, small galleries, or when you want version control for your photos.
-
-**Features:**
-
-- ✅ Free storage space (GitHub repository limit 1GB)
-- ✅ Global CDN support via raw.githubusercontent.com
-- ✅ Version control for your photos
-- ✅ Public access without authentication
-- ⚠️ GitHub API rate limits apply
-- ⚠️ Not suitable for large files or frequent updates
-
-**Configuration in `builder.config.ts`:**
+Use GitHub storage for small public galleries or demos where repository limits and API rate limits are acceptable.
 
 ```ts
 export default defineBuilderConfig(() => ({
@@ -88,56 +146,20 @@ export default defineBuilderConfig(() => ({
 }))
 ```
 
-**Environment Variables:**
+For private repositories, use a fine-grained token with the minimum required Contents permissions.
 
-```bash
-GIT_TOKEN=ghp_your_github_personal_access_token
-```
+### Eagle
 
-**Setup Steps:**
-
-1. **Create GitHub Repository**
-
-   ```bash
-   git clone https://github.com/your-username/photo-gallery.git
-   cd photo-gallery
-   mkdir photos
-   ```
-
-2. **Get GitHub Access Token** (optional but recommended)
-   - Visit GitHub Settings > Developer settings > Personal access tokens
-   - Create new Fine-grained personal access token
-   - Grant "Contents" permission (read/write) to your repository
-
-3. **Required Permissions:**
-   - `Contents: Read and write` - for uploading processed photos
-   - `Metadata: Read` - for repository access
-
-### Eagle Storage
-
-Eagle storage integrates directly with an existing Eagle 4 desktop library, making it ideal for teams that already curate assets in Eagle and want to publish selected photos without additional uploads.
-
-**Features:**
-
-- ✅ No upload step: reads directly from the Eagle library
-- ✅ Flexible filtering: include or exclude by folder (with optional subfolders) and tags
-- ✅ Automatic publishing: copies originals to a public directory on demand
-- ⚠️ Requires absolute paths for `libraryPath` and `distPath`
-- ⚠️ Only Eagle 4.x is validated; other versions may require testing
-
-**Configuration in `builder.config.ts`:**
+Use Eagle storage when publishing selected assets from an Eagle 4 desktop library.
 
 ```ts
 export default defineBuilderConfig(() => ({
   storage: {
     provider: 'eagle',
     libraryPath: '/Users/alice/Pictures/Eagle.library',
-    distPath: '/Users/alice/workspaces/afilmory/apps/web/public/originals',
+    distPath: '/Users/alice/workspaces/gallery/apps/web/public/originals',
     baseUrl: '/originals/',
-    include: [
-      { type: 'folder', name: 'Published', includeSubfolder: true },
-      { type: 'tag', name: 'Featured' },
-    ],
+    include: [{ type: 'folder', name: 'Published', includeSubfolder: true }],
     exclude: [{ type: 'tag', name: 'Private' }],
     folderAsTag: true,
     omitTagNamesInMetadata: ['Temp'],
@@ -145,226 +167,32 @@ export default defineBuilderConfig(() => ({
 }))
 ```
 
-**Setup Steps:**
+## Processing Pipeline
 
-1. **Locate the Eagle library**: copy the absolute path shown in Eagle → Preferences → Library.
-2. **Choose a distribution path (optional)**: The original images will be copied to `distPath` during the build process (defaults to `<workdir>/public/originals`).
-3. **Align URLs**: set `baseUrl` to match how the frontend serves `distPath` (defaults to `/originals/`).
-4. **Refine filters (optional)**: use `include` and `exclude` rules to control which assets are exported.
+For each supported image, the builder performs:
 
-**Rule Notes:**
+1. storage scan and path normalization
+2. format detection
+3. EXIF/GPS/camera/lens metadata extraction
+4. Live Photo and Motion Photo detection
+5. browser-friendly image preparation when needed
+6. thumbnail and Thumbhash generation
+7. tone analysis
+8. manifest merge through configured plugins
+9. manifest save and stale-thumbnail cleanup
 
-- Leaving `include` empty processes every supported image in the library.
-- `exclude` overrides inclusion rules when both match a single asset.
-- `folder` rules use folder names (not full paths); enabling `includeSubfolder` recursively matches children.
-- `tag` rules are case-sensitive and match Eagle tags.
+## Provider Comparison
 
-### Local File System
+| Provider | Best for                                              | Notes                                                             |
+| -------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
+| Local    | This repository, local builds, private photo checkout | Fast and simple; public delivery is handled separately by R2 sync |
+| S3       | Direct object-storage source                          | Requires credentials and network access during manifest build     |
+| GitHub   | Small public galleries or demos                       | Repository size and API limits apply                              |
+| Eagle    | Publishing curated desktop library assets             | Requires an Eagle 4 library path and URL/static-output alignment  |
 
-Local storage is suitable for development, testing, or self-hosted deployments where photos are stored on the same server.
+## Security Notes
 
-**Features:**
-
-- ✅ No external dependencies
-- ✅ Fast access speeds
-- ✅ Complete private control
-- ✅ Recursive directory scanning
-- ✅ Live Photos detection support
-- ⚠️ Requires proper file system permissions
-- ⚠️ Not suitable for distributed deployments
-
-**Configuration in `builder.config.ts`:**
-
-Self-hosted original image (manually serve to `basePath`):
-
-```ts
-import { defineBuilderConfig } from '@afilmory/builder'
-export default defineBuilderConfig(() => ({
-  storage: {
-    provider: 'local',
-    basePath: './photos',
-    baseUrl: 'http://example.com:3000/photos/',
-  },
-}))
-```
-
-Hosted with frontend (serve via app static assets):
-
-```ts
-export default defineBuilderConfig(() => ({
-  storage: {
-    provider: 'local',
-    basePath: './photos',
-    distPath: './apps/web/public/originals',
-    baseUrl: '/originals/',
-  },
-}))
-```
-
-Use when you want originals deployed alongside your frontend’s static assets. On initialization/build, files from `basePath` are copied to `distPath` (overwriting same-named files).
-
-## Photo Processing Workflow
-
-### Image Processing Pipeline
-
-When photos are processed, Afilmory performs these operations:
-
-1. **Format Detection** - Identifies HEIC, TIFF, RAW, and standard formats
-2. **EXIF Extraction** - Extracts camera metadata, GPS data, and Fujifilm film recipes
-3. **Format Conversion** - Converts formats such as HEIC, TIFF, and BMP to browser-friendly image data when needed
-4. **Thumbnail Generation** - Creates responsive `360w` and `640w` WebP thumbnails plus a `640w` JPEG fallback
-5. **Thumbhash Placeholder Generation** - Creates compact placeholder data for smooth loading
-6. **Manifest Creation** - Generates metadata JSON for the gallery
-
-### Storage Organization
-
-Afilmory organizes files in your storage with this structure:
-
-```
-photos/
-├── 2024/
-│   ├── 01-january/
-│   │   ├── IMG_001.jpg
-│   │   ├── IMG_001.mov      # Live Photo video
-│   │   └── IMG_002.heic
-│   └── 02-february/
-│       └── sunset.jpg
-├── 2023/
-│   └── vacation/
-│       ├── beach.jpg
-│       └── mountain.png
-└── manifest.json            # Photo metadata and index
-```
-
-### Processing Commands
-
-Use these commands to manage your photo processing:
-
-```bash
-# Initial photo processing
-pnpm run build:manifest
-
-# Force rebuild all photos
-pnpm run build:manifest -- --force
-
-# Regenerate only thumbnails
-pnpm run build:manifest -- --force-thumbnails
-
-# Show resolved builder configuration
-pnpm run build:manifest -- --config
-```
-
-When the thumbnail strategy or manifest thumbnail fields change, force both thumbnail and manifest regeneration:
-
-```bash
-pnpm run build:manifest -- --force-thumbnails --force-manifest
-```
-
-The generated manifest keeps `thumbnailUrl` for backward-compatible JPEG fallback usage and adds optional `thumbnailSrcSet` and `thumbnailWebpSrcSet` fields for responsive gallery rendering.
-
-## Environment-Specific Configurations
-
-### Development Setup
-
-For local development, use local storage:
-
-```ts
-import { defineBuilderConfig } from '@afilmory/builder'
-
-export default defineBuilderConfig(() => ({
-  storage: {
-    provider: 'local',
-    basePath: './dev-photos',
-    baseUrl: 'http://localhost:1924/photos',
-  },
-}))
-```
-
-### Production Setup
-
-For production, use S3-compatible storage with CDN:
-
-```ts
-import { defineBuilderConfig } from '@afilmory/builder'
-
-export default defineBuilderConfig(() => ({
-  storage: {
-    provider: 's3',
-    bucket: 'prod-photos-bucket',
-    region: 'us-east-1',
-    accessKeyId: process.env.S3_ACCESS_KEY_ID,
-    secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    prefix: 'photos/',
-    customDomain: 'cdn.yourdomain.com',
-  },
-  system: {
-    observability: {
-      performance: {
-        worker: {
-          workerCount: 4,
-          workerConcurrency: 2,
-          useClusterMode: true,
-        },
-      },
-    },
-  },
-}))
-```
-
-## API Limitations
-
-### GitHub Storage Limits
-
-- **Unauthenticated requests**: 60 requests/hour/IP
-- **Authenticated requests**: 5,000 requests/hour/token
-- **File size**: Maximum 100MB (via API)
-- **Repository size**: Recommended not to exceed 1GB
-
-### Storage Provider Comparison
-
-| Feature          | Local                    | S3              | GitHub                    | Eagle                    |
-| ---------------- | ------------------------ | --------------- | ------------------------- | ------------------------ |
-| Storage Space    | Depends on disk          | Pay-as-you-go   | Repository-limited        | Depends on local library |
-| CDN              | Manual setup             | External/CDN    | raw.githubusercontent.com | Manual/static output     |
-| API Limits       | None                     | Provider limits | GitHub API limits         | None                     |
-| Use Case         | Development, self-hosted | Production      | Small projects, demos     | Eagle library publishing |
-| Setup Complexity | Minimal                  | Medium          | Simple                    | Medium                   |
-
-## Security Considerations
-
-### S3 Bucket Policies
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": "*",
-      "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::your-bucket/photos/*"
-    }
-  ]
-}
-```
-
-### GitHub Repository Settings
-
-- Set repository to public for image access
-- Use fine-grained personal access tokens
-- Limit token permissions to specific repositories
-
-### Environment Variables
-
-Store sensitive credentials securely:
-
-```bash
-# Use environment-specific .env files
-# .env.production
-S3_ACCESS_KEY_ID=prod_access_key
-S3_SECRET_ACCESS_KEY=prod_secret_key
-
-# .env.development
-S3_ACCESS_KEY_ID=dev_access_key
-S3_SECRET_ACCESS_KEY=dev_secret_key
-```
+- Never commit storage tokens or private photo files.
+- Reject symlinks before publishing local photo trees; the GitHub workflow already does this.
+- Keep `incoming/` excluded from the manifest and R2 sync.
+- Scope GitHub and S3/R2 tokens to the minimum required repositories or buckets.

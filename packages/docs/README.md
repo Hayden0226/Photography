@@ -1,6 +1,6 @@
 # @afilmory/docs
 
-Documentation site for Jacky's Photography. It is a Vite, React, and MDX static site that documents this repository's photo pipeline, storage setup, performance notes, and deployment workflows.
+Documentation site for Jacky's Photography. It is a static Vite + React + MDX app that documents this repository's photo pipeline, storage setup, performance decisions, deployment workflow, and maintenance conventions.
 
 ## Commands
 
@@ -22,7 +22,7 @@ pnpm preview
 pnpm create:doc
 ```
 
-`pnpm build` runs the client build, SSR/static rendering, and final output processing.
+`pnpm docs:build` runs the client build, SSR/static rendering, route generation, table-of-contents extraction, and final output processing.
 
 ## Structure
 
@@ -31,13 +31,16 @@ packages/docs/
 ├── contents/              # MDX documentation pages
 │   ├── index.mdx          # Project overview
 │   ├── docs-site.mdx      # Docs maintenance guide
+│   ├── photo-metadata/    # Manual metadata and SEO workflow
 │   ├── performance/       # Loading and performance notes
 │   ├── storage/           # Builder storage providers
-│   └── deployment/        # Platform deployment guides
-├── plugins/               # Route and table-of-contents Vite plugins
+│   └── deployment/        # Deployment guides
+├── plugins/               # Route, heading, and table-of-contents plugins
 ├── scripts/               # Static output processing
-└── src/                   # React app, components, styles, generated routes
+└── src/                   # React app, styles, components, generated routes
 ```
+
+The old Vite sample asset has been removed; keep `src/assets/` out unless the docs UI truly needs a committed asset.
 
 ## Routing
 
@@ -45,33 +48,36 @@ Routes are generated from `contents/`:
 
 - `contents/index.mdx` -> `/`
 - `contents/storage/index.mdx` -> `/storage`
-- `contents/deployment/github-pages.mdx` -> `/deployment/github-pages`
+- `contents/photo-metadata/index.mdx` -> `/photo-metadata`
+- `contents/deployment/github-action.mdx` -> `/deployment/github-action`
 
 The generator writes `src/routes.ts` and `src/routes.json`; do not edit those files by hand.
 
 ## Writing Docs
 
-Each content page should include frontmatter:
+Each page must include frontmatter:
 
 ```yaml
 ---
 title: Page Title
 description: Short page description.
-createdAt: 2026-04-29T00:00:00+08:00
-lastModified: 2026-04-29T00:00:00+08:00
+createdAt: 2026-05-25T00:00:00+01:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 ```
 
 Keep `lastModified` current. The repo hook runs `pnpm update:lastmodified` for staged Markdown and MDX files, and the script can also be run manually with file paths.
 
-Use `pnpm create:doc` when adding a new page. It scaffolds frontmatter and places the file under `packages/docs/contents/`.
+Use `pnpm create:doc` for new pages. It scaffolds frontmatter and places the file under `packages/docs/contents/`.
 
-## Content Guidelines
+## Content Rules
 
-- Keep examples specific to this workspace: Node.js 24, pnpm 10.19.0, React 19, Vite, and the current `builder.config.ts`.
-- Document the static SPA output path, `apps/web/dist/`, and the mirrored root `web/` output used by CI.
-- Do not describe `photos/` as sample or reusable media; those files are personal copyrighted works.
-- Prefer concise operational docs over generic framework explanations.
+- Match this repository, not upstream Afilmory in general.
+- Keep examples aligned with Node.js 24, pnpm 10.19.0, React 19, Vite, and the current `builder.config.ts`.
+- Describe the current manifest flow: builder writes `apps/web/src/data/photos-manifest.json`; `packages/data/src/photos-manifest.json` is a symlink to that file.
+- Document `apps/web/dist/` as the web output and `Jackyhq/Photography-Web` as the mirrored deployment repository.
+- Do not describe `photos/` as sample media. It is a private photo checkout and contains personal copyrighted works.
+- Prefer short operational docs over generic framework explanations.
 
 ## Verification
 
@@ -79,4 +85,4 @@ Use `pnpm create:doc` when adding a new page. It scaffolds frontmatter and place
 pnpm docs:build
 ```
 
-Run this before publishing documentation changes to catch MDX, route generation, and static rendering issues.
+Run this before publishing documentation changes to catch MDX syntax, route generation, table-of-contents extraction, and static rendering issues.

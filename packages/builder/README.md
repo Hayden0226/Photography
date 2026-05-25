@@ -1,167 +1,116 @@
-# Afilmory Builder
+# @afilmory/builder
 
-这是照片库构建系统的核心模块，采用模块化设计，将不同功能分离到各自的模块中。
+`@afilmory/builder` 是 Jacky's Photography 的照片处理与 manifest 生成包。它在 `pnpm run build:manifest`、`pnpm dev` 和 `pnpm build` 的预检阶段运行，负责把私有照片源转换成前端可直接消费的静态数据。
 
-## 架构概览
+## 当前职责
 
+- 扫描配置的照片存储，支持 `local`、`s3`、`github` 和 `eagle`。
+- 读取 EXIF、GPS、相机、镜头、Fujifilm recipe、Live Photo 和 Motion Photo 信息。
+- 处理 JPEG、PNG、HEIC/HEIF、TIFF、BMP 等常见格式。
+- 生成 `360w`/`640w` WebP 缩略图、`640w` JPEG fallback、Thumbhash 和色调分析数据。
+- 维护 `apps/web/src/data/photos-manifest.json`，并清理不再使用的缩略图。
+- 通过插件在保存 manifest 前后扩展流程，例如合并 `photo-descriptions.json` 中的人工标题、双语描述和标签。
+
+`packages/data/src/photos-manifest.json` 是一个被 Git 追踪的 symlink，指向 `apps/web/src/data/photos-manifest.json`。构建器仍然写入 web app 的生成目录，`@afilmory/data` 和 Vite 插件通过这个 symlink 读取同一份数据。
+
+## 目录结构
+
+```plain
+src/builder/              # AfilmoryBuilder 编排扫描、处理、插件和保存
+src/cli.ts                # builder CLI，解析 --force 等参数
+src/config/               # defineBuilderConfig、默认值和配置加载
+src/image/                # sharp/exif/thumbnail/blurhash/histogram
+src/manifest/             # manifest 读取、迁移、保存和删除检测
+src/media/                # 媒体 ID 与类型辅助逻辑
+src/photo/                # 单张照片处理流水线、缓存、Live Photo 检测
+src/plugins/              # builder 插件、存储插件、缩略图存储插件
+src/s3/                   # S3 client helper
+src/storage/              # StorageProvider 接口、工厂和 provider 实现
+src/types/                # BuilderConfig、manifest、photo 类型
+src/video/                # 视频处理 helper
+src/worker/               # cluster/worker 并发处理
 ```
-src/core/
-├── types/          # 类型定义
-│   └── photo.ts    # 照片相关类型
-├── logger/         # 日志系统
-│   └── index.ts    # 统一日志器
-├── s3/             # S3 存储操作
-│   ├── client.ts   # S3 客户端配置
-│   └── operations.ts # S3 操作（上传、下载、列表）
-├── image/          # 图像处理
-│   ├── processor.ts # 图像预处理和元数据
-│   ├── blurhash.ts # Blurhash 生成
-│   ├── thumbnail.ts # 缩略图生成
-│   └── exif.ts     # EXIF 数据提取
-├── photo/          # 照片处理
-│   ├── info-extractor.ts # 照片信息提取
-│   └── processor.ts # 照片处理主逻辑
-├── manifest/       # Manifest 管理
-│   └── manager.ts  # Manifest 读写和管理
-├── worker/         # 并发处理
-│   └── pool.ts     # Worker 池管理
-├── builder/        # 主构建器
-│   └── index.ts    # 构建流程编排
-└── index.ts        # 模块入口
-```
 
-## 模块说明
-
-### 1. 类型定义 (`types/`)
-
-- `PhotoInfo`: 照片基本信息
-- `ImageMetadata`: 图像元数据
-- `PhotoManifestItem`: Manifest 项目
-- `ProcessPhotoResult`: 处理结果
-- `ThumbnailResult`: 缩略图生成结果，包含 JPEG fallback 与响应式 WebP srcset
-
-### 2. 日志系统 (`logger/`)
-
-- 统一的日志管理
-- 支持不同模块的标签化日志
-- Worker 专用日志器
-
-### 3. S3 存储操作 (`s3/`)
-
-- **client.ts**: S3 客户端配置和连接
-- **operations.ts**: 图片下载、列表获取、URL 生成
-
-### 4. 图像处理 (`image/`)
-
-- **processor.ts**: 图像预处理、HEIC 转换、元数据提取
-- **blurhash.ts**: Blurhash 生成算法
-- **thumbnail.ts**: 生成 `360w`/`640w` WebP 缩略图、`640w` JPEG fallback，并维护 manifest 需要的 srcset 字段
-- **exif.ts**: EXIF 数据提取和清理
-
-### 5. 照片处理 (`photo/`)
-
-- **info-extractor.ts**: 从文件名和 EXIF 提取照片信息
-- **processor.ts**: 照片处理主流程，整合所有处理步骤
-
-### 6. Manifest 管理 (`manifest/`)
-
-- **manager.ts**: Manifest 文件的读取、保存、更新检测
-
-### 7. 并发处理 (`worker/`)
-
-- **pool.ts**: Worker 池管理，支持并发处理
-
-### 8. 主构建器 (`builder/`)
-
-- **index.ts**: 整个构建流程的编排和协调
+旧文档中提到的 `src/core/` 已不存在；不要再按旧路径新增模块。
 
 ## 使用方式
 
-### 基本使用
+从仓库根目录运行：
 
-```typescript
-import { buildManifest } from './src/core/index.js'
-
-await buildManifest({
-  isForceMode: false,
-  isForceManifest: false,
-  isForceThumbnails: false,
-  concurrencyLimit: 10,
-})
+```bash
+pnpm run build:manifest
+pnpm run build:manifest -- --force
+pnpm run build:manifest -- --force-thumbnails
+pnpm run build:manifest -- --force-manifest
+pnpm run build:manifest -- --config
 ```
 
-### 单独使用模块
+包内命令：
 
-```typescript
-import { getImageFromS3, generateThumbnailAndBlurhash, extractExifData } from './src/core/index.js'
-
-// 下载图片
-const buffer = await getImageFromS3('path/to/image.jpg')
-
-// 生成缩略图
-const result = await generateThumbnailAndBlurhash(buffer, 'photo-id', 1920, 1080)
-
-// 提取 EXIF
-const exif = await extractExifData(buffer)
+```bash
+pnpm --filter @afilmory/builder cli
+pnpm --filter @afilmory/builder build
 ```
 
-## 特性
+CLI 启动时会检查 Perl，因为 `exiftool-vendored` 依赖 Perl 运行时。默认会在 TTY 中使用 TUI 进度显示；可传入 `--no-ui` 使用传统日志输出。
 
-### 1. 模块化设计
+## 配置
 
-- 每个功能模块独立，便于测试和维护
-- 清晰的依赖关系
-- 易于扩展新功能
+仓库根目录的 `builder.config.ts` 是当前项目入口：
 
-### 2. 类型安全
+```ts
+import { defineBuilderConfig } from '@afilmory/builder'
 
-- 完整的 TypeScript 类型定义
-- 编译时错误检查
-
-### 3. 性能优化
-
-- Worker 池并发处理
-- Sharp 实例复用
-- 增量更新支持
-
-### 4. 错误处理
-
-- 统一的错误处理机制
-- 详细的日志记录
-- 优雅的失败处理
-
-### 5. 配置灵活
-
-- 支持多种运行模式
-- 可配置的并发数
-- 环境变量配置
-
-## 扩展指南
-
-### 添加新的图像处理功能
-
-1. 在 `image/` 目录下创建新模块
-2. 在 `index.ts` 中导出新功能
-3. 在 `photo/processor.ts` 中集成
-
-### 添加新的存储后端
-
-1. 在 `s3/` 目录下创建新的操作模块
-2. 实现相同的接口
-3. 在配置中切换
-
-### 自定义日志器
-
-```typescript
-import { logger } from './src/core/index.js'
-
-const customLogger = logger.worker(1).withTag('CUSTOM')
-customLogger.info('自定义日志')
+export default defineBuilderConfig(() => ({
+  storage: {
+    provider: 'local',
+    basePath: './photos',
+    baseUrl: 'https://photos3.jackyw.cn/photos/',
+    excludeRegex: '^incoming($|/.*)',
+  },
+  plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],
+}))
 ```
 
-## 性能考虑
+常用配置区域：
 
-- 使用 Worker 池避免过度并发
-- Sharp 实例复用减少内存开销
-- 增量更新减少不必要的处理
-- 缩略图、响应式 WebP 变体和 Thumbhash 缓存复用
+- `storage`: 照片来源。当前项目使用本地私有照片 checkout。
+- `plugins`: 构建插件。当前项目使用 `plugins/builder/photo-descriptions.ts` 合并人工元数据。
+- `system.processing.defaultConcurrency`: 默认处理并发数。
+- `system.processing.enableLivePhotoDetection`: 是否检测 Live Photo。
+- `system.processing.digestSuffixLength`: 当照片 ID 冲突时追加摘要后缀的长度。
+- `system.observability.performance.worker`: worker 数、超时、cluster 模式和 worker 内并发。
+
+## 输出
+
+主要生成物：
+
+```plain
+apps/web/src/data/photos-manifest.json
+apps/web/public/thumbnails/<photo-id>.jpg
+apps/web/public/thumbnails/<photo-id>-360.webp
+apps/web/public/thumbnails/<photo-id>-640.webp
+```
+
+这些文件是构建产物，通常不应手动编辑。若缩略图策略或 manifest 字段变更，使用：
+
+```bash
+pnpm run build:manifest -- --force-thumbnails --force-manifest
+```
+
+## 插件
+
+Builder 插件通过 `beforeBuild`、`beforeSaveManifest`、`afterBuild` 等 hook 扩展流程。当前项目的人工描述插件位于：
+
+```plain
+plugins/builder/photo-descriptions.ts
+```
+
+该插件读取根目录 `photo-descriptions.json`，按照片 storage key 匹配条目，并将人工标题、`zh-CN`/`en` 描述和标签合并进 manifest。
+
+## 维护注意
+
+- 保持存储 provider 逻辑在 `src/storage/providers/`，不要把 provider 细节塞进 builder 主流程。
+- 单张照片处理逻辑优先放在 `src/photo/` 或 `src/image/`，按职责拆分。
+- 修改 manifest schema 时，同步更新 `src/manifest/version.ts`、迁移逻辑、`packages/data` 类型和 web app 使用方。
+- 不要把 `apps/web/src/data/photos-manifest.json` 或 `apps/web/public/thumbnails/` 当作源文件维护。

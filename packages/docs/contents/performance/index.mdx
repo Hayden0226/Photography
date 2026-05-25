@@ -2,7 +2,7 @@
 title: Performance
 description: Mobile-first loading and image performance notes for Jacky's Photography.
 createdAt: 2026-04-27T00:00:00+01:00
-lastModified: 2026-05-10T05:45:29+08:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 
 # Performance
@@ -70,6 +70,7 @@ After changing thumbnail formats, manifest fields, or first-screen loading behav
 pnpm run build:manifest -- --force-thumbnails --force-manifest
 pnpm --filter web type-check
 pnpm build
+pnpm run bundle:budget
 ```
 
 Use `pnpm --filter web analyze` when checking chunk boundaries. The home route should not eagerly include HEIC/TIFF converter chunks, command palette code, or the photo detail route.
@@ -85,3 +86,4 @@ Before publishing a performance change, check:
 - `index.html` contains image preloads for the first two homepage thumbnails.
 - `/photos/<photo-id>/index.html` files contain photo-specific title, description, canonical URL, and social image tags.
 - `registerSW.js` is loaded with `defer`.
+- `pnpm run bundle:budget` passes after production build output exists.

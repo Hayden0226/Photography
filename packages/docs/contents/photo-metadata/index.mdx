@@ -2,7 +2,7 @@
 title: Photo Metadata
 description: Manual photo descriptions, tags, manifest merge behavior, and SEO metadata workflow.
 createdAt: 2026-05-09T00:00:00+01:00
-lastModified: 2026-05-10T05:45:29+08:00
+lastModified: 2026-05-25T00:00:00+01:00
 ---
 
 # Photo Metadata
@@ -49,7 +49,7 @@ The current editorial convention is to keep manual tags short and focused, usual
 
 ## Sync Workflow
 
-Run the builder first so the manifest reflects the current photo set:
+Run the builder first so `apps/web/src/data/photos-manifest.json` reflects the current photo set:
 
 ```bash
 pnpm run build:manifest
@@ -61,7 +61,7 @@ Then sync the sidecar file:
 pnpm run photos:descriptions:sync
 ```
 
-The sync script reads `apps/web/src/data/photos-manifest.json`, creates missing sidecar entries, preserves existing `title`, `descriptions`, and `tags`, and refreshes `aiContext` from the latest manifest data. By default it keeps stale entries that are no longer present in the manifest.
+The sync script reads `apps/web/src/data/photos-manifest.json`, creates missing sidecar entries, preserves existing `title`, `descriptions`, and `tags`, and refreshes `aiContext` from the latest manifest data. `packages/data/src/photos-manifest.json` is only a symlink to this generated file, so do not edit either manifest path by hand.
 
 Use pruning only when old sidecar entries should be removed:
 
