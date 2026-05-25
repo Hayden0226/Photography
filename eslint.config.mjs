@@ -10,7 +10,9 @@ import recursiveSort from './plugins/eslint/eslint-recursive-sort.js'
 const rootIgnores = globalIgnores([
   'apps/ssr/src/index.html.ts',
   'apps/ssr/public/**',
+  'apps/web/src/data/photos-manifest.json',
   'apps/web/public/**',
+  'packages/data/src/photos-manifest.json',
   'packages/docs/public/**',
   'web/**',
 ])
@@ -106,7 +108,14 @@ const hyobanConfig = await defineConfig(
   },
 
   // Redundant but harmless: keep a local ignore in case this block is used standalone somewhere
-  globalIgnores(['apps/ssr/src/index.html.ts', 'apps/ssr/public/**', 'apps/web/public/**', 'packages/docs/public/**']),
+  globalIgnores([
+    'apps/ssr/src/index.html.ts',
+    'apps/ssr/public/**',
+    'apps/web/src/data/photos-manifest.json',
+    'apps/web/public/**',
+    'packages/data/src/photos-manifest.json',
+    'packages/docs/public/**',
+  ]),
 )
 
 export default [
