@@ -9,7 +9,7 @@ import { usePageMeta } from '~/hooks/usePageMeta'
 import { useContextPhotos, usePhotoViewer } from '~/hooks/usePhotoViewer'
 import { useTitle } from '~/hooks/useTitle'
 import { deriveAccentFromSources } from '~/lib/color'
-import { getLocalizedPhotoDescription } from '~/lib/photo-description'
+import { getLocalizedPhotoDescription, getPhotoAltText } from '~/lib/photo-description'
 import { getPhotoDetailPath } from '~/lib/photo-route'
 
 const PhotoViewer = lazy(() =>
@@ -29,10 +29,13 @@ export const Component = () => {
     [ref],
   )
   const currentPhoto = photos[photoViewer.currentIndex]
-  useTitle(currentPhoto?.title || 'Not Found')
+  const pageTitle = currentPhoto?.title || currentPhoto?.id || 'Not Found'
+  const pageDescription = currentPhoto ? getLocalizedPhotoDescription(currentPhoto, i18n.language) : ''
+
+  useTitle(pageTitle)
   usePageMeta({
-    title: currentPhoto?.title || currentPhoto?.id,
-    description: currentPhoto ? getLocalizedPhotoDescription(currentPhoto, i18n.language) : undefined,
+    title: currentPhoto ? pageTitle : undefined,
+    description: pageDescription || undefined,
     image: currentPhoto?.thumbnailUrl || currentPhoto?.originalUrl,
     url: currentPhoto ? getPhotoDetailPath(currentPhoto.id) : undefined,
     type: currentPhoto?.mediaType === 'video' ? 'video.other' : 'article',
@@ -90,29 +93,37 @@ export const Component = () => {
   }
 
   return (
-    <RootPortal>
-      <RootPortalProvider value={rootPortalValue}>
-        <RemoveScroll
-          style={
-            {
-              ...(accentColor ? { '--color-accent': accentColor } : {}),
-            } as React.CSSProperties
-          }
-          ref={setRef}
-          className={clsx(photoViewer.isOpen ? 'fixed inset-0 z-9999' : 'pointer-events-none fixed inset-0 z-40')}
-        >
-          <Suspense fallback={null}>
-            <PhotoViewer
-              photos={photos}
-              currentIndex={photoViewer.currentIndex}
-              isOpen={photoViewer.isOpen}
-              triggerElement={photoViewer.triggerElement}
-              onClose={photoViewer.closeViewer}
-              onIndexChange={photoViewer.goToIndex}
-            />
-          </Suspense>
-        </RemoveScroll>
-      </RootPortalProvider>
-    </RootPortal>
+    <>
+      <article className="sr-only" aria-labelledby="photo-detail-heading">
+        <h1 id="photo-detail-heading">{pageTitle}</h1>
+        {pageDescription && <p>{pageDescription}</p>}
+        <p>{getPhotoAltText(currentPhoto, i18n.language)}</p>
+      </article>
+
+      <RootPortal>
+        <RootPortalProvider value={rootPortalValue}>
+          <RemoveScroll
+            style={
+              {
+                ...(accentColor ? { '--color-accent': accentColor } : {}),
+              } as React.CSSProperties
+            }
+            ref={setRef}
+            className={clsx(photoViewer.isOpen ? 'fixed inset-0 z-9999' : 'pointer-events-none fixed inset-0 z-40')}
+          >
+            <Suspense fallback={null}>
+              <PhotoViewer
+                photos={photos}
+                currentIndex={photoViewer.currentIndex}
+                isOpen={photoViewer.isOpen}
+                triggerElement={photoViewer.triggerElement}
+                onClose={photoViewer.closeViewer}
+                onIndexChange={photoViewer.goToIndex}
+              />
+            </Suspense>
+          </RemoveScroll>
+        </RootPortalProvider>
+      </RootPortal>
+    </>
   )
 }

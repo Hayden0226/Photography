@@ -16,10 +16,12 @@ export const Component = () => {
   useStateRestoreFromUrl()
   useSyncStateToUrl()
 
-  // const location = useLocation()
+  const { photoId } = useParams()
+  const isDirectPhotoRouteRef = useRef(Boolean(photoId))
   const isMobile = useMobile()
 
   const photos = usePhotos()
+  const shouldRenderGallery = !photoId || !isDirectPhotoRouteRef.current
 
   return (
     <>
@@ -38,14 +40,18 @@ export const Component = () => {
           />
         )}
 
-        {isMobile ? (
-          <ScrollElementContext value={document.body}>
-            <MasonryRoot />
-          </ScrollElementContext>
-        ) : (
-          <ScrollArea rootClassName={'h-svh w-full'} viewportClassName="size-full">
-            <MasonryRoot />
-          </ScrollArea>
+        {shouldRenderGallery && (
+          <>
+            {isMobile ? (
+              <ScrollElementContext value={document.body}>
+                <MasonryRoot />
+              </ScrollElementContext>
+            ) : (
+              <ScrollArea rootClassName={'h-svh w-full'} viewportClassName="size-full">
+                <MasonryRoot />
+              </ScrollArea>
+            )}
+          </>
         )}
 
         <Outlet />
