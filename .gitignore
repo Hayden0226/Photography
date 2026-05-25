@@ -36,6 +36,10 @@ Thumbs.db
 npm-debug.log*
 yarn-debug.log*
 
+# Test outputs
+test-results/
+playwright-report/
+
 # Project Specific
 photos/
 public/og-image-*.png

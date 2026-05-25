@@ -2,6 +2,7 @@ import { useScrollViewElement } from '@afilmory/ui'
 import { clsxm, Spring } from '@afilmory/utils'
 import { useAtomValue } from 'jotai'
 import { AnimatePresence, m } from 'motion/react'
+import type { RefObject } from 'react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { gallerySettingAtom } from '~/atoms/app'
@@ -48,7 +49,8 @@ export const MasonryRoot = () => {
   const { columns } = useAtomValue(gallerySettingAtom)
   const hasAnimatedRef = useRef(false)
   const [showFloatingActions, setShowFloatingActions] = useState(false)
-  const [containerWidth, setContainerWidth] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const containerWidth = useElementWidth(containerRef)
 
   const photos = useContextPhotos()
   const masonryRef = useRef<MasonryRef>(null)
@@ -63,20 +65,6 @@ export const MasonryRoot = () => {
 
   const [activePanel, setActivePanel] = useState<PanelType | null>(null)
   const masonryItems = useMemo(() => (isMobile ? photos : [MasonryHeaderItem.default, ...photos]), [photos, isMobile])
-
-  // 监听容器宽度变化
-  useEffect(() => {
-    const updateContainerWidth = () => {
-      setContainerWidth(window.innerWidth)
-    }
-
-    updateContainerWidth()
-    window.addEventListener('resize', updateContainerWidth)
-
-    return () => {
-      window.removeEventListener('resize', updateContainerWidth)
-    }
-  }, [])
 
   // 动态计算列宽
   const columnWidth = useMemo(() => {
@@ -149,7 +137,7 @@ export const MasonryRoot = () => {
         </div>
       )}
 
-      <div className="p-1 **:select-none! lg:px-0 lg:pb-0">
+      <div ref={containerRef} className="p-1 **:select-none! lg:px-0 lg:pb-0">
         {isMobile && <MasonryHeaderMasonryItem className="mb-1" />}
         <Masonry<MasonryItemType>
           ref={masonryRef}
@@ -304,4 +292,32 @@ const FloatingActionBar = ({ showFloatingActions }: { showFloatingActions: boole
       )}
     </AnimatePresence>
   )
+}
+
+const useElementWidth = (ref: RefObject<HTMLElement | null>) => {
+  const [width, setWidth] = useState(0)
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    const updateWidth = () => {
+      setWidth(element.clientWidth)
+    }
+
+    updateWidth()
+
+    if (typeof ResizeObserver === 'undefined') {
+      return
+    }
+
+    const resizeObserver = new ResizeObserver(updateWidth)
+    resizeObserver.observe(element)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [ref])
+
+  return width
 }
