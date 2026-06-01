@@ -11,6 +11,11 @@ const ALLOWED_MEDIA_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.heic', '.mo
 
 async function standardize() {
   try {
+    const categories = await getCanonicalCategories()
+    const categorySet = new Set(categories)
+
+    await ensureIncomingCategoryDirectories(categories)
+
     // 1. 获取 incoming 目录下的所有子项（文件夹和文件）
     const incomingEntries = await readdir(INCOMING_DIR, { withFileTypes: true })
 
@@ -21,6 +26,13 @@ async function standardize() {
       if (entry.isDirectory()) {
         // 2a. 处理分类文件夹：photos/incoming/[Category] -> photos/[Category]
         const category = entry.name
+        if (!categorySet.has(category)) {
+          consola.warn(
+            `跳过未知 incoming 分类：${path.join('incoming', category)}。请改名为现有分类之一：${categories.join(', ')}`,
+          )
+          continue
+        }
+
         const categoryIncomingDir = path.join(INCOMING_DIR, category)
         const targetDir = path.join(PHOTOS_ROOT, category)
 
@@ -35,6 +47,23 @@ async function standardize() {
     consola.error('标准化流程失败:', err)
   } finally {
     await exiftool.end()
+  }
+}
+
+async function getCanonicalCategories(): Promise<string[]> {
+  const entries = await readdir(PHOTOS_ROOT, { withFileTypes: true })
+
+  return entries
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.') && entry.name !== 'incoming')
+    .map((entry) => entry.name)
+    .sort((a, b) => a.localeCompare(b, 'zh-CN'))
+}
+
+async function ensureIncomingCategoryDirectories(categories: string[]) {
+  await mkdir(INCOMING_DIR, { recursive: true })
+
+  for (const category of categories) {
+    await mkdir(path.join(INCOMING_DIR, category), { recursive: true })
   }
 }
 
