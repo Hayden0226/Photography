@@ -44,7 +44,7 @@ interface PhotoDescriptionAIContext {
   categoryTags: string[]
 }
 
-const DESCRIPTIONS_PATH = path.resolve(process.cwd(), 'photo-descriptions.json')
+const DESCRIPTIONS_PATH = path.resolve(process.cwd(), 'content/photo-descriptions.json')
 const MANIFEST_PATH = path.resolve(process.cwd(), 'apps/web/src/data/photos-manifest.json')
 
 async function main() {

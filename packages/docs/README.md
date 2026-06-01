@@ -36,6 +36,7 @@ packages/docs/
 │   ├── storage/           # Builder storage providers
 │   └── deployment/        # Deployment guides
 ├── plugins/               # Route, heading, and table-of-contents plugins
+├── references/            # Supporting specs that are not generated as routes
 ├── scripts/               # Static output processing
 └── src/                   # React app, styles, components, generated routes
 ```

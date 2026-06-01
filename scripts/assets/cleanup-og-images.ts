@@ -1,5 +1,10 @@
 import { readdir, stat, unlink } from 'node:fs/promises'
-import { join } from 'node:path'
+import path, { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const REPO_ROOT = path.resolve(__dirname, '../..')
+const WEB_PUBLIC_DIR = join(REPO_ROOT, 'apps/web/public')
 
 interface FileInfo {
   name: string
@@ -8,7 +13,7 @@ interface FileInfo {
 }
 
 export async function cleanupOldOGImages(keepCount = 3) {
-  const publicDir = join(process.cwd(), 'public')
+  const publicDir = WEB_PUBLIC_DIR
 
   try {
     const files = await readdir(publicDir)

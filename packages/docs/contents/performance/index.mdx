@@ -2,7 +2,7 @@
 title: Performance
 description: Mobile-first loading and image performance notes for Jacky's Photography.
 createdAt: 2026-04-27T00:00:00+01:00
-lastModified: 2026-05-25T00:00:00+01:00
+lastModified: 2026-06-02T07:24:08+08:00
 ---
 
 # Performance
@@ -48,7 +48,7 @@ This keeps the initial viewport image budget low while preserving compatibility 
 
 Production builds also generate static HTML shells for every photo detail route at `photos/<photo-id>/index.html`. These files reuse the SPA entrypoint but replace the title, description, canonical URL, OpenGraph tags, and Twitter Card tags with photo-specific metadata.
 
-That metadata is generated from the manifest after `photo-descriptions.json` has been merged, so crawlers and link unfurlers can read localized manual descriptions before React loads. The feature adds HTML files to the static output, but it does not add extra JavaScript to the homepage path.
+That metadata is generated from the manifest after `content/photo-descriptions.json` has been merged, so crawlers and link unfurlers can read localized manual descriptions before React loads. The feature adds HTML files to the static output, but it does not add extra JavaScript to the homepage path.
 
 ## JavaScript Loading
 

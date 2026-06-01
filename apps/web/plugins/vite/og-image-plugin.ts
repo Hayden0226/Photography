@@ -1,8 +1,8 @@
 import type { Plugin } from 'vite'
 
-import { cleanupOldOGImages } from '../../../../scripts/cleanup-og-images.js'
-import { generateFavicons } from '../../../../scripts/generate-favicon.js'
-import { generateOGImage } from '../../../../scripts/generate-og-image.js'
+import { cleanupOldOGImages } from '../../../../scripts/assets/cleanup-og-images.js'
+import { generateFavicons } from '../../../../scripts/assets/generate-favicon.js'
+import { generateOGImage } from '../../../../scripts/assets/generate-og-image.js'
 
 interface OGImagePluginOptions {
   title?: string

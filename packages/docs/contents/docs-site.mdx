@@ -2,7 +2,7 @@
 title: Docs site
 description: How to maintain and publish the Jacky's Photography documentation site at docs.photo.jackyw.cn.
 createdAt: 2025-09-11T17:05:55+08:00
-lastModified: 2026-05-25T00:00:00+01:00
+lastModified: 2026-06-02T07:24:08+08:00
 ---
 
 # Docs Site
@@ -80,7 +80,7 @@ Use `pnpm create:doc` for new pages when you want scaffolded frontmatter and rou
 - Use Node.js 24, pnpm 10.19.0, React 19, Vite, and the current workspace package names in examples.
 - Describe the current manifest relationship accurately: builder writes `apps/web/src/data/photos-manifest.json`; `packages/data/src/photos-manifest.json` is a symlink to it.
 - Document `apps/web/dist/` as the web build output and `Jackyhq/Photography-Web` as the mirrored deployment repository.
-- Keep photo metadata docs aligned with `photo-descriptions.json`, `scripts/sync-photo-descriptions.ts`, and `plugins/builder/photo-descriptions.ts`.
+- Keep photo metadata docs aligned with `content/photo-descriptions.json`, `scripts/sync-photo-descriptions.ts`, and `plugins/builder/photo-descriptions.ts`.
 - Do not describe `photos/` as sample media. It is a private checkout containing copyrighted personal photos.
 - Avoid committing local generated output, `.DS_Store`, or tool conversation history.
 - When changing `packages/docs/contents/deployment/*`, verify the commands against `.github/workflows/deploy.yml` and root `package.json`.
