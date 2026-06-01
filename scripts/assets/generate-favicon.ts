@@ -1,9 +1,13 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import path, { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import sharp from 'sharp'
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const REPO_ROOT = path.resolve(__dirname, '../..')
+const LOGO_PATH = join(REPO_ROOT, 'apps/web/src/assets/brand/logo.jpg')
+const WEB_PUBLIC_DIR = join(REPO_ROOT, 'apps/web/public')
 
 // 创建圆角遮罩
 function createRoundedCornersMask(size: number, cornerRadius: number) {
@@ -16,10 +20,7 @@ function createRoundedCornersMask(size: number, cornerRadius: number) {
 }
 
 // 为图片添加圆角
-async function addRoundedCorners(
-  imageBuffer: Buffer,
-  size: number,
-): Promise<Buffer> {
+async function addRoundedCorners(imageBuffer: Buffer, size: number): Promise<Buffer> {
   // 计算圆角半径，约为尺寸的 12%
   const cornerRadius = Math.round(size * 0.12)
 
@@ -39,12 +40,12 @@ async function addRoundedCorners(
 
 // 生成不同尺寸的 favicon
 export async function generateFavicons() {
-  const logoPath = join(__dirname, '../logo.jpg')
-  const outputDir = join(process.cwd(), 'public')
+  const logoPath = LOGO_PATH
+  const outputDir = WEB_PUBLIC_DIR
 
   // 检查 logo 文件是否存在
   if (!existsSync(logoPath)) {
-    throw new Error('Logo file not found: logo.jpg')
+    throw new Error(`Logo file not found: ${path.relative(REPO_ROOT, logoPath)}`)
   }
 
   if (!existsSync(outputDir)) {
@@ -107,7 +108,7 @@ export async function generateFavicons() {
     // PWA manifest 由 vite-plugin-pwa 生成，这里不再生成重复的文件
 
     console.info(
-      `🎨 All favicons generated successfully from logo.jpg with rounded corners!`,
+      `🎨 All favicons generated successfully from ${path.relative(REPO_ROOT, logoPath)} with rounded corners!`,
     )
   } catch (error) {
     console.error('❌ Error generating favicons:', error)

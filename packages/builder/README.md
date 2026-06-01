@@ -9,7 +9,7 @@
 - 处理 JPEG、PNG、HEIC/HEIF、TIFF、BMP 等常见格式。
 - 生成 `360w`/`640w` WebP 缩略图、`640w` JPEG fallback、Thumbhash 和色调分析数据。
 - 维护 `apps/web/src/data/photos-manifest.json`，并清理不再使用的缩略图。
-- 通过插件在保存 manifest 前后扩展流程，例如合并 `photo-descriptions.json` 中的人工标题、双语描述和标签。
+- 通过插件在保存 manifest 前后扩展流程，例如合并 `content/photo-descriptions.json` 中的人工标题、双语描述和标签。
 
 `packages/data/src/photos-manifest.json` 是一个被 Git 追踪的 symlink，指向 `apps/web/src/data/photos-manifest.json`。构建器仍然写入 web app 的生成目录，`@afilmory/data` 和 Vite 插件通过这个 symlink 读取同一份数据。
 
@@ -106,7 +106,7 @@ Builder 插件通过 `beforeBuild`、`beforeSaveManifest`、`afterBuild` 等 hoo
 plugins/builder/photo-descriptions.ts
 ```
 
-该插件读取根目录 `photo-descriptions.json`，按照片 storage key 匹配条目，并将人工标题、`zh-CN`/`en` 描述和标签合并进 manifest。
+该插件读取 `content/photo-descriptions.json`，按照片 storage key 匹配条目，并将人工标题、`zh-CN`/`en` 描述和标签合并进 manifest。
 
 ## 维护注意
 

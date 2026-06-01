@@ -22,7 +22,7 @@ Jacky's Photography 是一个静态发布的个人摄影画廊。构建器会在
 - 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，移动端可回退到 DOM 查看器。
 - 照片详情：展示 EXIF、直方图、相机、镜头、标签、GPS、Live Photo、HDR 和 Fujifilm 信息。
 - 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览。
-- 人工元数据：`photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
+- 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
 - 自动部署：GitHub Actions checkout 私有照片仓库、标准化照片、同步 Cloudflare R2、构建静态站点并发布到 GitHub Pages 与部署仓库。
 
@@ -38,8 +38,10 @@ packages/sdk/             # 轻量 schema/client helper
 packages/ui/              # 共享 UI 基础组件
 packages/utils/           # 通用工具、RSS、动画、存储和二进制 helper
 packages/webgl-viewer/    # WebGL 图片查看器
+content/                  # 人工维护的照片描述和编辑元数据
 plugins/                  # builder、eslint、vite 自定义插件
-scripts/                  # 照片标准化、描述同步、OG、favicon、文档脚本
+scripts/                  # 照片标准化、描述同步、文档和维护脚本
+scripts/assets/           # favicon、OG 图和相关静态资产生成脚本
 photos/                   # 私有照片仓库 checkout，主仓库不追踪
 ```
 
@@ -135,7 +137,7 @@ export default defineBuilderConfig(() => ({
 1. 将新照片放入私有照片仓库的 `incoming/`，或直接放入目标分类目录。
 2. 运行 `pnpm run photos:standardize`。直接放在 `incoming` 根目录的文件会进入默认分类 `随手/`。
 3. 运行 `pnpm run build:manifest`，生成最新 manifest 和缩略图。
-4. 运行 `pnpm run photos:descriptions:sync` 创建或刷新 `photo-descriptions.json` 条目。
+4. 运行 `pnpm run photos:descriptions:sync` 创建或刷新 `content/photo-descriptions.json` 条目。
 5. 填写 `title`、`descriptions.zh-CN`、`descriptions.en` 和精简标签后，再运行 `pnpm run build:manifest` 合并人工元数据。
 6. 运行 `pnpm dev` 本地检查，或运行 `pnpm build` 生成生产产物。
 

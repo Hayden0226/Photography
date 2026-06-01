@@ -71,6 +71,8 @@ The production site is a pure client-side SPA. The builder runs before the web b
 - `packages/ui/` - Shared UI primitives and design-system components.
 - `packages/utils/` - Utilities for class names, animation constants, RSS, tenant helpers, backoff, and binary helpers.
 - `packages/webgl-viewer/` - WebGL image viewer used by the photo viewer.
+- `content/` - Human-maintained gallery metadata such as `content/photo-descriptions.json`.
+- `scripts/assets/` - Favicon, OpenGraph image, and static asset generation scripts.
 
 There is no `packages/components/` package in the current workspace.
 
@@ -88,6 +90,7 @@ There is no `packages/components/` package in the current workspace.
   ```
 
 - `config.json` and `site.config.ts` control site branding, author metadata, social links, map settings, and canonical URL.
+- `content/photo-descriptions.json` stores human-written titles, localized descriptions, editorial tags, and AI helper context.
 - `pnpm-workspace.yaml` defines workspace packages and shared dependency catalog versions.
 
 ### Photo Data Flow

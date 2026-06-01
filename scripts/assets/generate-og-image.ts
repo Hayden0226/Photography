@@ -1,10 +1,15 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import path, { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import sharp from 'sharp'
 
-import { buildTimePhotoLoader } from './photo-loader.js'
+import { buildTimePhotoLoader } from '../photo-loader.js'
 import { renderSVGText, wrapSVGText } from './svg-text-renderer.js'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const REPO_ROOT = path.resolve(__dirname, '../..')
+const WEB_PUBLIC_DIR = join(REPO_ROOT, 'apps/web/public')
 
 // 获取最新的照片
 async function getLatestPhotos(count = 4) {
@@ -29,7 +34,7 @@ async function downloadAndProcessThumbnail(thumbnailUrl: string, size = 150) {
   try {
     // 如果是本地路径，直接读取
     if (thumbnailUrl.startsWith('/')) {
-      const localPath = join(process.cwd(), 'public', thumbnailUrl)
+      const localPath = join(WEB_PUBLIC_DIR, thumbnailUrl.slice(1))
       if (existsSync(localPath)) {
         return await sharp(localPath).resize(size, size, { fit: 'cover' }).png().toBuffer()
       }
@@ -143,7 +148,7 @@ export async function generateOGImage(options: OGImageOptions) {
   const { title, width = 1200, height = 630, outputPath, includePhotos = true, photoCount = 4 } = options
 
   // 确保输出目录存在
-  const outputDir = join(process.cwd(), 'public')
+  const outputDir = WEB_PUBLIC_DIR
   if (!existsSync(outputDir)) {
     mkdirSync(outputDir, { recursive: true })
   }

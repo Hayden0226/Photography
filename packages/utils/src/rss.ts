@@ -1,6 +1,23 @@
-import type { PhotoManifestItem } from '@afilmory/builder'
-
 const GENERATOR_NAME = 'Afilmory Feed Generator'
+
+type FeedPhotoExifValue = string | number | null | undefined
+
+export interface FeedPhotoExif {
+  Model?: FeedPhotoExifValue
+  LensModel?: FeedPhotoExifValue
+  FNumber?: FeedPhotoExifValue
+  ExposureTime?: FeedPhotoExifValue
+}
+
+export interface FeedPhoto {
+  id: string
+  title?: string | null
+  description?: string | null
+  tags?: readonly string[] | null
+  dateTaken?: string | null
+  lastModified?: string | null
+  exif?: FeedPhotoExif | null
+}
 
 export interface FeedSiteAuthor {
   name: string
@@ -16,7 +33,7 @@ export interface FeedSiteConfig {
   locale?: string | null
 }
 
-export function generateRSSFeed(photos: readonly PhotoManifestItem[], config: FeedSiteConfig): string {
+export function generateRSSFeed(photos: readonly FeedPhoto[], config: FeedSiteConfig): string {
   const baseUrl = normalizeBaseUrl(config.url)
   const sortedPhotos = [...photos].sort((a, b) => resolveDate(b) - resolveDate(a))
   const lastBuildDate = new Date().toUTCString()
@@ -43,7 +60,7 @@ ${itemsXml}
 </rss>`
 }
 
-function createItemXml(photo: PhotoManifestItem, baseUrl: string): string {
+function createItemXml(photo: FeedPhoto, baseUrl: string): string {
   const link = `${baseUrl}/photos/${encodeURIComponent(photo.id)}/`
   const pubDate = new Date(resolveDate(photo)).toUTCString()
   const title = escapeXml(photo.title ?? photo.id)
@@ -63,7 +80,7 @@ ${categories}
     </item>`
 }
 
-function buildDescription(photo: PhotoManifestItem): string {
+function buildDescription(photo: FeedPhoto): string {
   const segments: string[] = []
   if (photo.description) {
     segments.push(escapeHtmlBlock(photo.description))
@@ -74,17 +91,21 @@ function buildDescription(photo: PhotoManifestItem): string {
 
   if (photo.exif) {
     const exifParts: string[] = []
-    if (photo.exif.Model) {
-      exifParts.push(escapeXml(photo.exif.Model))
+    const model = formatExifValue(photo.exif.Model)
+    if (model) {
+      exifParts.push(escapeXml(model))
     }
-    if (photo.exif.LensModel) {
-      exifParts.push(escapeXml(photo.exif.LensModel))
+    const lensModel = formatExifValue(photo.exif.LensModel)
+    if (lensModel) {
+      exifParts.push(escapeXml(lensModel))
     }
-    if (photo.exif.FNumber) {
-      exifParts.push(`f/${photo.exif.FNumber}`)
+    const fNumber = formatExifValue(photo.exif.FNumber)
+    if (fNumber) {
+      exifParts.push(`f/${fNumber}`)
     }
-    if (photo.exif.ExposureTime) {
-      exifParts.push(`${photo.exif.ExposureTime}s`)
+    const exposureTime = formatExifValue(photo.exif.ExposureTime)
+    if (exposureTime) {
+      exifParts.push(`${exposureTime}s`)
     }
     if (exifParts.length > 0) {
       segments.push(`<p><strong>EXIF:</strong> ${exifParts.join(' · ')}</p>`)
@@ -92,6 +113,11 @@ function buildDescription(photo: PhotoManifestItem): string {
   }
 
   return segments.join('\n') || escapeXml(photo.title ?? photo.id)
+}
+
+function formatExifValue(value: FeedPhotoExifValue): string | null {
+  if (value === null || value === undefined || value === '') return null
+  return String(value)
 }
 
 function escapeXml(value: string): string {
@@ -114,7 +140,7 @@ function normalizeBaseUrl(url: string): string {
   return url.endsWith('/') ? url.slice(0, -1) : url
 }
 
-function resolveDate(photo: PhotoManifestItem): number {
+function resolveDate(photo: FeedPhoto): number {
   const date = photo.dateTaken ?? photo.lastModified
   const timestamp = date ? Date.parse(date) : Number.NaN
   if (!Number.isNaN(timestamp)) {

@@ -2,7 +2,7 @@
 title: Overview
 description: Documentation for Jacky's Photography at docs.photo.jackyw.cn, covering the gallery, photo pipeline, storage, performance, and deployment.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-25T00:00:00+01:00
+lastModified: 2026-06-02T07:24:08+08:00
 ---
 
 # Jacky's Photography
@@ -44,8 +44,10 @@ packages/sdk/             # Shared schemas/client helpers
 packages/ui/              # Shared UI primitives
 packages/utils/           # Shared utilities, RSS helpers, storage helpers
 packages/webgl-viewer/    # WebGL image viewer
-plugins/                  # Builder, ESLint, and Vite plugins
-scripts/                  # Photo, docs, OG, favicon, and maintenance scripts
+content/                  # Human-edited photo descriptions and editorial metadata
+plugins/                  # Builder and ESLint plugins
+scripts/                  # Photo, docs, and maintenance scripts
+scripts/assets/           # Favicon, OG image, and static asset generation scripts
 photos/                   # Local private photo checkout, ignored by Git
 ```
 
@@ -87,7 +89,7 @@ export default defineBuilderConfig(() => ({
 }))
 ```
 
-The `photo-descriptions` plugin merges human-written titles, `zh-CN`/`en` descriptions, and editorial tags from `photo-descriptions.json`.
+The `photo-descriptions` plugin merges human-written titles, `zh-CN`/`en` descriptions, and editorial tags from `content/photo-descriptions.json`.
 
 ## Common Commands
 

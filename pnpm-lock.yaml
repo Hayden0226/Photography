@@ -733,9 +733,6 @@ importers:
 
   packages/utils:
     dependencies:
-      '@afilmory/builder':
-        specifier: workspace:*
-        version: link:../builder
       clsx:
         specifier: ^2.1.1
         version: 2.1.1

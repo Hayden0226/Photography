@@ -20,7 +20,7 @@ interface PhotoDescriptionsFile {
   photos?: unknown
 }
 
-const DEFAULT_DESCRIPTIONS_FILE = 'photo-descriptions.json'
+const DEFAULT_DESCRIPTIONS_FILE = 'content/photo-descriptions.json'
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..')
 
 export function createPhotoDescriptionsPlugin(options: PhotoDescriptionsPluginOptions = {}): BuilderPlugin {

@@ -2,16 +2,16 @@
 title: Photo Metadata
 description: Manual photo descriptions, tags, manifest merge behavior, and SEO metadata workflow.
 createdAt: 2026-05-09T00:00:00+01:00
-lastModified: 2026-05-25T00:00:00+01:00
+lastModified: 2026-06-02T07:24:08+08:00
 ---
 
 # Photo Metadata
 
-Jacky's Photography keeps generated camera metadata in the builder manifest and keeps human-written copy in `photo-descriptions.json`. The sidecar file is merged into the manifest during `pnpm run build:manifest`, so editorial descriptions can improve search, alt text, detail pages, and social sharing without hand-editing generated manifest output.
+Jacky's Photography keeps generated camera metadata in the builder manifest and keeps human-written copy in `content/photo-descriptions.json`. The sidecar file is merged into the manifest during `pnpm run build:manifest`, so editorial descriptions can improve search, alt text, detail pages, and social sharing without hand-editing generated manifest output.
 
 ## Sidecar Shape
 
-`photo-descriptions.json` is versioned JSON at the repository root. Each entry is matched by storage key, normalized without a leading `photos/` prefix.
+`content/photo-descriptions.json` is versioned JSON for editorial photo metadata. Each entry is matched by storage key, normalized without a leading `photos/` prefix.
 
 ```json
 {
@@ -79,7 +79,7 @@ pnpm run build:manifest
 
 `builder.config.ts` registers `plugins/builder/photo-descriptions.ts`. The plugin runs before the manifest is saved:
 
-- Missing `photo-descriptions.json` is allowed; the build skips manual metadata.
+- Missing `content/photo-descriptions.json` is allowed; the build skips manual metadata.
 - Sidecar keys are normalized by removing leading slashes and an optional `photos/` prefix.
 - Matching entries can update `title`, `descriptions`, fallback `description`, and `tags`.
 - `description` falls back to `descriptions["zh-CN"]`, then `descriptions.en`.
