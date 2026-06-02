@@ -101,11 +101,11 @@ function buildDescription(photo: FeedPhoto): string {
     }
     const fNumber = formatExifValue(photo.exif.FNumber)
     if (fNumber) {
-      exifParts.push(`f/${fNumber}`)
+      exifParts.push(`f/${escapeXml(fNumber)}`)
     }
     const exposureTime = formatExifValue(photo.exif.ExposureTime)
     if (exposureTime) {
-      exifParts.push(`${exposureTime}s`)
+      exifParts.push(`${escapeXml(exposureTime)}s`)
     }
     if (exifParts.length > 0) {
       segments.push(`<p><strong>EXIF:</strong> ${exifParts.join(' · ')}</p>`)
