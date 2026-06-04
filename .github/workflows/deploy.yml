@@ -79,13 +79,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Check photo repository token
+      - name: Prepare placeholder manifest
         if: env.HAS_PHOTO_REPO_TOKEN != 'true'
+        shell: bash
         run: |
-          echo "PHOTO_REPO_TOKEN is required to read ${PHOTO_REPOSITORY} during PR validation."
-          exit 1
+          echo "PHOTO_REPO_TOKEN is unavailable for this PR validation."
+          echo "Using an empty manifest and skipping private photo repository checks."
+          mkdir -p apps/web/src/data
+          printf '%s\n' '{"version":"v9","data":[],"cameras":[],"lenses":[]}' > apps/web/src/data/photos-manifest.json
 
       - name: Checkout photo repository
+        if: env.HAS_PHOTO_REPO_TOKEN == 'true'
         uses: actions/checkout@v6
         with:
           repository: ${{ env.PHOTO_REPOSITORY }}
@@ -95,6 +99,7 @@ jobs:
           persist-credentials: false
 
       - name: Reject symlinks in photo repository
+        if: env.HAS_PHOTO_REPO_TOKEN == 'true'
         shell: bash
         run: |
           first_symlink="$(find ./photos -path './photos/.git' -prune -o -type l -print -quit)"
@@ -130,9 +135,11 @@ jobs:
         run: pnpm test
 
       - name: Standardize Photos
+        if: env.HAS_PHOTO_REPO_TOKEN == 'true'
         run: pnpm run photos:standardize
 
       - name: Build manifest
+        if: env.HAS_PHOTO_REPO_TOKEN == 'true'
         run: pnpm run build:manifest
 
       - name: Build web app
@@ -153,9 +160,11 @@ jobs:
           fi
 
       - name: Install Playwright browser
+        if: env.HAS_PHOTO_REPO_TOKEN == 'true'
         run: pnpm exec playwright install --with-deps chromium
 
       - name: E2E tests
+        if: env.HAS_PHOTO_REPO_TOKEN == 'true'
         env:
           AFILMORY_SKIP_MANIFEST_PRECHECK: 'true'
         run: pnpm run test:e2e
