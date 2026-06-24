@@ -2,7 +2,7 @@
 title: GitHub Action
 description: Current GitHub Actions validation and deployment workflow for Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-25T00:00:00+01:00
+lastModified: 2026-06-25T01:07:09+08:00
 ---
 
 # GitHub Action Deployment
@@ -18,7 +18,7 @@ The workflow runs on:
 - `workflow_dispatch`
 - `repository_dispatch` with type `photos-updated`, sent by `Jackyhq/Photography-Photos`
 
-Pull requests use a `pr-<number>` concurrency group and cancel stale runs. Non-PR deployments use the `pages` concurrency group.
+Pull requests use a `pr-<number>` concurrency group and cancel stale runs. Non-PR deployments use the `deploy` concurrency group.
 
 ## Shared Validation Steps
 
@@ -45,7 +45,7 @@ Pull requests additionally install the Chromium browser and run:
 pnpm run test:e2e
 ```
 
-PRs do not push photo changes, sync R2, mirror deployment output, upload Pages artifacts, or deploy.
+PRs do not push photo changes, sync R2, or mirror deployment output.
 
 ## Deployment-Only Steps
 
@@ -54,11 +54,9 @@ Pushes to `main`, manual runs, and photo-repository dispatches run the `build-an
 1. Commits standardized photo changes back to `Jackyhq/Photography-Photos` with `[skip dispatch]`.
 2. Syncs `./photos` to Cloudflare R2 under the `photos/` prefix.
 3. Builds the manifest and web app.
-4. Prepares `googlesitemap.xml`, `.nojekyll`, and the README preview image.
+4. Prepares `googlesitemap.xml` and the README preview image.
 5. Publishes the optional IndexNow verification file.
 6. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
-7. Uploads `apps/web/dist/` as a GitHub Pages artifact.
-8. Deploys the artifact to GitHub Pages.
 
 ## Required Secrets
 
@@ -97,11 +95,9 @@ It excludes:
 
 ## Permissions
 
-The workflow defaults to `contents: read`. The deploy job expands permissions only when publishing:
+The workflow defaults to `contents: read`. The deploy job expands permissions for production deployment:
 
 - `contents: write`
-- `pages: write`
-- `id-token: write`
 
 ## Output Targets
 

@@ -162,17 +162,17 @@ export const tocData: FileToc[] = [
   {
     file: 'deployment/github-pages.mdx',
     path: '/deployment/github-pages',
-    title: 'GitHub Pages',
+    title: 'GitHub Pages Removal',
     toc: [
       {
-        id: 'heading-github-pages-deployment',
+        id: 'heading-github-pages-deployment-removed',
         level: 1,
-        text: 'GitHub Pages Deployment',
+        text: 'GitHub Pages Deployment Removed',
         children: [
           {
-            id: 'heading-repository-settings',
+            id: 'heading-removed-automation',
             level: 2,
-            text: 'Repository Settings',
+            text: 'Removed Automation',
             children: []
           },
           {
@@ -182,15 +182,15 @@ export const tocData: FileToc[] = [
             children: []
           },
           {
-            id: 'heading-workflow-output',
+            id: 'heading-current-workflow-output',
             level: 2,
-            text: 'Workflow Output',
+            text: 'Current Workflow Output',
             children: []
           },
           {
-            id: 'heading-custom-domain',
+            id: 'heading-if-re-enabling-pages',
             level: 2,
-            text: 'Custom Domain',
+            text: 'If Re-Enabling Pages',
             children: []
           }
         ]

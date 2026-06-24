@@ -24,7 +24,7 @@ Jacky's Photography 是一个静态发布的个人摄影画廊。构建器会在
 - 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览。
 - 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
-- 自动部署：GitHub Actions checkout 私有照片仓库、标准化照片、同步 Cloudflare R2、构建静态站点并发布到 GitHub Pages 与部署仓库。
+- 自动部署：GitHub Actions checkout 私有照片仓库、标准化照片、同步 Cloudflare R2、构建静态站点并同步到部署仓库。
 
 ## 工作区结构
 
@@ -54,7 +54,7 @@ photos/                   # 私有照片仓库 checkout，主仓库不追踪
 3. `pnpm run build:manifest` 读取 `builder.config.ts`，扫描 `photos/`，排除 `incoming`，生成缩略图、Thumbhash、EXIF/GPS/设备信息和 manifest。
 4. 构建器写入 `apps/web/src/data/photos-manifest.json`；`packages/data/src/photos-manifest.json` 是指向该文件的 symlink，供 `@afilmory/data` 和 Vite 插件读取。
 5. `pnpm build` 输出静态站点到 `apps/web/dist/`，并生成 sitemap、RSS、PWA 资源和照片级 HTML。
-6. CI 将发布照片同步到 Cloudflare R2 的 `photos/` prefix，并把 `apps/web/dist/` 同步到 `Jackyhq/Photography-Web` 与 GitHub Pages。
+6. CI 将发布照片同步到 Cloudflare R2 的 `photos/` prefix，并把 `apps/web/dist/` 同步到 `Jackyhq/Photography-Web`。
 
 ## 环境要求
 
@@ -171,9 +171,8 @@ PR 会执行：
 
 - 将标准化后的照片变更 push 回 `Jackyhq/Photography-Photos`
 - 使用 `aws s3 sync --size-only --delete` 同步 `./photos` 到 Cloudflare R2 的 `photos/` prefix
-- 生成 `googlesitemap.xml`、`.nojekyll`、README 预览图和可选 IndexNow 验证文件
+- 生成 `googlesitemap.xml`、README 预览图和可选 IndexNow 验证文件
 - 同步 `apps/web/dist/` 到 `Jackyhq/Photography-Web`
-- 上传 GitHub Pages artifact 并部署
 
 主仓库需要这些 secrets：
 
@@ -185,7 +184,7 @@ PR 会执行：
 - `CLOUDFLARE_R2_BUCKET`
 - `INDEXNOW_KEY`，可选
 
-Vercel Preview 使用 `vercel.json` 中的 `pnpm run vercel:build`。Preview 只拉取私有照片仓库并构建静态预览，不同步 R2、不回写照片仓库、不发布 GitHub Pages。不要授权不可信 fork 使用带私有 token 的 Preview 构建。
+Vercel Preview 使用 `vercel.json` 中的 `pnpm run vercel:build`。Preview 只拉取私有照片仓库并构建静态预览，不同步 R2、不回写照片仓库、不同步生产部署仓库。不要授权不可信 fork 使用带私有 token 的 Preview 构建。
 
 ## 仓库维护约定
 

@@ -2,7 +2,7 @@
 title: Vercel Preview
 description: Guide to Vercel Preview deployments that pull the private photo repository during the build.
 createdAt: 2026-05-13T22:45:00+08:00
-lastModified: 2026-05-13T22:42:49+08:00
+lastModified: 2026-06-25T01:07:09+08:00
 ---
 
 # Vercel Preview Deployment
@@ -39,7 +39,7 @@ Mark the variable as Sensitive in Vercel. The token is only needed at build time
 
 ## Behavior
 
-Vercel Preview builds do not push standardized photo changes back to `Jackyhq/Photography-Photos`, do not sync Cloudflare R2, and do not deploy GitHub Pages. They only build the static preview artifact in `apps/web/dist/`.
+Vercel Preview builds do not push standardized photo changes back to `Jackyhq/Photography-Photos`, do not sync Cloudflare R2, and do not mirror production output into `Jackyhq/Photography-Web`. They only build the static preview artifact in `apps/web/dist/`.
 
 The generated manifest still uses the configured public photo base URL:
 

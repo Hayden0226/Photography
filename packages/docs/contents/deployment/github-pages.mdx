@@ -1,27 +1,30 @@
 ---
-title: GitHub Pages
-description: Guide to deploying Jacky's Photography via GitHub Pages.
+title: GitHub Pages Removal
+description: Historical notes for the removed GitHub Pages deployment in Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-05-25T00:00:00+01:00
+lastModified: 2026-06-25T01:07:09+08:00
 ---
 
-# GitHub Pages Deployment
+# GitHub Pages Deployment Removed
 
-The current deployment workflow publishes the static gallery build from `apps/web/dist/` to GitHub Pages.
+The production workflow no longer publishes the static gallery build to GitHub Pages. `.github/workflows/deploy.yml` now stops after building `apps/web/dist/`, syncing photos to Cloudflare R2, and mirroring the static output into `Jackyhq/Photography-Web`.
 
-## Repository Settings
+## Removed Automation
 
-In GitHub, configure:
+The deployment job no longer declares the `github-pages` environment or the Pages-specific permissions:
 
-- **Pages source**: GitHub Actions.
-- **Workflow**: `.github/workflows/deploy.yml`.
-- **Branch**: `main`.
+- `pages: write`
+- `id-token: write`
 
-The workflow declares the `github-pages` environment and deploys through `actions/deploy-pages`.
+The job also no longer runs these GitHub Pages actions:
+
+- `actions/configure-pages`
+- `actions/upload-pages-artifact`
+- `actions/deploy-pages`
 
 ## Local Build Equivalent
 
-To reproduce the main build locally:
+To reproduce the static gallery build locally:
 
 ```bash
 pnpm install
@@ -37,9 +40,9 @@ The deployable static files will be in:
 apps/web/dist/
 ```
 
-## Workflow Output
+## Current Workflow Output
 
-During CI, the workflow uploads:
+During CI, the workflow builds:
 
 ```plain
 apps/web/dist/
@@ -49,12 +52,6 @@ The same directory is mirrored into the external deployment repository `Jackyhq/
 
 Photo source files stay in the private `Jackyhq/Photography-Photos` repository. The generated manifest lives at `apps/web/src/data/photos-manifest.json` during local builds and CI; `packages/data/src/photos-manifest.json` is a tracked symlink to that generated file.
 
-## Custom Domain
+## If Re-Enabling Pages
 
-The gallery site configuration currently points to:
-
-```plain
-https://photo.jackyw.cn
-```
-
-Keep `config.json` and your GitHub Pages custom-domain/DNS settings aligned so canonical URLs, OpenGraph metadata, and sitemap output use the deployed domain.
+If GitHub Pages is needed again, restore the Pages environment, `pages: write`, `id-token: write`, artifact upload, and `actions/deploy-pages` step in `.github/workflows/deploy.yml`. Also restore any Pages-specific output files such as `.nojekyll` only if the serving target requires them.

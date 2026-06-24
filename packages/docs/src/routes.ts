@@ -29,7 +29,7 @@ export const routes: RouteConfig[] = [
       description:
         "Documentation for Jacky's Photography at docs.photo.jackyw.cn, covering the gallery, photo pipeline, storage, performance, and deployment.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-06-02T00:00:00+01:00',
+      lastModified: '2026-06-25T01:07:09+08:00',
     },
   },
   {
@@ -40,7 +40,7 @@ export const routes: RouteConfig[] = [
       title: 'Deployment',
       description: "Guide to deploying Jacky's Photography in production environments.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-05-25T00:00:00+01:00',
+      lastModified: '2026-06-25T01:07:09+08:00',
     },
   },
   {
@@ -51,18 +51,18 @@ export const routes: RouteConfig[] = [
       title: 'GitHub Action',
       description: "Current GitHub Actions validation and deployment workflow for Jacky's Photography.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-05-25T00:00:00+01:00',
+      lastModified: '2026-06-25T01:07:09+08:00',
     },
   },
   {
     path: '/deployment/github-pages',
     component: Route3,
-    title: 'GitHub Pages',
+    title: 'GitHub Pages Removal',
     meta: {
-      title: 'GitHub Pages',
-      description: "Guide to deploying Jacky's Photography via GitHub Pages.",
+      title: 'GitHub Pages Removal',
+      description: "Historical notes for the removed GitHub Pages deployment in Jacky's Photography.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-05-25T00:00:00+01:00',
+      lastModified: '2026-06-25T01:07:09+08:00',
     },
   },
   {
@@ -73,7 +73,7 @@ export const routes: RouteConfig[] = [
       title: 'Vercel Preview',
       description: 'Guide to Vercel Preview deployments that pull the private photo repository during the build.',
       createdAt: '2026-05-13T22:45:00+08:00',
-      lastModified: '2026-05-13T22:42:49+08:00',
+      lastModified: '2026-06-25T01:07:09+08:00',
     },
   },
   {

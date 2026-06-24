@@ -54,7 +54,7 @@ on:
 
 # Allow only one concurrent deployment while letting PR validation cancel stale runs.
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'pages' }}
+  group: ${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'deploy' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
@@ -173,11 +173,6 @@ jobs:
     if: github.event_name != 'pull_request'
     permissions:
       contents: write
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
@@ -349,7 +344,6 @@ jobs:
             cp ./apps/web/dist/sitemap.xml ./apps/web/dist/googlesitemap.xml
             echo "Copied sitemap.xml to googlesitemap.xml"
           fi
-          touch ./apps/web/dist/.nojekyll
 
       - name: Prepare README preview image
         shell: bash
@@ -408,15 +402,3 @@ jobs:
             git commit -m "chore: update site from ${GITHUB_SHA}"
             git push
           fi
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v5
-        with:
-          path: 'apps/web/dist'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v5

@@ -2,7 +2,7 @@
 title: Overview
 description: Documentation for Jacky's Photography at docs.photo.jackyw.cn, covering the gallery, photo pipeline, storage, performance, and deployment.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-06-02T07:24:08+08:00
+lastModified: 2026-06-25T01:07:09+08:00
 ---
 
 # Jacky's Photography
@@ -113,7 +113,7 @@ pnpm run test:e2e
 
 The GitHub Actions workflow checks out the private photo repository, rejects symlinks in that checkout, installs dependencies, runs linting, type checking, unit tests, photo standardization, manifest generation, web build, bundle budget checks, and Playwright E2E tests.
 
-Non-PR deployments also commit standardized photo changes back to the private photo repository, sync published photos to Cloudflare R2 under the `photos/` prefix, mirror `apps/web/dist/` into `Jackyhq/Photography-Web`, and deploy the same output to GitHub Pages.
+Non-PR deployments also commit standardized photo changes back to the private photo repository, sync published photos to Cloudflare R2 under the `photos/` prefix, and mirror `apps/web/dist/` into `Jackyhq/Photography-Web`.
 
 For manual metadata curation, see [Photo Metadata](/photo-metadata). For loading and build performance details, see [Performance](/performance). For storage-provider options, see [Storage Providers](/storage).
 
