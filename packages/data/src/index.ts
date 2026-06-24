@@ -71,15 +71,26 @@ function getLanguageCandidates(language: string): string[] {
   return [normalized, resolved, DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE]
 }
 
-function getLocalizedText(values: Record<string, string> | undefined, language: string): string {
-  if (!values) return ''
+function getLocalizedText(
+  values: Record<string, string> | undefined,
+  language: string,
+  legacyInlineText?: string,
+): string {
+  const legacyText = legacyInlineText?.trim() ?? ''
+  if (!values) return legacyText
+
+  const shouldPreferInlineFallback = resolvePhotoTextLanguage(language) === DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE
 
   for (const candidate of getLanguageCandidates(language)) {
     const value = values[candidate]?.trim()
     if (value) return value
+
+    if (shouldPreferInlineFallback && candidate === DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE && legacyText) {
+      return legacyText
+    }
   }
 
-  return ''
+  return legacyText
 }
 
 function getRuntimePhotoTextUrls(): Record<string, string> {
@@ -181,8 +192,8 @@ class PhotoLoader {
   }
 
   getPhotoText(photo: PhotoManifestIndexItem | PhotoManifestItem, language: string): ResolvedPhotoText {
-    const title = getLocalizedText(photo.titles, language) || photo.title || ''
-    const description = getLocalizedText(photo.descriptions, language) || photo.description || ''
+    const title = getLocalizedText(photo.titles, language, photo.title)
+    const description = getLocalizedText(photo.descriptions, language, photo.description)
 
     return {
       title,
