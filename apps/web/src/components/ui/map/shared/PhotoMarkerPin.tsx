@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Marker } from 'react-map-gl/maplibre'
 import { Link } from 'react-router'
 
-import { getPhotoAltText } from '~/lib/photo-description'
+import { getLocalizedPhotoTitle, getPhotoAltText } from '~/lib/photo-description'
 import { getPhotoDetailPath } from '~/lib/photo-route'
 
 import type { PhotoMarkerPinProps } from './types'
@@ -12,6 +12,7 @@ import type { PhotoMarkerPinProps } from './types'
 export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }: PhotoMarkerPinProps) => {
   const { i18n } = useTranslation()
   const photoAlt = getPhotoAltText(marker.photo, i18n.language)
+  const photoTitle = getLocalizedPhotoTitle(marker.photo, i18n.language) || marker.photo.id
 
   const handleClick = () => {
     onClick?.(marker)
@@ -125,11 +126,8 @@ export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }:
                 target="_blank"
                 className="group/link hover:text-blue flex items-center gap-2 transition-colors"
               >
-                <h3
-                  className="text-text flex-1 truncate text-sm font-semibold"
-                  title={marker.photo.title || marker.photo.id}
-                >
-                  {marker.photo.title || marker.photo.id}
+                <h3 className="text-text flex-1 truncate text-sm font-semibold" title={photoTitle}>
+                  {photoTitle}
                 </h3>
                 <i className="i-mingcute-arrow-right-line text-text-secondary transition-transform group-hover/link:translate-x-0.5" />
               </Link>

@@ -7,6 +7,7 @@ interface ManifestFile {
 
 interface ManifestPhoto {
   title?: string
+  titles?: PhotoDescriptionTranslations
   dateTaken?: string
   tags?: string[]
   s3Key?: string
@@ -26,6 +27,7 @@ interface PhotoDescriptionsFile {
 interface PhotoDescriptionEntry {
   key: string
   title: string
+  titles?: PhotoDescriptionTranslations
   descriptions: PhotoDescriptionTranslations
   tags: string[]
   aiContext: PhotoDescriptionAIContext
@@ -119,9 +121,12 @@ function mergeEntry(
   photo: ManifestPhoto & { s3Key: string },
   key: string,
 ): PhotoDescriptionEntry {
+  const titles = existing?.titles ?? normalizeOptionalTranslations(photo.titles)
+
   return {
     key,
     title: existing?.title ?? '',
+    ...(titles ? { titles } : {}),
     descriptions: existing?.descriptions ?? createEmptyTranslations(),
     tags: existing?.tags ?? [],
     aiContext: createAIContext(photo),
@@ -144,10 +149,12 @@ function normalizeEntry(entry: unknown): PhotoDescriptionEntry | null {
   const candidate = entry as Partial<PhotoDescriptionEntry>
   const key = typeof candidate.key === 'string' ? normalizeStorageKey(candidate.key) : ''
   if (!key) return null
+  const titles = normalizeOptionalTranslations(candidate.titles)
 
   return {
     key,
     title: typeof candidate.title === 'string' ? candidate.title : '',
+    ...(titles ? { titles } : {}),
     descriptions: normalizeTranslations(candidate.descriptions),
     tags: Array.isArray(candidate.tags) ? candidate.tags.filter((tag): tag is string => typeof tag === 'string') : [],
     aiContext: {
@@ -170,6 +177,15 @@ function normalizeTranslations(value: unknown): PhotoDescriptionTranslations {
     'zh-CN': typeof candidate['zh-CN'] === 'string' ? candidate['zh-CN'] : '',
     en: typeof candidate.en === 'string' ? candidate.en : '',
   }
+}
+
+function normalizeOptionalTranslations(value: unknown): PhotoDescriptionTranslations | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null
+  }
+
+  const translations = normalizeTranslations(value)
+  return translations['zh-CN'] || translations.en ? translations : null
 }
 
 function createEmptyTranslations(): PhotoDescriptionTranslations {

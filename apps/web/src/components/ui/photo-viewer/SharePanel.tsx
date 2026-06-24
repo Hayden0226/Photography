@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import { injectConfig, siteConfig } from '~/config'
+import { getLocalizedPhotoTitle } from '~/lib/photo-description'
 import type { PhotoManifest } from '~/types/photo'
 
 interface SharePanelProps {
@@ -34,8 +35,9 @@ interface SocialShareOption {
 }
 
 export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
-  const { t } = useTranslation()
+  const { i18n, t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
+  const localizedTitle = getLocalizedPhotoTitle(photo, i18n.language)
 
   // 社交媒体分享选项
   const socialOptions: SocialShareOption[] = [
@@ -75,7 +77,7 @@ export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
 
   const handleNativeShare = useCallback(async () => {
     const shareUrl = window.location.href
-    const shareTitle = photo.title || t('photo.share.default.title')
+    const shareTitle = localizedTitle || t('photo.share.default.title')
     const shareText = t('photo.share.text', { title: shareTitle })
     const isVideoMedia = photo.mediaType === 'video'
 
@@ -85,7 +87,7 @@ export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
       const response = await fetch(mediaUrl)
       const blob = await response.blob()
       const fallbackExtension = isVideoMedia ? getExtension(mediaUrl) || 'mp4' : 'jpg'
-      const file = new File([blob], `${photo.title || (isVideoMedia ? 'video' : 'photo')}.${fallbackExtension}`, {
+      const file = new File([blob], `${localizedTitle || (isVideoMedia ? 'video' : 'photo')}.${fallbackExtension}`, {
         type: blob.type || photo.mimeType || (isVideoMedia ? 'video/mp4' : 'image/jpeg'),
       })
 
@@ -112,7 +114,7 @@ export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
       toast.success(t('photo.share.link.copied'))
       setIsOpen(false)
     }
-  }, [photo.mediaType, photo.title, photo.videoUrl, photo.originalUrl, photo.mimeType, blobSrc, t])
+  }, [photo.mediaType, photo.videoUrl, photo.originalUrl, photo.mimeType, localizedTitle, blobSrc, t])
 
   const handleCopyLink = useCallback(async () => {
     try {
@@ -142,15 +144,15 @@ export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
     (url: string) => {
       const shareUrl = encodeURIComponent(window.location.href)
       const defaultTitle = t('photo.share.default.title')
-      const shareTitle = encodeURIComponent(photo.title || defaultTitle)
-      const shareText = encodeURIComponent(t('photo.share.text', { title: photo.title || defaultTitle }))
+      const shareTitle = encodeURIComponent(localizedTitle || defaultTitle)
+      const shareText = encodeURIComponent(t('photo.share.text', { title: localizedTitle || defaultTitle }))
 
       const finalUrl = url.replace('{url}', shareUrl).replace('{title}', shareTitle).replace('{text}', shareText)
 
       window.open(finalUrl, '_blank', 'width=600,height=400')
       setIsOpen(false)
     },
-    [photo.title, t],
+    [localizedTitle, t],
   )
 
   // 功能选项
@@ -218,7 +220,7 @@ export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
                 {/* 标题区域 */}
                 <div className="relative mb-4 text-center">
                   <h3 className="text-text font-semibold">{t('photo.share.title')}</h3>
-                  {photo.title && <p className="text-text-secondary mt-1 line-clamp-1 text-sm">{photo.title}</p>}
+                  {localizedTitle && <p className="text-text-secondary mt-1 line-clamp-1 text-sm">{localizedTitle}</p>}
                 </div>
 
                 {/* 社交媒体分享 - 第一排 */}

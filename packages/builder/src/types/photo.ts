@@ -35,6 +35,7 @@ export type VideoSource =
 
 export interface PhotoInfo {
   title: string
+  titles?: Record<string, string>
   dateTaken: string
   tags: string[]
   description: string

@@ -11,6 +11,7 @@ export interface PhotoDescriptionsPluginOptions {
 interface PhotoDescriptionEntry {
   key: string
   title?: unknown
+  titles?: unknown
   descriptions?: unknown
   tags?: unknown
 }
@@ -90,11 +91,21 @@ async function loadDescriptions(filePath: string): Promise<{ photos: PhotoDescri
 function applyDescriptionEntry(item: PhotoManifestItem, entry: PhotoDescriptionEntry): boolean {
   let changed = false
   const title = readNonEmptyString(entry.title)
+  const titles = readLocalizedStrings(entry.titles)
   const descriptions = readDescriptions(entry.descriptions)
   const tags = readTags(entry.tags)
 
+  if (titles && !areDescriptionMapsEqual(item.titles, titles)) {
+    item.titles = titles
+    changed = true
+  }
+
+  const fallbackTitle = titles?.['zh-CN'] || titles?.en || title
   if (title && item.title !== title) {
     item.title = title
+    changed = true
+  } else if (fallbackTitle && item.title !== fallbackTitle) {
+    item.title = fallbackTitle
     changed = true
   }
 
@@ -142,15 +153,19 @@ function readTags(value: unknown): string[] {
 }
 
 function readDescriptions(value: unknown): Record<string, string> | null {
+  return readLocalizedStrings(value)
+}
+
+function readLocalizedStrings(value: unknown): Record<string, string> | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
 
-  const descriptions = Object.fromEntries(
+  const localizedStrings = Object.fromEntries(
     Object.entries(value)
       .map(([language, description]) => [language.trim(), readNonEmptyString(description)] as const)
       .filter((entry): entry is [string, string] => entry[0].length > 0 && entry[1] !== null),
   )
 
-  return Object.keys(descriptions).length > 0 ? descriptions : null
+  return Object.keys(localizedStrings).length > 0 ? localizedStrings : null
 }
 
 function mergeTags(existing: string[], additions: string[]): string[] {

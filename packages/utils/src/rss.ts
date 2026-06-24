@@ -12,6 +12,7 @@ export interface FeedPhotoExif {
 export interface FeedPhoto {
   id: string
   title?: string | null
+  titles?: Record<string, string> | null
   description?: string | null
   tags?: readonly string[] | null
   dateTaken?: string | null
@@ -63,7 +64,7 @@ ${itemsXml}
 function createItemXml(photo: FeedPhoto, baseUrl: string): string {
   const link = `${baseUrl}/photos/${encodeURIComponent(photo.id)}/`
   const pubDate = new Date(resolveDate(photo)).toUTCString()
-  const title = escapeXml(photo.title ?? photo.id)
+  const title = escapeXml(getPhotoTitle(photo))
   const summary = buildDescription(photo)
   const categories =
     Array.isArray(photo.tags) && photo.tags.length > 0
@@ -112,7 +113,11 @@ function buildDescription(photo: FeedPhoto): string {
     }
   }
 
-  return segments.join('\n') || escapeXml(photo.title ?? photo.id)
+  return segments.join('\n') || escapeXml(getPhotoTitle(photo))
+}
+
+function getPhotoTitle(photo: FeedPhoto): string {
+  return photo.titles?.['zh-CN']?.trim() || photo.titles?.en?.trim() || photo.title?.trim() || photo.id
 }
 
 function formatExifValue(value: FeedPhotoExifValue): string | null {

@@ -23,6 +23,7 @@ declare global {
 
   const __MANIFEST__: AfilmoryIndexManifest
   const __FULL_MANIFEST_URL__: string | undefined
+  const __PHOTO_TEXT_URLS__: Record<string, string> | undefined
   const __SITE_CONFIG__: Partial<SiteConfig>
 
   const __CONFIG__: InjectConfig
@@ -33,6 +34,7 @@ declare global {
 
   interface Window {
     __SITE_CONFIG__?: Partial<SiteConfig>
+    __PHOTO_TEXT_URLS__?: Record<string, string>
   }
 }
 

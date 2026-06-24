@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router'
 import { gallerySettingAtom } from '~/atoms/app'
 import { usePhotoViewer } from '~/hooks/usePhotoViewer'
 import { MageLens } from '~/icons'
-import { getLocalizedPhotoDescription, getPhotoAltText, getSearchablePhotoDescriptions } from '~/lib/photo-description'
+import { getLocalizedPhotoDescription, getLocalizedPhotoTitle, getPhotoAltText } from '~/lib/photo-description'
 import { getPhotoDetailPath } from '~/lib/photo-route'
 
 // Command types
@@ -58,15 +58,14 @@ const searchPhotos = (photos: ReturnType<typeof photoLoader.getPhotos>, query: s
   if (!lowerQuery) return []
 
   return photos.filter((photo) => {
-    const matchesTitle = photo.title?.toLowerCase().includes(lowerQuery)
-    const matchesDescription = getSearchablePhotoDescriptions(photo).some((description) =>
-      description.toLowerCase().includes(lowerQuery),
-    )
+    const matchesText = photoLoader
+      .getSearchablePhotoText(photo)
+      .some((text) => text.toLowerCase().includes(lowerQuery))
     const matchesTags = photo.tags?.some((tag) => tag.toLowerCase().includes(lowerQuery))
     const matchesCamera = photo.cameraDisplayName?.toLowerCase().includes(lowerQuery)
     const matchesLens = photo.lensDisplayName?.toLowerCase().includes(lowerQuery)
 
-    return matchesTitle || matchesDescription || matchesTags || matchesCamera || matchesLens
+    return matchesText || matchesTags || matchesCamera || matchesLens
   })
 }
 
@@ -78,6 +77,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
 
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const [searchTextRevision, setSearchTextRevision] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
   const dialogTitleId = React.useId()
@@ -116,6 +116,26 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     }
   }, [isOpen])
 
+  useEffect(() => {
+    if (!isOpen) return
+
+    let isCancelled = false
+    photoLoader
+      .loadPhotoText('en')
+      .then(() => {
+        if (!isCancelled) {
+          setSearchTextRevision((revision) => revision + 1)
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load photo search text:', error)
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [isOpen])
+
   // Handle escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -129,6 +149,8 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
 
   // Generate commands
   const commands = useMemo((): Command[] => {
+    void searchTextRevision
+
     const cmds: Command[] = []
 
     // Filter commands - Tags
@@ -268,11 +290,12 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     if (query.trim()) {
       const photos = searchPhotos(photoLoader.getPhotos(), query)
       photos.slice(0, 10).forEach((photo) => {
+        const photoTitle = getLocalizedPhotoTitle(photo, i18n.language)
         const photoDescription = getLocalizedPhotoDescription(photo, i18n.language)
         cmds.push({
           id: `photo-${photo.id}`,
           type: 'photo',
-          title: photo.title || photo.id,
+          title: photoTitle || photo.id,
           subtitle: photoDescription || photo.cameraDisplayName || t('photo.fallback.title'),
           icon: (
             <img
@@ -290,15 +313,24 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
               onClose()
             }
           },
-          keywords: [photo.title, ...getSearchablePhotoDescriptions(photo), ...(photo.tags || [])].filter(
-            Boolean,
-          ) as string[],
+          keywords: [...photoLoader.getSearchablePhotoText(photo), ...(photo.tags || [])].filter(Boolean) as string[],
         })
       })
     }
 
     return cmds
-  }, [t, i18n.language, gallerySetting, query, navigate, onClose, setGallerySetting, openViewer, updateTagFilterMode])
+  }, [
+    t,
+    i18n.language,
+    gallerySetting,
+    query,
+    navigate,
+    onClose,
+    setGallerySetting,
+    openViewer,
+    updateTagFilterMode,
+    searchTextRevision,
+  ])
 
   // Filter commands based on query
   const filteredCommands = useMemo(() => {

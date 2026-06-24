@@ -4,7 +4,12 @@ import { Button, ScrollArea } from '@afilmory/ui'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { getPhotoAltText } from '~/lib/photo-description'
+import {
+  getLocalizedPhotoTitle,
+  getPhotoAltText,
+  getSearchablePhotoDescriptions,
+  getSearchablePhotoTitles,
+} from '~/lib/photo-description'
 
 const EMPTY_PHOTOS: AfilmoryManifest['data'] = []
 
@@ -110,6 +115,7 @@ const ManifestStats = ({ data }: { data: any[] }) => {
 // 照片卡片组件
 const PhotoCard = ({ photo, index }: { photo: any; index: number }) => {
   const { i18n } = useTranslation()
+  const photoTitle = getLocalizedPhotoTitle(photo, i18n.language)
 
   return (
     <div className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm transition-all hover:border-zinc-700 hover:bg-zinc-900/50">
@@ -141,7 +147,7 @@ const PhotoCard = ({ photo, index }: { photo: any; index: number }) => {
               <span className="inline-flex h-6 w-8 items-center justify-center rounded bg-zinc-800 font-mono text-xs text-zinc-400">
                 {index + 1}
               </span>
-              <h3 className="truncate font-medium text-zinc-100">{photo.title}</h3>
+              <h3 className="truncate font-medium text-zinc-100">{photoTitle || photo.id}</h3>
             </div>
 
             {/* 元数据网格 */}
@@ -225,8 +231,8 @@ export const Component = () => {
     const term = searchTerm.toLowerCase()
     return photos.filter(
       (photo) =>
-        photo.title?.toLowerCase().includes(term) ||
-        photo.description?.toLowerCase().includes(term) ||
+        getSearchablePhotoTitles(photo).some((title) => title.toLowerCase().includes(term)) ||
+        getSearchablePhotoDescriptions(photo).some((description) => description.toLowerCase().includes(term)) ||
         photo.tags?.some((tag) => tag.toLowerCase().includes(term)) ||
         photo.exif?.Make?.toLowerCase().includes(term) ||
         photo.exif?.Model?.toLowerCase().includes(term),

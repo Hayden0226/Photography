@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { createLightManifest, createThumbnailPreloadLinks, serializeForInlineScript } from './manifest-inject'
+import {
+  createLightManifest,
+  createPhotoTextPacks,
+  createThumbnailPreloadLinks,
+  serializeForInlineScript,
+} from './manifest-inject'
 
 describe('manifest-inject helpers', () => {
-  it('creates a light manifest with display metadata and compact gallery exif', () => {
+  it('creates a light manifest with default text, display metadata, and compact gallery exif', () => {
     const manifest = createLightManifest({
       version: 'v9',
       cameras: [{ name: 'camera' }],
@@ -12,6 +17,15 @@ describe('manifest-inject helpers', () => {
         {
           id: 'photo-1',
           title: 'Photo 1',
+          titles: {
+            'zh-CN': '照片 1',
+            en: 'Photo 1',
+          },
+          description: 'Photo description',
+          descriptions: {
+            'zh-CN': '中文描述',
+            en: 'English description',
+          },
           tags: ['travel'],
           thumbnailUrl: '/thumb.jpg',
           width: 100,
@@ -32,6 +46,8 @@ describe('manifest-inject helpers', () => {
     expect(manifest.version).toBe('v9')
     expect(manifest.data[0]).toMatchObject({
       id: 'photo-1',
+      title: '照片 1',
+      description: '中文描述',
       cameraDisplayName: 'Fujifilm X-T5',
       lensDisplayName: '35mm',
       rating: 5,
@@ -39,7 +55,48 @@ describe('manifest-inject helpers', () => {
         ISO: 200,
       },
     })
+    expect(manifest.data[0]).not.toHaveProperty('titles')
+    expect(manifest.data[0]).not.toHaveProperty('descriptions')
     expect(manifest.data[0].sortTime).toBe(new Date('2024-05-10 12:30:00').getTime())
+  })
+
+  it('creates separate non-default photo text packs', () => {
+    const packs = createPhotoTextPacks({
+      version: 'v9',
+      data: [
+        {
+          id: 'photo-1',
+          title: '照片 1',
+          titles: {
+            'zh-CN': '照片 1',
+            en: 'Photo 1',
+          },
+          description: '中文描述',
+          descriptions: {
+            'zh-CN': '中文描述',
+            en: 'English description',
+          },
+        },
+        {
+          id: 'photo-2',
+          title: '照片 2',
+          description: '中文描述 2',
+        },
+      ],
+    })
+
+    expect(packs).toEqual({
+      en: {
+        version: 'v9',
+        language: 'en',
+        photos: {
+          'photo-1': {
+            title: 'Photo 1',
+            description: 'English description',
+          },
+        },
+      },
+    })
   })
 
   it('serializes inline script data safely', () => {

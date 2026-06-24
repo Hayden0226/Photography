@@ -47,7 +47,7 @@ export function createPhotoPageMetaPlugin(siteConfig: SiteConfig): Plugin {
 }
 
 function createPhotoPageMeta(photo: PhotoManifestItem, siteConfig: SiteConfig): PhotoPageMeta {
-  const title = `${photo.title || photo.id} | ${siteConfig.name}`
+  const title = `${getPhotoTitle(photo) || photo.id} | ${siteConfig.name}`
   const baseUrl = siteConfig.url.replace(/\/+$/, '')
 
   return {
@@ -56,6 +56,10 @@ function createPhotoPageMeta(photo: PhotoManifestItem, siteConfig: SiteConfig): 
     url: `${baseUrl}/photos/${toSafePathSegment(photo.id)}/`,
     image: toAbsoluteUrl(photo.thumbnailUrl || photo.originalUrl, siteConfig.url),
   }
+}
+
+function getPhotoTitle(photo: PhotoManifestItem): string {
+  return photo.titles?.['zh-CN']?.trim() || photo.titles?.en?.trim() || photo.title?.trim() || ''
 }
 
 function applyPhotoPageMeta(html: string, meta: PhotoPageMeta): string {
