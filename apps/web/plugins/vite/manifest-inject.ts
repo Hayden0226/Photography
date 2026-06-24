@@ -21,6 +21,7 @@ interface FullManifestItem extends PreloadManifestItem {
   id: string
   mediaType?: string
   title?: string
+  titles?: Record<string, string>
   description?: string
   descriptions?: Record<string, string>
   dateTaken?: string
@@ -41,8 +42,21 @@ interface FullManifestItem extends PreloadManifestItem {
   exif?: Record<string, any> | null
 }
 
+interface PhotoTextEntry {
+  title?: string
+  description?: string
+}
+
+export interface PhotoTextPack {
+  version?: string
+  language: string
+  photos: Record<string, PhotoTextEntry>
+}
+
 const PRELOAD_THUMBNAIL_COUNT = 2
 const FULL_MANIFEST_ROUTE = '/__afilmory_full_manifest.json'
+const PHOTO_TEXT_ROUTE_PREFIX = '/__afilmory_photo_text/'
+const DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE = 'zh-CN'
 const GALLERY_EXIF_KEYS = ['ISO', 'FNumber', 'ExposureTime', 'FocalLength', 'FocalLengthIn35mmFormat'] as const
 
 function resolveEmbedPreference(_command: 'serve' | 'build'): boolean {
@@ -91,6 +105,18 @@ function pickGalleryExif(exif: FullManifestItem['exif']) {
   return Object.keys(galleryExif).length > 0 ? galleryExif : undefined
 }
 
+function trimText(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : undefined
+}
+
+function pickLocalizedText(
+  values: Record<string, string> | undefined,
+  language: string,
+  fallback?: string,
+): string | undefined {
+  return trimText(values?.[language]) ?? trimText(fallback)
+}
+
 function compactObject<T extends Record<string, unknown>>(value: T): Partial<T> {
   return Object.fromEntries(Object.entries(value).filter(([, entryValue]) => entryValue !== undefined)) as Partial<T>
 }
@@ -106,9 +132,8 @@ export function createLightManifest(manifest: FullManifest) {
         return compactObject({
           id: item.id,
           mediaType: item.mediaType,
-          title: item.title,
-          description: item.description,
-          descriptions: item.descriptions,
+          title: pickLocalizedText(item.titles, DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE, item.title),
+          description: pickLocalizedText(item.descriptions, DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE, item.description),
           dateTaken: item.dateTaken,
           tags: item.tags,
           thumbnailUrl: item.thumbnailUrl,
@@ -140,6 +165,43 @@ export function createLightManifest(manifest: FullManifest) {
     cameras: manifest.cameras ?? [],
     lenses: manifest.lenses ?? [],
   }
+}
+
+export function createPhotoTextPacks(manifest: FullManifest): Record<string, PhotoTextPack> {
+  const languages = new Set<string>()
+
+  for (const item of manifest.data ?? []) {
+    Object.keys(item.titles ?? {}).forEach((language) => languages.add(language))
+    Object.keys(item.descriptions ?? {}).forEach((language) => languages.add(language))
+  }
+
+  languages.delete(DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE)
+
+  const packs: Record<string, PhotoTextPack> = {}
+  for (const language of Array.from(languages).sort()) {
+    const photos: Record<string, PhotoTextEntry> = {}
+
+    for (const item of manifest.data ?? []) {
+      const title = trimText(item.titles?.[language])
+      const description = trimText(item.descriptions?.[language])
+      if (!title && !description) continue
+
+      photos[item.id] = compactObject({
+        title,
+        description,
+      })
+    }
+
+    if (Object.keys(photos).length > 0) {
+      packs[language] = {
+        version: manifest.version,
+        language,
+        photos,
+      }
+    }
+  }
+
+  return packs
 }
 
 export function createThumbnailPreloadLinks(manifest: { data?: PreloadManifestItem[] }): string {
@@ -186,6 +248,10 @@ function normalizeBase(base: string): string {
   return base.endsWith('/') ? base : `${base}/`
 }
 
+function encodePhotoTextRoute(language: string): string {
+  return `${PHOTO_TEXT_ROUTE_PREFIX}${encodeURIComponent(language)}.json`
+}
+
 export function serializeForInlineScript(value: unknown): string {
   return JSON.stringify(value)
     .replaceAll('<', '\\u003C')
@@ -199,6 +265,7 @@ export function manifestInjectPlugin(): Plugin {
   let embedManifest: boolean | undefined
   let resolvedConfig: ResolvedConfig | undefined
   let fullManifestAsset: { fileName: string; source: string } | undefined
+  let photoTextAssets: { fileName: string; source: string; language: string }[] = []
   let buildPayload: ReturnType<typeof buildManifestPayload> | undefined
 
   function getManifestContent(): string {
@@ -216,6 +283,7 @@ export function manifestInjectPlugin(): Plugin {
     const fullManifest = JSON.parse(manifestContent) as FullManifest
     const fullManifestSource = JSON.stringify(fullManifest)
     const lightManifest = createLightManifest(fullManifest)
+    const photoTextPacks = createPhotoTextPacks(fullManifest)
 
     if (command === 'build') {
       const fileName = `assets/photos-manifest.${getContentHash(fullManifestSource)}.json`
@@ -224,15 +292,30 @@ export function manifestInjectPlugin(): Plugin {
         source: fullManifestSource,
       }
       const base = normalizeBase(resolvedConfig?.base ?? '/')
+      photoTextAssets = Object.entries(photoTextPacks).map(([language, pack]) => {
+        const source = JSON.stringify(pack)
+        return {
+          language,
+          source,
+          fileName: `assets/photo-text.${language}.${getContentHash(source)}.json`,
+        }
+      })
+
       return {
         lightManifest,
         fullManifestUrl: `${base}${fileName}`,
+        photoTextUrls: Object.fromEntries(
+          photoTextAssets.map((asset) => [asset.language, `${base}${asset.fileName}`]),
+        ) as Record<string, string>,
       }
     }
 
     return {
       lightManifest,
       fullManifestUrl: FULL_MANIFEST_ROUTE,
+      photoTextUrls: Object.fromEntries(
+        Object.keys(photoTextPacks).map((language) => [language, encodePhotoTextRoute(language)]),
+      ) as Record<string, string>,
     }
   }
 
@@ -245,6 +328,8 @@ export function manifestInjectPlugin(): Plugin {
     },
 
     buildStart() {
+      if (resolvedConfig?.command !== 'build') return
+
       const shouldEmbed = embedManifest ?? resolveEmbedPreference('build')
       if (!shouldEmbed) return
 
@@ -256,6 +341,14 @@ export function manifestInjectPlugin(): Plugin {
         fileName: fullManifestAsset.fileName,
         source: fullManifestAsset.source,
       })
+
+      for (const asset of photoTextAssets) {
+        this.emitFile({
+          type: 'asset',
+          fileName: asset.fileName,
+          source: asset.source,
+        })
+      }
     },
 
     configureServer(server) {
@@ -269,6 +362,26 @@ export function manifestInjectPlugin(): Plugin {
       server.middlewares.use(FULL_MANIFEST_ROUTE, (_req, res) => {
         res.setHeader('Content-Type', 'application/json; charset=utf-8')
         res.end(JSON.stringify(JSON.parse(getManifestContent())))
+      })
+      server.middlewares.use((req, res, next) => {
+        const url = req.url?.split('?')[0] ?? ''
+        if (!url.startsWith(PHOTO_TEXT_ROUTE_PREFIX)) {
+          next()
+          return
+        }
+
+        const encodedLanguage = url.slice(PHOTO_TEXT_ROUTE_PREFIX.length).replace(/\.json$/, '')
+        const language = decodeURIComponent(encodedLanguage)
+        const fullManifest = JSON.parse(getManifestContent()) as FullManifest
+        const pack = createPhotoTextPacks(fullManifest)[language]
+        if (!pack) {
+          res.statusCode = 404
+          res.end('Not found')
+          return
+        }
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8')
+        res.end(JSON.stringify(pack))
       })
 
       server.watcher.on('change', (file) => {
@@ -290,11 +403,11 @@ export function manifestInjectPlugin(): Plugin {
         return html
       }
 
-      const { lightManifest, fullManifestUrl } =
+      const { lightManifest, fullManifestUrl, photoTextUrls } =
         command === 'build' && buildPayload ? buildPayload : buildManifestPayload(command)
 
       // 将 manifest 内容注入到 script#manifest 标签中
-      const scriptContent = `window.__MANIFEST__=${serializeForInlineScript(lightManifest)};window.__FULL_MANIFEST_URL__=${serializeForInlineScript(fullManifestUrl)};`
+      const scriptContent = `window.__MANIFEST__=${serializeForInlineScript(lightManifest)};window.__FULL_MANIFEST_URL__=${serializeForInlineScript(fullManifestUrl)};window.__PHOTO_TEXT_URLS__=${serializeForInlineScript(photoTextUrls)};`
       const preloadLinks = createThumbnailPreloadLinks(lightManifest)
 
       return html.replace(

@@ -1,5 +1,7 @@
+import { photoLoader } from '@afilmory/data'
 import { Button } from '@afilmory/ui'
 import { useAtom, useSetAtom } from 'jotai'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router'
 
@@ -13,6 +15,7 @@ export const ActionGroup = () => {
   const [gallerySetting] = useAtom(gallerySettingAtom)
   const setCommandPaletteOpen = useSetAtom(isCommandPaletteOpenAtom)
   const navigate = useNavigate()
+  const [isSwitchingLanguage, setIsSwitchingLanguage] = useState(false)
 
   // 计算视图设置是否有自定义配置
   const hasViewCustomization = gallerySetting.columns !== 'auto' || gallerySetting.sortOrder !== 'desc'
@@ -30,6 +33,29 @@ export const ActionGroup = () => {
   const languageToggleTitle = t(
     isChineseLanguage ? 'action.language.switchToEnglish' : 'action.language.switchToChinese',
   )
+
+  const handleLanguageToggle = async () => {
+    if (isSwitchingLanguage) return
+
+    setIsSwitchingLanguage(true)
+    try {
+      await photoLoader.loadPhotoText(nextLanguage)
+    } catch (error) {
+      console.error('Failed to load localized photo text:', error)
+    }
+
+    try {
+      localStorage.setItem('i18nextLng', nextLanguage)
+    } catch {
+      // localStorage can be unavailable in private or restricted browser contexts.
+    }
+
+    try {
+      await i18n.changeLanguage(nextLanguage)
+    } finally {
+      setIsSwitchingLanguage(false)
+    }
+  }
 
   return (
     <div className="flex items-center justify-center gap-3">
@@ -77,20 +103,19 @@ export const ActionGroup = () => {
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => {
-          try {
-            localStorage.setItem('i18nextLng', nextLanguage)
-          } catch {
-            // localStorage can be unavailable in private or restricted browser contexts.
-          }
-          void i18n.changeLanguage(nextLanguage)
-        }}
-        className="h-10 w-10 rounded-full border-0 bg-gray-100 px-0 transition-all duration-200 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
+        onClick={() => void handleLanguageToggle()}
+        disabled={isSwitchingLanguage}
+        aria-busy={isSwitchingLanguage}
+        className="h-10 w-10 rounded-full border-0 bg-gray-100 px-0 transition-all duration-200 hover:bg-gray-200 disabled:cursor-wait disabled:opacity-70 dark:bg-gray-800 dark:hover:bg-gray-700"
         title={languageToggleTitle}
         aria-label={languageToggleTitle}
         data-testid="language-toggle"
       >
-        <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">{nextLanguageLabel}</span>
+        {isSwitchingLanguage ? (
+          <i className="i-mingcute-loading-line animate-spin text-base text-gray-600 dark:text-gray-300" />
+        ) : (
+          <span className="text-xs font-semibold text-gray-600 dark:text-gray-300">{nextLanguageLabel}</span>
+        )}
       </Button>
     </div>
   )

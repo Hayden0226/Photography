@@ -19,7 +19,7 @@ import {
 } from '~/icons'
 import { getImageFormat } from '~/lib/image-utils'
 import { convertExifGPSToDecimal } from '~/lib/map-utils'
-import { getLocalizedPhotoDescription } from '~/lib/photo-description'
+import { getLocalizedPhotoDescription, getLocalizedPhotoTitle } from '~/lib/photo-description'
 import type { PhotoManifest } from '~/types/photo'
 
 import { Row } from './ExifRow'
@@ -51,6 +51,7 @@ export const ExifPanel: FC<{
   const megaPixels = (((currentPhoto.height * currentPhoto.width) / 1000000) | 0).toString()
   const isVideoMedia = currentPhoto.mediaType === 'video'
   const formattedDuration = isVideoMedia && currentPhoto.duration ? formatDuration(currentPhoto.duration) : null
+  const localizedTitle = getLocalizedPhotoTitle(currentPhoto, i18n.language)
   const localizedDescription = getLocalizedPhotoDescription(currentPhoto, i18n.language)
   const formattedCaptureTime =
     formattedExifData?.dateTime ||
@@ -119,7 +120,7 @@ export const ExifPanel: FC<{
           <div>
             <h4 className="mb-2 text-sm font-medium text-white/80">{t('exif.basic.info')}</h4>
             <div className="space-y-1 text-sm">
-              <Row label={t('exif.filename')} value={currentPhoto.title} ellipsis={true} />
+              <Row label={t('exif.filename')} value={localizedTitle || currentPhoto.title} ellipsis={true} />
               {localizedDescription && <Row label={t('exif.description')} value={localizedDescription} />}
               <Row label={t('exif.format')} value={imageFormat} />
               <Row label={t('exif.dimensions')} value={`${currentPhoto.width} × ${currentPhoto.height}`} />

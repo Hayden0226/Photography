@@ -1,7 +1,7 @@
 import { Thumbhash, useScrollViewElement } from '@afilmory/ui'
 import clsx from 'clsx'
 import { m } from 'motion/react'
-import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useContextPhotos, usePhotoViewer } from '~/hooks/usePhotoViewer'
@@ -14,13 +14,96 @@ import {
 import { isMobileDevice } from '~/lib/device-viewport'
 import type { ImageLoaderManager } from '~/lib/image-loader-manager'
 import { getImageFormat } from '~/lib/image-utils'
-import { getPhotoAltText } from '~/lib/photo-description'
+import { getLocalizedPhotoTitle, getPhotoAltText } from '~/lib/photo-description'
 import type { PhotoManifest } from '~/types/photo'
 
 const PRIORITY_IMAGE_COUNT = 6
 const THUMBNAIL_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 350px'
 
 type VideoSource = Parameters<ImageLoaderManager['processVideo']>[0]
+
+const PhotoErrorOverlay = () => {
+  const { t } = useTranslation()
+
+  return (
+    <div className="bg-fill-quaternary text-text-tertiary absolute inset-0 flex items-center justify-center">
+      <div className="text-center">
+        <i className="i-mingcute-image-line text-2xl" />
+        <p className="mt-2 text-sm">{t('photo.error.loading')}</p>
+      </div>
+    </div>
+  )
+}
+
+const MasonryPhotoTitle = ({ photo }: { photo: PhotoManifest }) => {
+  const { i18n } = useTranslation()
+  const title = getLocalizedPhotoTitle(photo, i18n.language)
+
+  return <h3 className="mb-2 truncate text-sm font-medium opacity-0 group-hover:opacity-100">{title || photo.id}</h3>
+}
+
+const VideoMediaBadge = ({ formattedDuration }: { formattedDuration: string | null }) => {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-100 transition-opacity duration-200 group-hover:opacity-0">
+        <div className="flex size-10 items-center justify-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-md">
+          <i className="i-mingcute-play-fill ml-0.5 size-5" />
+        </div>
+      </div>
+      <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-xl bg-black/50 px-2 py-1 text-xs text-white">
+        <i className="i-mingcute-video-line size-4" />
+        <span>{t('photo.video.badge', { defaultValue: 'Video' })}</span>
+      </div>
+      {formattedDuration && (
+        <div className="absolute right-2 bottom-2 z-20 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium text-white">
+          {formattedDuration}
+        </div>
+      )}
+    </>
+  )
+}
+
+const LivePhotoIndicator = ({
+  isConvertingVideo,
+  videoConvertionError,
+}: {
+  isConvertingVideo: boolean
+  videoConvertionError: unknown
+}) => {
+  const { t } = useTranslation()
+
+  return (
+    <div
+      className={clsx(
+        'absolute z-20 flex items-center space-x-1 rounded-xl bg-black/50 px-1 py-1 text-xs text-white transition-all duration-200 hover:bg-black/70',
+        'top-2 left-2',
+        'flex-wrap gap-y-1',
+      )}
+      title={isMobileDevice ? t('photo.live.tooltip.mobile.main') : t('photo.live.tooltip.desktop.main')}
+    >
+      {isConvertingVideo ? (
+        <div className="flex items-center gap-1 px-1">
+          <i className="i-mingcute-loading-line animate-spin" />
+          <span>{t('loading.converting')}</span>
+        </div>
+      ) : (
+        <Fragment>
+          <i className="i-mingcute-live-photo-line size-4 shrink-0" />
+          <span className="mr-1 shrink-0">{t('photo.live.badge')}</span>
+          {videoConvertionError ? (
+            <span className={'bg-warning/20 ml-0.5 rounded px-1 text-xs'}>
+              <div className="text-yellow w-3 text-center font-bold" title={(videoConvertionError as Error).message}>
+                !
+              </div>
+            </span>
+          ) : null}
+        </Fragment>
+      )}
+    </div>
+  )
+}
 
 const formatDuration = (duration: number) => {
   const totalSeconds = Math.max(0, Math.round(duration))
@@ -35,10 +118,9 @@ const formatDuration = (duration: number) => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`
 }
 
-export const MasonryPhotoItem = ({ data, width, index }: { data: PhotoManifest; width: number; index: number }) => {
+const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; width: number; index: number }) => {
   const photos = useContextPhotos()
   const photoViewer = usePhotoViewer()
-  const { i18n, t } = useTranslation()
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
@@ -56,7 +138,7 @@ export const MasonryPhotoItem = ({ data, width, index }: { data: PhotoManifest; 
   const imageLoaderManagerRef = useRef<ImageLoaderManager | null>(null)
   const videoLoadStartedRef = useRef(false)
   const scrollElement = useScrollViewElement()
-  const photoAlt = getPhotoAltText(data, i18n.language)
+  const photoAlt = getPhotoAltText(data, 'zh-CN')
   const isPriorityImage = index < PRIORITY_IMAGE_COUNT
 
   const handleImageLoad = () => {
@@ -340,67 +422,14 @@ export const MasonryPhotoItem = ({ data, width, index }: { data: PhotoManifest; 
       )}
 
       {/* 错误状态 */}
-      {imageError && (
-        <div className="bg-fill-quaternary text-text-tertiary absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <i className="i-mingcute-image-line text-2xl" />
-            <p className="mt-2 text-sm">{t('photo.error.loading')}</p>
-          </div>
-        </div>
-      )}
+      {imageError && <PhotoErrorOverlay />}
 
       {/* 独立视频标识 */}
-      {isVideoMedia && (
-        <>
-          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-100 transition-opacity duration-200 group-hover:opacity-0">
-            <div className="flex size-10 items-center justify-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-md">
-              <i className="i-mingcute-play-fill ml-0.5 size-5" />
-            </div>
-          </div>
-          <div className="absolute top-2 left-2 z-20 flex items-center gap-1 rounded-xl bg-black/50 px-2 py-1 text-xs text-white">
-            <i className="i-mingcute-video-line size-4" />
-            <span>{t('photo.video.badge', { defaultValue: 'Video' })}</span>
-          </div>
-          {formattedDuration && (
-            <div className="absolute right-2 bottom-2 z-20 rounded bg-black/60 px-1.5 py-0.5 text-xs font-medium text-white">
-              {formattedDuration}
-            </div>
-          )}
-        </>
-      )}
+      {isVideoMedia && <VideoMediaBadge formattedDuration={formattedDuration} />}
 
       {/* Live Photo/Motion Photo 标识 */}
       {hasLivePhotoVideo && (
-        <div
-          className={clsx(
-            'absolute z-20 flex items-center space-x-1 rounded-xl bg-black/50 px-1 py-1 text-xs text-white transition-all duration-200 hover:bg-black/70',
-            'top-2 left-2',
-            'flex-wrap gap-y-1',
-          )}
-          title={isMobileDevice ? t('photo.live.tooltip.mobile.main') : t('photo.live.tooltip.desktop.main')}
-        >
-          {isConvertingVideo ? (
-            <div className="flex items-center gap-1 px-1">
-              <i className="i-mingcute-loading-line animate-spin" />
-              <span>{t('loading.converting')}</span>
-            </div>
-          ) : (
-            <Fragment>
-              <i className="i-mingcute-live-photo-line size-4 shrink-0" />
-              <span className="mr-1 shrink-0">{t('photo.live.badge')}</span>
-              {videoConvertionError ? (
-                <span className={'bg-warning/20 ml-0.5 rounded px-1 text-xs'}>
-                  <div
-                    className="text-yellow w-3 text-center font-bold"
-                    title={(videoConvertionError as Error).message}
-                  >
-                    !
-                  </div>
-                </span>
-              ) : null}
-            </Fragment>
-          )}
-        </div>
+        <LivePhotoIndicator isConvertingVideo={isConvertingVideo} videoConvertionError={videoConvertionError} />
       )}
 
       {/* 图片信息和 EXIF 覆盖层 */}
@@ -413,7 +442,7 @@ export const MasonryPhotoItem = ({ data, width, index }: { data: PhotoManifest; 
           <div className="absolute inset-x-0 bottom-0 p-4 pb-0 text-white">
             {/* 基本信息和标签 section */}
             <div className="mb-3 [&_*]:duration-300">
-              <h3 className="mb-2 truncate text-sm font-medium opacity-0 group-hover:opacity-100">{data.title}</h3>
+              <MasonryPhotoTitle photo={data} />
 
               {/* 基本信息 */}
               <div className="mb-2 flex flex-wrap gap-2 text-xs text-white/80 opacity-0 group-hover:opacity-100">
@@ -485,3 +514,8 @@ export const MasonryPhotoItem = ({ data, width, index }: { data: PhotoManifest; 
     </m.div>
   )
 }
+
+export const MasonryPhotoItem = memo(
+  MasonryPhotoItemBase,
+  (previous, next) => previous.data === next.data && previous.width === next.width && previous.index === next.index,
+)

@@ -4,6 +4,10 @@
     {
       "key": "随手/20260620111458.jpeg",
       "title": "暮色云隙里的粉光",
+      "titles": {
+        "zh-CN": "暮色云隙里的粉光",
+        "en": "Pink Light Between Evening Clouds"
+      },
       "descriptions": {
         "zh-CN": "拍摄于傍晚，粉色霞光从厚云的缝隙中透出，给蓝灰色天空添上一层柔和光色。",
         "en": ""
@@ -26,6 +30,10 @@
     {
       "key": "随手/20260619111704.jpeg",
       "title": "田野上方的层云",
+      "titles": {
+        "zh-CN": "田野上方的层云",
+        "en": "Layered Clouds Over the Field"
+      },
       "descriptions": {
         "zh-CN": "拍摄于田野边，低垂云层铺满天空，树影和草地在暮色里压成安静的轮廓。",
         "en": ""
@@ -48,6 +56,10 @@
     {
       "key": "随手/20260617072037.jpeg",
       "title": "椅背后的猫眼",
+      "titles": {
+        "zh-CN": "椅背后的猫眼",
+        "en": "Cat Eyes Behind the Chair"
+      },
       "descriptions": {
         "zh-CN": "拍摄于室内，灰色猫咪从椅背后探出眼睛，木质横梁把画面分成亲近的生活瞬间。",
         "en": ""
@@ -70,6 +82,10 @@
     {
       "key": "风光/20260615105932.jpeg",
       "title": "云雾里的广州塔",
+      "titles": {
+        "zh-CN": "云雾里的广州塔",
+        "en": "Canton Tower in the Clouds"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州，广州塔在云雾与暖光中露出塔身，前景人群衬出城市地标的尺度。",
         "en": ""
@@ -92,6 +108,10 @@
     {
       "key": "城市/20260613230252.jpeg",
       "title": "高德置地广场路口",
+      "titles": {
+        "zh-CN": "高德置地广场路口",
+        "en": "GT Land Plaza Intersection"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州，高处俯看高德置地广场旁的路口，车道箭头、天桥和绿树铺开城市秩序。",
         "en": ""
@@ -114,6 +134,10 @@
     {
       "key": "城市/20260601185329.jpeg",
       "title": "维多利亚剧院街角",
+      "titles": {
+        "zh-CN": "维多利亚剧院街角",
+        "en": "Victoria Theatre Street Corner"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦维多利亚，维多利亚宫剧院的白色立面与背后的现代楼宇形成鲜明对照。",
         "en": "Photographed at London Victoria, where the white facade of the Victoria Palace Theatre contrasts with the modern buildings behind it."
@@ -139,6 +163,10 @@
     {
       "key": "城市/20260601185325.jpeg",
       "title": "维多利亚站外的傍晚",
+      "titles": {
+        "zh-CN": "维多利亚站外的傍晚",
+        "en": "Evening Outside Victoria Station"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦维多利亚，地铁标识、高楼和街口车流交织成忙碌的城市傍晚。",
         "en": "Photographed at London Victoria, where the Underground sign, tall buildings, and street traffic come together in a busy evening scene."
@@ -164,6 +192,10 @@
     {
       "key": "城市/20260601155057.jpeg",
       "title": "海边钟楼",
+      "titles": {
+        "zh-CN": "海边钟楼",
+        "en": "Clock Tower by the Sea"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海边，钟楼立在云层与海面之间，成为安静海岸线上的垂直坐标。",
         "en": "Photographed on the British coast, where a clock tower stands between layered clouds and the sea as a quiet vertical marker."
@@ -189,6 +221,10 @@
     {
       "key": "无人机/20260601153148.jpeg",
       "title": "白崖与碧海航拍",
+      "titles": {
+        "zh-CN": "白崖与碧海航拍",
+        "en": "White Cliffs and Turquoise Sea from Above"
+      },
       "descriptions": {
         "zh-CN": "航拍于英国海岸，白色崖壁、浅色沙滩和碧绿色海水在俯瞰中展开。",
         "en": "Captured from above on the British coast, where white cliffs, pale sand, and turquoise water unfold below."
@@ -214,6 +250,10 @@
     {
       "key": "风光/20260601135942.jpg",
       "title": "藤蔓覆住的海边遗墙",
+      "titles": {
+        "zh-CN": "藤蔓覆住的海边遗墙",
+        "en": "Vines Over a Coastal Ruin Wall"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，藤蔓把旧石墙覆盖成一片绿色，留下自然与遗迹交叠的纹理。",
         "en": "Photographed on the British coast, where vines cover an old stone wall in green texture, blending nature with a weathered ruin."
@@ -239,6 +279,10 @@
     {
       "key": "风光/20260601135836.jpg",
       "title": "燧石拱洞里的海色",
+      "titles": {
+        "zh-CN": "燧石拱洞里的海色",
+        "en": "Sea Color Through a Flint Arch"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，燧石拱洞框住远处海色，粗粝石面与柔和蓝色形成对比。",
         "en": "Photographed on the British coast, where a flint arch frames the sea beyond, contrasting rough stone with soft blue water."
@@ -264,6 +308,10 @@
     {
       "key": "风光/20260601135612.jpg",
       "title": "白崖边的步道",
+      "titles": {
+        "zh-CN": "白崖边的步道",
+        "en": "Cliffside Path by the White Cliffs"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，白色崖壁、草丛和海面沿着步道层层展开。",
         "en": "Photographed on the British coast, where white cliffs, grasses, and the sea open up along the cliffside path."
@@ -289,6 +337,10 @@
     {
       "key": "风光/20260601134856.jpeg",
       "title": "白崖拱门与沙滩",
+      "titles": {
+        "zh-CN": "白崖拱门与沙滩",
+        "en": "White Cliff Arch and Beach"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，白色海蚀拱门立在沙滩与水面之间，显出海岸线的层次。",
         "en": "Photographed on the British coast, where a white sea arch stands between sand and water, revealing the layers of the shoreline."
@@ -314,6 +366,10 @@
     {
       "key": "风光/20260601134849.jpeg",
       "title": "白崖上的城堡轮廓",
+      "titles": {
+        "zh-CN": "白崖上的城堡轮廓",
+        "en": "Castle Silhouette Above the White Cliffs"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，石砌建筑立在白崖之上，与悬崖纹理和蓝天相互映衬。",
         "en": "Photographed on the British coast, where a stone building rises above the white cliffs against the textured rock and blue sky."
@@ -339,6 +395,10 @@
     {
       "key": "风光/20260601133657.jpg",
       "title": "白崖下奔跑的狗",
+      "titles": {
+        "zh-CN": "白崖下奔跑的狗",
+        "en": "Dogs Running Beneath the White Cliffs"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，两只狗在沙滩和浪花间奔跑，远处白崖拱门静静展开。",
         "en": "Photographed on the British coast, where two dogs run through sand and surf below a quiet white cliff arch."
@@ -364,6 +424,10 @@
     {
       "key": "风光/20260601132636.jpg",
       "title": "海边停车处",
+      "titles": {
+        "zh-CN": "海边停车处",
+        "en": "Parking Spot by the Sea"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英国海岸，草地、停靠的车辆和远处海面构成一帧朴素的旅途风景。",
         "en": "Photographed on the British coast, where grass, parked vehicles, and the sea form a simple roadside travel scene."
@@ -389,6 +453,10 @@
     {
       "key": "风光/20260601120347.jpeg",
       "title": "蓝天里的流云",
+      "titles": {
+        "zh-CN": "蓝天里的流云",
+        "en": "Drifting Clouds in Blue Sky"
+      },
       "descriptions": {
         "zh-CN": "拍摄于晴朗午后，细长云带在蓝天中舒展开，留下轻盈的天空纹理。",
         "en": "Photographed on a clear afternoon, where thin bands of cloud stretch across blue sky in a light, airy pattern."
@@ -414,6 +482,10 @@
     {
       "key": "无人机/20260601114459.jpg",
       "title": "白崖灯塔航拍",
+      "titles": {
+        "zh-CN": "白崖灯塔航拍",
+        "en": "White Cliffs Lighthouse from Above"
+      },
       "descriptions": {
         "zh-CN": "航拍于英国海岸，白崖、灯塔和海边社区沿着海岸线铺展开来，远处海面停着点点船影。",
         "en": "Captured from above on the British coast, where white cliffs, a lighthouse, and a seaside neighborhood stretch along the water, with ships dotting the horizon."
@@ -439,6 +511,10 @@
     {
       "key": "无人机/20260601113900.jpg",
       "title": "沙滩海堤航拍",
+      "titles": {
+        "zh-CN": "沙滩海堤航拍",
+        "en": "Beach and Seawall from Above"
+      },
       "descriptions": {
         "zh-CN": "航拍于英国海岸，沙滩、海堤和沿岸小镇在蓝绿色海水旁展开。",
         "en": "Captured from above on the British coast, where the beach, sea wall, and coastal town open out beside blue-green water."
@@ -464,6 +540,10 @@
     {
       "key": "城市/20260517132941.jpeg",
       "title": "小黄瓜楼下的云影",
+      "titles": {
+        "zh-CN": "小黄瓜楼下的云影",
+        "en": "Cloud Shadows Below the Gherkin"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦金融城，小黄瓜大楼和周边高楼在云影下露出清晰轮廓。",
         "en": "Photographed in the City of London, where the Gherkin and nearby towers cut a clear silhouette beneath passing clouds."
@@ -489,6 +569,10 @@
     {
       "key": "城市/20260516121707.jpeg",
       "title": "伦敦教堂云下街景",
+      "titles": {
+        "zh-CN": "伦敦教堂云下街景",
+        "en": "London Church Street Scene Under Clouds"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，教堂尖塔、砖墙街巷和流动云层组成一帧安静的城市街景。",
         "en": "Photographed in London, where a church spire, brick streets, and moving clouds form a quiet city street scene."
@@ -514,6 +598,10 @@
     {
       "key": "随手/20260516092324.jpeg",
       "title": "伦敦咖啡节彩棚",
+      "titles": {
+        "zh-CN": "伦敦咖啡节彩棚",
+        "en": "Colorful Canopies at the London Coffee Festival"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦咖啡节，彩色顶棚、灯串和吧台人群记录了热闹的室内市集气氛。",
         "en": "Photographed at the London Coffee Festival, where colorful canopies, string lights, and the busy bar counter capture the feel of an indoor market."
@@ -539,6 +627,10 @@
     {
       "key": "视频/20260414.mov",
       "title": "芝加哥与纽约剪辑",
+      "titles": {
+        "zh-CN": "芝加哥与纽约剪辑",
+        "en": "Chicago and New York Montage"
+      },
       "descriptions": {
         "zh-CN": "拍摄于美国，这段剪辑串联芝加哥与纽约的城市天际线、水岸和旅途片段。",
         "en": "Filmed in the United States, this clip brings together travel fragments from Chicago and New York, including skylines, waterfronts, and city moments."
@@ -564,6 +656,10 @@
     {
       "key": "风光/20260413193902.jpeg",
       "title": "密歇根湖上的小船",
+      "titles": {
+        "zh-CN": "密歇根湖上的小船",
+        "en": "Small Boats on Lake Michigan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，港湾里的船只、水面和远山组成平静的旅行场景。",
         "en": "Photographed in Chicago, where boats, water, and distant hills form a calm harbor scene."
@@ -589,6 +685,10 @@
     {
       "key": "城市/20260412210032.jpeg",
       "title": "芝加哥街角餐厅",
+      "titles": {
+        "zh-CN": "芝加哥街角餐厅",
+        "en": "Chicago Corner Restaurant"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Chicago, where street architecture, people, and light form a compact travel moment."
@@ -614,6 +714,10 @@
     {
       "key": "城市/20260412194241.jpeg",
       "title": "湖面上的芝加哥天际线",
+      "titles": {
+        "zh-CN": "湖面上的芝加哥天际线",
+        "en": "Chicago Skyline Across the Water"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in Chicago, where the skyline opens across the water with a clear urban silhouette."
@@ -639,6 +743,10 @@
     {
       "key": "无人机/20260412193504.jpg",
       "title": "芝加哥湖岸航拍",
+      "titles": {
+        "zh-CN": "芝加哥湖岸航拍",
+        "en": "Chicago Lakefront from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Chicago, where an aerial view lays out roads, towers, and the city texture."
@@ -664,6 +772,10 @@
     {
       "key": "无人机/20260411225731.jpg",
       "title": "芝加哥立交航拍",
+      "titles": {
+        "zh-CN": "芝加哥立交航拍",
+        "en": "Chicago Interchange from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Chicago, where an aerial view lays out roads, towers, and the city texture."
@@ -689,6 +801,10 @@
     {
       "key": "无人机/20260411210013.jpg",
       "title": "芝加哥街谷远望",
+      "titles": {
+        "zh-CN": "芝加哥街谷远望",
+        "en": "Looking Down a Chicago Street Canyon"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Chicago, where street architecture, people, and light form a compact travel moment."
@@ -714,6 +830,10 @@
     {
       "key": "无人机/20260411174529.jpg",
       "title": "芝加哥河岸高楼",
+      "titles": {
+        "zh-CN": "芝加哥河岸高楼",
+        "en": "Chicago Riverfront Towers"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，河道穿过楼群，水面和建筑形成纵深。",
         "en": "Photographed in Chicago, where the river cuts through the buildings and adds depth to the scene."
@@ -739,6 +859,10 @@
     {
       "key": "无人机/20260411170343.jpg",
       "title": "千禧公园航拍",
+      "titles": {
+        "zh-CN": "千禧公园航拍",
+        "en": "Millennium Park from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Chicago, where an aerial view lays out roads, towers, and the city texture."
@@ -764,6 +888,10 @@
     {
       "key": "城市/20260411164214.jpeg",
       "title": "云门前的广场",
+      "titles": {
+        "zh-CN": "云门前的广场",
+        "en": "The Plaza Before Cloud Gate"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Chicago, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -789,6 +917,10 @@
     {
       "key": "城市/20260411000456.jpeg",
       "title": "芝加哥窗边街景",
+      "titles": {
+        "zh-CN": "芝加哥窗边街景",
+        "en": "Chicago Street View by the Window"
+      },
       "descriptions": {
         "zh-CN": "拍摄于芝加哥，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Chicago, where street architecture, people, and light form a compact travel moment."
@@ -814,6 +946,10 @@
     {
       "key": "风光/20260410102438.jpeg",
       "title": "纽约降落前的机翼",
+      "titles": {
+        "zh-CN": "纽约降落前的机翼",
+        "en": "Wing Before Landing in New York"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，机窗外的天空、云层和机翼记录了旅途中的过渡时刻。",
         "en": "Photographed in New York City, where sky, clouds, and wing outside the window mark an in-between travel moment."
@@ -839,6 +975,10 @@
     {
       "key": "无人机/20260409104624.jpeg",
       "title": "纽约港日落航拍",
+      "titles": {
+        "zh-CN": "纽约港日落航拍",
+        "en": "New York Harbor Sunset from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于新泽西哈德逊河畔，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in the New Jersey waterfront, where the skyline and water are layered in warm sunset light."
@@ -864,6 +1004,10 @@
     {
       "key": "无人机/20260409104222.jpeg",
       "title": "哈德逊河畔日落",
+      "titles": {
+        "zh-CN": "哈德逊河畔日落",
+        "en": "Sunset by the Hudson River"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in New York Harbor, where the skyline and water are layered in warm sunset light."
@@ -889,6 +1033,10 @@
     {
       "key": "城市/20260408210418.jpeg",
       "title": "纽约老城建筑",
+      "titles": {
+        "zh-CN": "纽约老城建筑",
+        "en": "Old City Architecture in New York"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in New York Harbor, where historic architecture and street life create a layered city memory."
@@ -914,6 +1062,10 @@
     {
       "key": "城市/20260408205056.jpeg",
       "title": "曼哈顿桥下",
+      "titles": {
+        "zh-CN": "曼哈顿桥下",
+        "en": "Under the Manhattan Bridge"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，桥梁与城市背景交织，线条把视线引向远处。",
         "en": "Photographed in New York Harbor, where bridge lines lead the eye into the city beyond."
@@ -939,6 +1091,10 @@
     {
       "key": "风光/20260408204352.jpeg",
       "title": "纽约春日花枝",
+      "titles": {
+        "zh-CN": "纽约春日花枝",
+        "en": "Spring Blossoms in New York"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，花树在城市边缘盛开，柔化了街景和天空。",
         "en": "Photographed in New York Harbor, where blossoms soften the city edge and the sky around it."
@@ -964,6 +1120,10 @@
     {
       "key": "城市/20260408204030.jpeg",
       "title": "布鲁克林桥与世贸中心",
+      "titles": {
+        "zh-CN": "布鲁克林桥与世贸中心",
+        "en": "Brooklyn Bridge and One World Trade Center"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，桥梁与城市背景交织，线条把视线引向远处。",
         "en": "Photographed in New York Harbor, where bridge lines lead the eye into the city beyond."
@@ -989,6 +1149,10 @@
     {
       "key": "无人机/20260408174000.jpeg",
       "title": "自由女神像远眺",
+      "titles": {
+        "zh-CN": "自由女神像远眺",
+        "en": "Distant View of the Statue of Liberty"
+      },
       "descriptions": {
         "zh-CN": "拍摄于新泽西哈德逊河畔，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in the New Jersey waterfront, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -1014,6 +1178,10 @@
     {
       "key": "无人机/20260408173745.jpeg",
       "title": "纽约高楼航拍",
+      "titles": {
+        "zh-CN": "纽约高楼航拍",
+        "en": "New York Towers from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于新泽西哈德逊河畔，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in the New Jersey waterfront, where an aerial view lays out roads, towers, and the city texture."
@@ -1039,6 +1207,10 @@
     {
       "key": "无人机/20260408173651.jpeg",
       "title": "纽约城区航拍",
+      "titles": {
+        "zh-CN": "纽约城区航拍",
+        "en": "New York City from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于新泽西哈德逊河畔，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in the New Jersey waterfront, where an aerial view lays out roads, towers, and the city texture."
@@ -1064,6 +1236,10 @@
     {
       "key": "城市/20260407205029.jpeg",
       "title": "曼哈顿街头高楼",
+      "titles": {
+        "zh-CN": "曼哈顿街头高楼",
+        "en": "Manhattan Street Towers"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in New York City, where street architecture, people, and light form a compact travel moment."
@@ -1089,6 +1265,10 @@
     {
       "key": "城市/20260407193943.jpeg",
       "title": "中央公园湖景",
+      "titles": {
+        "zh-CN": "中央公园湖景",
+        "en": "Central Park Lake View"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Photographed in New York City, where trees, lawns, and water slow the frame down inside the park."
@@ -1114,6 +1294,10 @@
     {
       "key": "城市/20260407193601.jpeg",
       "title": "中央公园春花与塔楼",
+      "titles": {
+        "zh-CN": "中央公园春花与塔楼",
+        "en": "Central Park Blossoms and Towers"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，花树在城市边缘盛开，柔化了街景和天空。",
         "en": "Photographed in New York City, where blossoms soften the city edge and the sky around it."
@@ -1139,6 +1323,10 @@
     {
       "key": "城市/20260407185745.jpeg",
       "title": "纽约街口春光",
+      "titles": {
+        "zh-CN": "纽约街口春光",
+        "en": "Spring Light at a New York Street Corner"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in New York City, where street architecture, people, and light form a compact travel moment."
@@ -1164,6 +1352,10 @@
     {
       "key": "城市/20260407182729.jpeg",
       "title": "时代广场咖啡",
+      "titles": {
+        "zh-CN": "时代广场咖啡",
+        "en": "Coffee in Times Square"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，饮品和周围环境一起记录了旅途中的短暂停留。",
         "en": "Photographed in New York City, where a drink and its surroundings record a brief travel pause."
@@ -1189,6 +1381,10 @@
     {
       "key": "城市/20260407182109.jpeg",
       "title": "时代广场人潮",
+      "titles": {
+        "zh-CN": "时代广场人潮",
+        "en": "Crowds in Times Square"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in New York City, where street architecture, people, and light form a compact travel moment."
@@ -1214,6 +1410,10 @@
     {
       "key": "城市/20260406161109.jpeg",
       "title": "曼哈顿桥晴空",
+      "titles": {
+        "zh-CN": "曼哈顿桥晴空",
+        "en": "Manhattan Bridge Under Clear Sky"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，桥梁与城市背景交织，线条把视线引向远处。",
         "en": "Photographed in New York Harbor, where bridge lines lead the eye into the city beyond."
@@ -1239,6 +1439,10 @@
     {
       "key": "城市/20260406155216.jpeg",
       "title": "自由女神像晴空",
+      "titles": {
+        "zh-CN": "自由女神像晴空",
+        "en": "Statue of Liberty Under Clear Sky"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in New York Harbor, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -1264,6 +1468,10 @@
     {
       "key": "城市/20260406153854.jpeg",
       "title": "纽约下城天际线",
+      "titles": {
+        "zh-CN": "纽约下城天际线",
+        "en": "Lower Manhattan Skyline"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in New York Harbor, where the skyline opens across the water with a clear urban silhouette."
@@ -1289,6 +1497,10 @@
     {
       "key": "城市/20260406153708.jpeg",
       "title": "纽约下城天际线",
+      "titles": {
+        "zh-CN": "纽约下城天际线",
+        "en": "Lower Manhattan Skyline"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约下城水岸，晴朗蓝天下的天际线沿河展开。",
         "en": "Photographed on the Lower Manhattan waterfront, with the skyline stretching along the river under a clear blue sky."
@@ -1314,6 +1526,10 @@
     {
       "key": "城市/20260406012707.jpeg",
       "title": "纽约夜色水岸",
+      "titles": {
+        "zh-CN": "纽约夜色水岸",
+        "en": "New York Waterfront at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in New York Harbor, where night lights from the towers reflect across water and streets."
@@ -1339,6 +1555,10 @@
     {
       "key": "风光/20260404221208.jpeg",
       "title": "纽瓦克樱花小径",
+      "titles": {
+        "zh-CN": "纽瓦克樱花小径",
+        "en": "Cherry Blossom Path in Newark"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽瓦克樱花公园，花树在城市边缘盛开，柔化了街景和天空。",
         "en": "Photographed in Newark Branch Brook Park, where blossoms soften the city edge and the sky around it."
@@ -1364,6 +1584,10 @@
     {
       "key": "风光/20260404173524.jpeg",
       "title": "枝头樱花盛开",
+      "titles": {
+        "zh-CN": "枝头樱花盛开",
+        "en": "Cherry Blossoms on the Branches"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽瓦克樱花公园，花树在城市边缘盛开，柔化了街景和天空。",
         "en": "Photographed in Newark Branch Brook Park, where blossoms soften the city edge and the sky around it."
@@ -1389,6 +1613,10 @@
     {
       "key": "城市/20260404140240.jpeg",
       "title": "哈德逊河对岸天际线",
+      "titles": {
+        "zh-CN": "哈德逊河对岸天际线",
+        "en": "Skyline Across the Hudson River"
+      },
       "descriptions": {
         "zh-CN": "拍摄于新泽西哈德逊河畔，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in the New Jersey waterfront, where the skyline opens across the water with a clear urban silhouette."
@@ -1414,6 +1642,10 @@
     {
       "key": "城市/20260404022724.jpeg",
       "title": "新泽西夜望曼哈顿",
+      "titles": {
+        "zh-CN": "新泽西夜望曼哈顿",
+        "en": "Manhattan at Night from New Jersey"
+      },
       "descriptions": {
         "zh-CN": "拍摄于新泽西哈德逊河畔，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in the New Jersey waterfront, where night lights from the towers reflect across water and streets."
@@ -1439,6 +1671,10 @@
     {
       "key": "城市/20260402195144.jpg",
       "title": "伦敦大本钟黄昏",
+      "titles": {
+        "zh-CN": "伦敦大本钟黄昏",
+        "en": "Big Ben at Dusk"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -1464,6 +1700,10 @@
     {
       "key": "城市/20260402191024.jpg",
       "title": "泰晤士河畔伦敦天际线",
+      "titles": {
+        "zh-CN": "泰晤士河畔伦敦天际线",
+        "en": "London Skyline by the Thames"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in London, where the skyline opens across the water with a clear urban silhouette."
@@ -1489,6 +1729,10 @@
     {
       "key": "风光/20260330103304.jpg",
       "title": "多佛白崖近景",
+      "titles": {
+        "zh-CN": "多佛白崖近景",
+        "en": "Close View of the White Cliffs of Dover"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，白色海崖贴着海面展开，风和浪让画面更开阔。",
         "en": "Photographed in the White Cliffs of Dover, where white cliffs stretch along the sea, opened by wind and waves."
@@ -1514,6 +1758,10 @@
     {
       "key": "风光/20260330092222.jpeg",
       "title": "海面上的多佛白崖",
+      "titles": {
+        "zh-CN": "海面上的多佛白崖",
+        "en": "White Cliffs of Dover Above the Sea"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，白色海崖贴着海面展开，风和浪让画面更开阔。",
         "en": "Photographed in the White Cliffs of Dover, where white cliffs stretch along the sea, opened by wind and waves."
@@ -1539,6 +1787,10 @@
     {
       "key": "风光/20260330075251.jpg",
       "title": "加来海岸晨光",
+      "titles": {
+        "zh-CN": "加来海岸晨光",
+        "en": "Morning Light on the Calais Coast"
+      },
       "descriptions": {
         "zh-CN": "拍摄于加来，港湾里的船只、水面和远山组成平静的旅行场景。",
         "en": "Photographed in Calais, where boats, water, and distant hills form a calm harbor scene."
@@ -1564,6 +1816,10 @@
     {
       "key": "城市/20260329144101.jpg",
       "title": "加来市政厅立面",
+      "titles": {
+        "zh-CN": "加来市政厅立面",
+        "en": "Calais Town Hall Facade"
+      },
       "descriptions": {
         "zh-CN": "拍摄于加来，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Calais, where historic architecture and street life create a layered city memory."
@@ -1589,6 +1845,10 @@
     {
       "key": "城市/20260329142650.jpg",
       "title": "加来教堂塔楼",
+      "titles": {
+        "zh-CN": "加来教堂塔楼",
+        "en": "Calais Church Tower"
+      },
       "descriptions": {
         "zh-CN": "拍摄于加来，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Calais, where historic architecture and street life create a layered city memory."
@@ -1614,6 +1874,10 @@
     {
       "key": "城市/20260329133558.jpg",
       "title": "加来街角纪念碑",
+      "titles": {
+        "zh-CN": "加来街角纪念碑",
+        "en": "Calais Street Corner Monument"
+      },
       "descriptions": {
         "zh-CN": "拍摄于加来，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Calais, where historic architecture and street life create a layered city memory."
@@ -1639,6 +1903,10 @@
     {
       "key": "风光/20260328185228.jpg",
       "title": "英吉利海峡落日",
+      "titles": {
+        "zh-CN": "英吉利海峡落日",
+        "en": "Sunset Over the English Channel"
+      },
       "descriptions": {
         "zh-CN": "拍摄于加来，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in Calais, where the sea catches warm sunset light under layered clouds."
@@ -1664,6 +1932,10 @@
     {
       "key": "风光/20260328182744.jpg",
       "title": "白崖前的渡轮",
+      "titles": {
+        "zh-CN": "白崖前的渡轮",
+        "en": "Ferry Before the White Cliffs"
+      },
       "descriptions": {
         "zh-CN": "拍摄于加来，渡轮、码头和水面记录了城市之间的移动感。",
         "en": "Photographed in Calais, where ferry, pier, and water record motion between places."
@@ -1689,6 +1961,10 @@
     {
       "key": "风光/20260328165428.jpg",
       "title": "海峡云隙光",
+      "titles": {
+        "zh-CN": "海峡云隙光",
+        "en": "Light Through Clouds Over the Channel"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in the White Cliffs of Dover, where the sea catches warm sunset light under layered clouds."
@@ -1714,6 +1990,10 @@
     {
       "key": "风光/20260328164019.jpeg",
       "title": "海峡风暴云",
+      "titles": {
+        "zh-CN": "海峡风暴云",
+        "en": "Storm Clouds Over the Channel"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Photographed in the White Cliffs of Dover, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -1739,6 +2019,10 @@
     {
       "key": "风光/20260328134207.jpg",
       "title": "多佛港口渡轮",
+      "titles": {
+        "zh-CN": "多佛港口渡轮",
+        "en": "Ferry in Dover Harbor"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，渡轮、码头和水面记录了城市之间的移动感。",
         "en": "Photographed in the White Cliffs of Dover, where ferry, pier, and water record motion between places."
@@ -1764,6 +2048,10 @@
     {
       "key": "风光/20260328133445.jpg",
       "title": "多佛草坡与海港",
+      "titles": {
+        "zh-CN": "多佛草坡与海港",
+        "en": "Dover Grass Slope and Harbor"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，白色海崖贴着海面展开，风和浪让画面更开阔。",
         "en": "Photographed in the White Cliffs of Dover, where white cliffs stretch along the sea, opened by wind and waves."
@@ -1789,6 +2077,10 @@
     {
       "key": "风光/20260328131541.jpg",
       "title": "白崖边缘海水",
+      "titles": {
+        "zh-CN": "白崖边缘海水",
+        "en": "Water Along the Edge of the White Cliffs"
+      },
       "descriptions": {
         "zh-CN": "拍摄于多佛白崖，白色海崖贴着海面展开，风和浪让画面更开阔。",
         "en": "Photographed in the White Cliffs of Dover, where white cliffs stretch along the sea, opened by wind and waves."
@@ -1814,6 +2106,10 @@
     {
       "key": "无人机/20260314192519.jpg",
       "title": "伦敦夜航拍",
+      "titles": {
+        "zh-CN": "伦敦夜航拍",
+        "en": "London Night Aerial"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in London, where a night aerial view turns streets and towers into a bright pattern."
@@ -1839,6 +2135,10 @@
     {
       "key": "无人机/20260314192449.jpg",
       "title": "伦敦城市夜景",
+      "titles": {
+        "zh-CN": "伦敦城市夜景",
+        "en": "London City Nightscape"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in London, where a night aerial view turns streets and towers into a bright pattern."
@@ -1864,6 +2164,10 @@
     {
       "key": "城市/20260312182734.jpeg",
       "title": "伦敦春夜路牌",
+      "titles": {
+        "zh-CN": "伦敦春夜路牌",
+        "en": "London Road Sign on a Spring Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -1889,6 +2193,10 @@
     {
       "key": "风光/20260312180812.jpeg",
       "title": "伦敦街边花树",
+      "titles": {
+        "zh-CN": "伦敦街边花树",
+        "en": "Flowering Tree by a London Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，花树在城市边缘盛开，柔化了街景和天空。",
         "en": "Photographed in London, where blossoms soften the city edge and the sky around it."
@@ -1914,6 +2222,10 @@
     {
       "key": "风光/20260311181229.jpg",
       "title": "阿克斯布里奇公园",
+      "titles": {
+        "zh-CN": "阿克斯布里奇公园",
+        "en": "Uxbridge Park"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Photographed in Uxbridge, London, where trees, lawns, and water slow the frame down inside the park."
@@ -1939,6 +2251,10 @@
     {
       "key": "无人机/20260311180216.jpg",
       "title": "阿克斯布里奇运河船",
+      "titles": {
+        "zh-CN": "阿克斯布里奇运河船",
+        "en": "Canal Boat in Uxbridge"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Photographed in Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -1964,6 +2280,10 @@
     {
       "key": "无人机/20260311180202.jpg",
       "title": "阿克斯布里奇船闸",
+      "titles": {
+        "zh-CN": "阿克斯布里奇船闸",
+        "en": "Uxbridge Canal Lock"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Photographed in Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -1989,6 +2309,10 @@
     {
       "key": "无人机/20260311180007.jpg",
       "title": "伦敦郊外日落航拍",
+      "titles": {
+        "zh-CN": "伦敦郊外日落航拍",
+        "en": "Suburban London Sunset from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Uxbridge, London, where an aerial view lays out roads, towers, and the city texture."
@@ -2014,6 +2338,10 @@
     {
       "key": "无人机/20260305183315.jpg",
       "title": "伯明翰夜间路口航拍",
+      "titles": {
+        "zh-CN": "伯明翰夜间路口航拍",
+        "en": "Birmingham Night Intersection from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in Birmingham, where a night aerial view turns streets and towers into a bright pattern."
@@ -2039,6 +2367,10 @@
     {
       "key": "无人机/20260305183256.jpg",
       "title": "伯明翰夜色城区",
+      "titles": {
+        "zh-CN": "伯明翰夜色城区",
+        "en": "Birmingham City at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in Birmingham, where a night aerial view turns streets and towers into a bright pattern."
@@ -2064,6 +2396,10 @@
     {
       "key": "无人机/20260305183105.jpg",
       "title": "伯明翰蓝调航拍",
+      "titles": {
+        "zh-CN": "伯明翰蓝调航拍",
+        "en": "Blue-Hour Birmingham from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in Birmingham, where a night aerial view turns streets and towers into a bright pattern."
@@ -2089,6 +2425,10 @@
     {
       "key": "无人机/20260305182317.jpg",
       "title": "伯明翰市中心夜景",
+      "titles": {
+        "zh-CN": "伯明翰市中心夜景",
+        "en": "Birmingham City Center at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in Birmingham, where a night aerial view turns streets and towers into a bright pattern."
@@ -2114,6 +2454,10 @@
     {
       "key": "无人机/20260305182219.jpg",
       "title": "伯明翰道路光流",
+      "titles": {
+        "zh-CN": "伯明翰道路光流",
+        "en": "Birmingham Road Light Trails"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in Birmingham, where a night aerial view turns streets and towers into a bright pattern."
@@ -2139,6 +2483,10 @@
     {
       "key": "城市/20260305163032.jpg",
       "title": "伯明翰教堂尖顶",
+      "titles": {
+        "zh-CN": "伯明翰教堂尖顶",
+        "en": "Birmingham Church Spire"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Birmingham, where historic architecture and street life create a layered city memory."
@@ -2164,6 +2512,10 @@
     {
       "key": "城市/20260305133322.jpg",
       "title": "伯明翰钟楼夹景",
+      "titles": {
+        "zh-CN": "伯明翰钟楼夹景",
+        "en": "Birmingham Clock Tower Framed Between Buildings"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Birmingham, where historic architecture and street life create a layered city memory."
@@ -2189,6 +2541,10 @@
     {
       "key": "无人机/20260305115949.jpg",
       "title": "伯明翰城市高处",
+      "titles": {
+        "zh-CN": "伯明翰城市高处",
+        "en": "Birmingham from a High Viewpoint"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Birmingham, where an aerial view lays out roads, towers, and the city texture."
@@ -2214,6 +2570,10 @@
     {
       "key": "无人机/20260305101648.jpg",
       "title": "伯明翰白日航拍",
+      "titles": {
+        "zh-CN": "伯明翰白日航拍",
+        "en": "Birmingham Daytime Aerial"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伯明翰，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Birmingham, where an aerial view lays out roads, towers, and the city texture."
@@ -2239,6 +2599,10 @@
     {
       "key": "风光/20260304181033.jpg",
       "title": "阿克斯布里奇站台晨光",
+      "titles": {
+        "zh-CN": "阿克斯布里奇站台晨光",
+        "en": "Morning Light on the Uxbridge Platform"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，站台、轨道和天光组成出行中的安静间隔。",
         "en": "Photographed in Uxbridge, London, where platform, tracks, and sky make a quiet interval in transit."
@@ -2264,6 +2628,10 @@
     {
       "key": "无人机/20260301171801.jpg",
       "title": "伦敦阴天航拍",
+      "titles": {
+        "zh-CN": "伦敦阴天航拍",
+        "en": "Cloudy London from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in London, where an aerial view lays out roads, towers, and the city texture."
@@ -2289,6 +2657,10 @@
     {
       "key": "无人机/20260301171522.jpg",
       "title": "伦敦城市塔楼",
+      "titles": {
+        "zh-CN": "伦敦城市塔楼",
+        "en": "London City Towers"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in London, where an aerial view lays out roads, towers, and the city texture."
@@ -2314,6 +2686,10 @@
     {
       "key": "无人机/20260225125917.jpg",
       "title": "阿克斯布里奇绿地航拍",
+      "titles": {
+        "zh-CN": "阿克斯布里奇绿地航拍",
+        "en": "Uxbridge Green Space from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Uxbridge, London, where an aerial view lays out roads, towers, and the city texture."
@@ -2339,6 +2715,10 @@
     {
       "key": "无人机/20260225125511.jpg",
       "title": "阿克斯布里奇车场航拍",
+      "titles": {
+        "zh-CN": "阿克斯布里奇车场航拍",
+        "en": "Uxbridge Rail Yard from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，航拍视角把道路、楼群和城市肌理一起展开。",
         "en": "Photographed in Uxbridge, London, where an aerial view lays out roads, towers, and the city texture."
@@ -2364,6 +2744,10 @@
     {
       "key": "城市/20260222142211.jpeg",
       "title": "国家美术馆前",
+      "titles": {
+        "zh-CN": "国家美术馆前",
+        "en": "In Front of the National Gallery"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -2389,6 +2773,10 @@
     {
       "key": "城市/20260216152243.jpeg",
       "title": "伦敦街头教堂尖顶",
+      "titles": {
+        "zh-CN": "伦敦街头教堂尖顶",
+        "en": "Church Spire on a London Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in London, where historic architecture and street life create a layered city memory."
@@ -2414,6 +2802,10 @@
     {
       "key": "城市/20260117171806.jpeg",
       "title": "伦敦水岸夜楼",
+      "titles": {
+        "zh-CN": "伦敦水岸夜楼",
+        "en": "London Waterfront Towers at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in London, where night lights from the towers reflect across water and streets."
@@ -2439,6 +2831,10 @@
     {
       "key": "风光/20260116125810.jpeg",
       "title": "阿克斯布里奇冬日运河",
+      "titles": {
+        "zh-CN": "阿克斯布里奇冬日运河",
+        "en": "Uxbridge Canal in Winter"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Photographed in Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -2464,6 +2860,10 @@
     {
       "key": "随手/20260108110513.jpeg",
       "title": "广州花都车站",
+      "titles": {
+        "zh-CN": "广州花都车站",
+        "en": "Huadu Station in Guangzhou"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州花都，站台、轨道和天光组成出行中的安静间隔。",
         "en": "Photographed in Huadu, Guangzhou, where platform, tracks, and sky make a quiet interval in transit."
@@ -2489,6 +2889,10 @@
     {
       "key": "随手/20260101213228.jpeg",
       "title": "江门夜空烟花",
+      "titles": {
+        "zh-CN": "江门夜空烟花",
+        "en": "Fireworks in the Jiangmen Night Sky"
+      },
       "descriptions": {
         "zh-CN": "拍摄于江门，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Jiangmen, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -2514,6 +2918,10 @@
     {
       "key": "风光/20251229163804.jpeg",
       "title": "维港夕阳水面",
+      "titles": {
+        "zh-CN": "维港夕阳水面",
+        "en": "Sunset Water in Victoria Harbour"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where the sea catches warm sunset light under layered clouds."
@@ -2539,6 +2947,10 @@
     {
       "key": "城市/20251228222500.jpeg",
       "title": "深圳湾夜景",
+      "titles": {
+        "zh-CN": "深圳湾夜景",
+        "en": "Shenzhen Bay Nightscape"
+      },
       "descriptions": {
         "zh-CN": "拍摄于深圳湾，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Shenzhen Bay, where night lights from the towers reflect across water and streets."
@@ -2564,6 +2976,10 @@
     {
       "key": "城市/20251228221148.jpeg",
       "title": "深圳湾灯火倒影",
+      "titles": {
+        "zh-CN": "深圳湾灯火倒影",
+        "en": "Lights Reflected in Shenzhen Bay"
+      },
       "descriptions": {
         "zh-CN": "拍摄于深圳湾，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Shenzhen Bay, where night lights from the towers reflect across water and streets."
@@ -2589,6 +3005,10 @@
     {
       "key": "风光/20251225184623.jpeg",
       "title": "泰山夜登石阶",
+      "titles": {
+        "zh-CN": "泰山夜登石阶",
+        "en": "Night Climb on Mount Tai Steps"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，古建筑、石阶和山色把旅途的历史感留在画面里。",
         "en": "Photographed in Mount Tai, where historic architecture, steps, and mountains keep a sense of place in the frame."
@@ -2614,6 +3034,10 @@
     {
       "key": "风光/20251225183430.jpeg",
       "title": "泰山夜色山路",
+      "titles": {
+        "zh-CN": "泰山夜色山路",
+        "en": "Mount Tai Mountain Road at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Mount Tai, where mountains, trees, and mist build a layered natural scene."
@@ -2639,6 +3063,10 @@
     {
       "key": "城市/20251225183326.jpeg",
       "title": "泰山电视塔夜色",
+      "titles": {
+        "zh-CN": "泰山电视塔夜色",
+        "en": "Mount Tai TV Tower at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Mount Tai, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -2664,6 +3092,10 @@
     {
       "key": "城市/20251225174146.jpeg",
       "title": "泰山山门夜影",
+      "titles": {
+        "zh-CN": "泰山山门夜影",
+        "en": "Mount Tai Gate in Night Shadow"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，古建筑、石阶和山色把旅途的历史感留在画面里。",
         "en": "Photographed in Mount Tai, where historic architecture, steps, and mountains keep a sense of place in the frame."
@@ -2689,6 +3121,10 @@
     {
       "key": "风光/20251225173435.jpeg",
       "title": "泰山盘道石阶",
+      "titles": {
+        "zh-CN": "泰山盘道石阶",
+        "en": "Stone Steps on Mount Tai Winding Path"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，古建筑、石阶和山色把旅途的历史感留在画面里。",
         "en": "Photographed in Mount Tai, where historic architecture, steps, and mountains keep a sense of place in the frame."
@@ -2714,6 +3150,10 @@
     {
       "key": "风光/20251225171902.jpeg",
       "title": "泰山晨昏山谷",
+      "titles": {
+        "zh-CN": "泰山晨昏山谷",
+        "en": "Mount Tai Valley at Dawn and Dusk"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，晚霞从山脊背后展开，轮廓和云层都被染亮。",
         "en": "Photographed in Mount Tai, where sunset spreads behind the ridges, lighting the silhouettes and clouds."
@@ -2739,6 +3179,10 @@
     {
       "key": "风光/20251225164808.jpeg",
       "title": "泰山松影暮色",
+      "titles": {
+        "zh-CN": "泰山松影暮色",
+        "en": "Pine Shadows at Dusk on Mount Tai"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，晚霞从山脊背后展开，轮廓和云层都被染亮。",
         "en": "Photographed in Mount Tai, where sunset spreads behind the ridges, lighting the silhouettes and clouds."
@@ -2764,6 +3208,10 @@
     {
       "key": "风光/20251225163044.jpeg",
       "title": "泰山岩壁冬色",
+      "titles": {
+        "zh-CN": "泰山岩壁冬色",
+        "en": "Winter Colors on Mount Tai Rock Face"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Mount Tai, where mountains, trees, and mist build a layered natural scene."
@@ -2789,6 +3237,10 @@
     {
       "key": "风光/20251225163034.jpeg",
       "title": "泰山峭壁暖光",
+      "titles": {
+        "zh-CN": "泰山峭壁暖光",
+        "en": "Warm Light on Mount Tai Cliffs"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Mount Tai, where mountains, trees, and mist build a layered natural scene."
@@ -2814,6 +3266,10 @@
     {
       "key": "城市/20251225135236.jpeg",
       "title": "泰山山门近景",
+      "titles": {
+        "zh-CN": "泰山山门近景",
+        "en": "Close View of Mount Tai Gate"
+      },
       "descriptions": {
         "zh-CN": "拍摄于泰山，古建筑、石阶和山色把旅途的历史感留在画面里。",
         "en": "Photographed in Mount Tai, where historic architecture, steps, and mountains keep a sense of place in the frame."
@@ -2839,6 +3295,10 @@
     {
       "key": "城市/20251223145645.jpeg",
       "title": "济南趵突泉碑刻",
+      "titles": {
+        "zh-CN": "济南趵突泉碑刻",
+        "en": "Stone Inscription at Baotu Spring in Jinan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于济南趵突泉，古建筑、石碑和泉水庭院把城市的历史感留在画面里。",
         "en": "Photographed at Baotu Spring in Jinan, where historic architecture, stone inscriptions, and the spring courtyard hold the city’s sense of history."
@@ -2864,6 +3324,10 @@
     {
       "key": "随手/20251223081505.jpeg",
       "title": "广州机场机位",
+      "titles": {
+        "zh-CN": "广州机场机位",
+        "en": "Aircraft Stand at Guangzhou Airport"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州花都，机场与机坪记录了出发或抵达前后的短暂停顿。",
         "en": "Photographed in Huadu, Guangzhou, where the airport and apron capture a pause around departure or arrival."
@@ -2889,6 +3353,10 @@
     {
       "key": "随手/20251215173116.jpeg",
       "title": "希思罗航站楼",
+      "titles": {
+        "zh-CN": "希思罗航站楼",
+        "en": "Heathrow Terminal"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，机场与机坪记录了出发或抵达前后的短暂停顿。",
         "en": "Photographed in Uxbridge, London, where the airport and apron capture a pause around departure or arrival."
@@ -2914,6 +3382,10 @@
     {
       "key": "城市/20251213171233.jpeg",
       "title": "伦敦节日橱窗",
+      "titles": {
+        "zh-CN": "伦敦节日橱窗",
+        "en": "London Holiday Window Display"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -2939,6 +3411,10 @@
     {
       "key": "风光/20251210130629.jpg",
       "title": "阿克斯布里奇运河桥",
+      "titles": {
+        "zh-CN": "阿克斯布里奇运河桥",
+        "en": "Uxbridge Canal Bridge"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -2964,6 +3440,10 @@
     {
       "key": "风光/20251210125945.jpg",
       "title": "林间秋日小径",
+      "titles": {
+        "zh-CN": "林间秋日小径",
+        "en": "Autumn Path Through the Woods"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where trees, lawns, and water slow the frame down inside the park."
@@ -2989,6 +3469,10 @@
     {
       "key": "风光/20251210125330.jpg",
       "title": "阿克斯布里奇水边码头",
+      "titles": {
+        "zh-CN": "阿克斯布里奇水边码头",
+        "en": "Waterside Dock in Uxbridge"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -3014,6 +3498,10 @@
     {
       "key": "风光/20251210125058.jpg",
       "title": "阿克斯布里奇窄船水道",
+      "titles": {
+        "zh-CN": "阿克斯布里奇窄船水道",
+        "en": "Narrowboat Waterway in Uxbridge"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -3039,6 +3527,10 @@
     {
       "key": "风光/20251210123810.jpg",
       "title": "林间警示牌",
+      "titles": {
+        "zh-CN": "林间警示牌",
+        "en": "Warning Sign in the Woods"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where a close detail is singled out as a small note from the trip."
@@ -3064,6 +3556,10 @@
     {
       "key": "动图/20251210.heic",
       "title": "阿克斯布里奇运河阳光",
+      "titles": {
+        "zh-CN": "阿克斯布里奇运河阳光",
+        "en": "Sunlight on the Uxbridge Canal"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Photographed in Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -3089,6 +3585,10 @@
     {
       "key": "风光/20251210123407.jpg",
       "title": "运河边的窄船",
+      "titles": {
+        "zh-CN": "运河边的窄船",
+        "en": "Narrowboat by the Canal"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -3114,6 +3614,10 @@
     {
       "key": "风光/20251210122640.jpg",
       "title": "逆光里的运河船",
+      "titles": {
+        "zh-CN": "逆光里的运河船",
+        "en": "Canal Boat in Backlight"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
@@ -3139,6 +3643,10 @@
     {
       "key": "风光/20251210122439.jpg",
       "title": "树干上的松鼠",
+      "titles": {
+        "zh-CN": "树干上的松鼠",
+        "en": "Squirrel on a Tree Trunk"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为伦敦阿克斯布里奇，小动物出现在自然边缘，给画面添了轻松的生命感。",
         "en": "Inferred from nearby photos and the image context as Uxbridge, London, where a small animal appears at the edge of nature and livens the frame."
@@ -3164,6 +3672,10 @@
     {
       "key": "风光/20251130152524.jpeg",
       "title": "伦敦奥林匹克公园日落",
+      "titles": {
+        "zh-CN": "伦敦奥林匹克公园日落",
+        "en": "Sunset in London Olympic Park"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -3189,6 +3701,10 @@
     {
       "key": "动图/20251123.heic",
       "title": "阿克斯布里奇站台",
+      "titles": {
+        "zh-CN": "阿克斯布里奇站台",
+        "en": "Uxbridge Platform"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦阿克斯布里奇，站台、轨道和天光组成出行中的安静间隔。",
         "en": "Photographed in Uxbridge, London, where platform, tracks, and sky make a quiet interval in transit."
@@ -3214,6 +3730,10 @@
     {
       "key": "城市/20251120160038.jpeg",
       "title": "伦敦黄昏街道",
+      "titles": {
+        "zh-CN": "伦敦黄昏街道",
+        "en": "London Street at Dusk"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -3239,6 +3759,10 @@
     {
       "key": "城市/20251120144154.jpeg",
       "title": "伦敦白厅圣诞树",
+      "titles": {
+        "zh-CN": "伦敦白厅圣诞树",
+        "en": "Christmas Tree on Whitehall"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -3264,6 +3788,10 @@
     {
       "key": "城市/20251120143738.jpeg",
       "title": "伦敦古典建筑夹景",
+      "titles": {
+        "zh-CN": "伦敦古典建筑夹景",
+        "en": "Framed View of Classical London Architecture"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in London, where historic architecture and street life create a layered city memory."
@@ -3289,6 +3817,10 @@
     {
       "key": "城市/20251115172328.jpeg",
       "title": "伦敦公园圣诞树",
+      "titles": {
+        "zh-CN": "伦敦公园圣诞树",
+        "en": "Christmas Tree in a London Park"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -3314,6 +3846,10 @@
     {
       "key": "城市/20251115150155.jpeg",
       "title": "伦敦雾中街景",
+      "titles": {
+        "zh-CN": "伦敦雾中街景",
+        "en": "London Street Scene in Fog"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -3339,6 +3875,10 @@
     {
       "key": "城市/20251113161216.jpeg",
       "title": "牛津街节日灯饰",
+      "titles": {
+        "zh-CN": "牛津街节日灯饰",
+        "en": "Holiday Lights on Oxford Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -3364,6 +3904,10 @@
     {
       "key": "城市/20251113150238.jpeg",
       "title": "泰晤士河金融城天际线",
+      "titles": {
+        "zh-CN": "泰晤士河金融城天际线",
+        "en": "City of London Skyline by the Thames"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in London, where the skyline opens across the water with a clear urban silhouette."
@@ -3389,6 +3933,10 @@
     {
       "key": "城市/20251108170701.jpeg",
       "title": "摄政街节日灯光",
+      "titles": {
+        "zh-CN": "摄政街节日灯光",
+        "en": "Holiday Lights on Regent Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -3414,6 +3962,10 @@
     {
       "key": "城市/20251108162502.jpeg",
       "title": "伦敦街头节日灯带",
+      "titles": {
+        "zh-CN": "伦敦街头节日灯带",
+        "en": "Holiday Light Strands on a London Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -3439,6 +3991,10 @@
     {
       "key": "风光/20251106112752.jpg",
       "title": "湖区秋色山路",
+      "titles": {
+        "zh-CN": "湖区秋色山路",
+        "en": "Autumn Mountain Road in the Lake District"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where trees, lawns, and water slow the frame down inside the park."
@@ -3464,6 +4020,10 @@
     {
       "key": "风光/20251105164957.jpg",
       "title": "湖区傍晚码头",
+      "titles": {
+        "zh-CN": "湖区傍晚码头",
+        "en": "Evening Pier in the Lake District"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3489,6 +4049,10 @@
     {
       "key": "风光/20251105174409.jpg",
       "title": "温德米尔码头游船",
+      "titles": {
+        "zh-CN": "温德米尔码头游船",
+        "en": "Tour Boat at Windermere Pier"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3514,6 +4078,10 @@
     {
       "key": "风光/20251105173653.jpg",
       "title": "湖区小镇街道",
+      "titles": {
+        "zh-CN": "湖区小镇街道",
+        "en": "Town Street in the Lake District"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where street architecture, people, and light form a compact travel moment."
@@ -3539,6 +4107,10 @@
     {
       "key": "风光/20251105173427.jpg",
       "title": "温德米尔湖边水鸟",
+      "titles": {
+        "zh-CN": "温德米尔湖边水鸟",
+        "en": "Waterbirds by Windermere"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，小动物出现在自然边缘，给画面添了轻松的生命感。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where a small animal appears at the edge of nature and livens the frame."
@@ -3564,6 +4136,10 @@
     {
       "key": "风光/20251105173136.jpg",
       "title": "温德米尔阴天湖面",
+      "titles": {
+        "zh-CN": "温德米尔阴天湖面",
+        "en": "Windermere Lake Under Cloudy Sky"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3589,6 +4165,10 @@
     {
       "key": "风光/20251105172409.jpg",
       "title": "湖区小店橱窗",
+      "titles": {
+        "zh-CN": "湖区小店橱窗",
+        "en": "Shop Window in the Lake District"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，橱窗和室内陈列捕捉了城市漫游中的小片段。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the shopfront and display catch a small fragment of city wandering."
@@ -3614,6 +4194,10 @@
     {
       "key": "风光/20251105170545.jpg",
       "title": "湖区湖畔草地",
+      "titles": {
+        "zh-CN": "湖区湖畔草地",
+        "en": "Lakeside Grass in the Lake District"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3639,6 +4223,10 @@
     {
       "key": "风光/20251105170521.jpg",
       "title": "苔藓树桩纹理",
+      "titles": {
+        "zh-CN": "苔藓树桩纹理",
+        "en": "Mossy Tree Stump Texture"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where a close detail is singled out as a small note from the trip."
@@ -3664,6 +4252,10 @@
     {
       "key": "风光/20251105170349.jpg",
       "title": "雨后木桩纹理",
+      "titles": {
+        "zh-CN": "雨后木桩纹理",
+        "en": "Wooden Post Texture After Rain"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where a close detail is singled out as a small note from the trip."
@@ -3689,6 +4281,10 @@
     {
       "key": "动图/20251105.heic",
       "title": "温德米尔湖面船影",
+      "titles": {
+        "zh-CN": "温德米尔湖面船影",
+        "en": "Boat Shadows on Windermere"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Photographed in Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3714,6 +4310,10 @@
     {
       "key": "风光/20251105163559.jpg",
       "title": "湖区秋树草坡",
+      "titles": {
+        "zh-CN": "湖区秋树草坡",
+        "en": "Autumn Trees on a Lake District Slope"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3739,6 +4339,10 @@
     {
       "key": "风光/20251105162412.jpg",
       "title": "温德米尔湖畔树影",
+      "titles": {
+        "zh-CN": "温德米尔湖畔树影",
+        "en": "Tree Shadows by Windermere"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3764,6 +4368,10 @@
     {
       "key": "风光/20251105161630.jpg",
       "title": "湖区湖边秋树",
+      "titles": {
+        "zh-CN": "湖区湖边秋树",
+        "en": "Autumn Trees by the Lake"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3789,6 +4397,10 @@
     {
       "key": "风光/20251105124230.jpg",
       "title": "雾中温德米尔帆船",
+      "titles": {
+        "zh-CN": "雾中温德米尔帆船",
+        "en": "Sailboats on Windermere in Fog"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3814,6 +4426,10 @@
     {
       "key": "随手/20251105122940.jpg",
       "title": "湖上船舱视角",
+      "titles": {
+        "zh-CN": "湖上船舱视角",
+        "en": "Cabin View on the Lake"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，渡轮、码头和水面记录了城市之间的移动感。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where ferry, pier, and water record motion between places."
@@ -3839,6 +4455,10 @@
     {
       "key": "动图/20251105(1).heic",
       "title": "温德米尔船尾水纹",
+      "titles": {
+        "zh-CN": "温德米尔船尾水纹",
+        "en": "Wake Behind a Windermere Boat"
+      },
       "descriptions": {
         "zh-CN": "拍摄于英格兰湖区温德米尔，渡轮、码头和水面记录了城市之间的移动感。",
         "en": "Photographed in Windermere in the Lake District, where ferry, pier, and water record motion between places."
@@ -3864,6 +4484,10 @@
     {
       "key": "风光/20251105121025.jpg",
       "title": "温德米尔停泊帆船",
+      "titles": {
+        "zh-CN": "温德米尔停泊帆船",
+        "en": "Moored Sailboats on Windermere"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3889,6 +4513,10 @@
     {
       "key": "风光/20251105120705.jpg",
       "title": "温德米尔码头帆樯",
+      "titles": {
+        "zh-CN": "温德米尔码头帆樯",
+        "en": "Masts at Windermere Pier"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -3914,6 +4542,10 @@
     {
       "key": "城市/20251104192450.jpg",
       "title": "湖区雨夜街道",
+      "titles": {
+        "zh-CN": "湖区雨夜街道",
+        "en": "Rainy Night Street in the Lake District"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为英格兰湖区温德米尔，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Inferred from nearby photos and the image context as Windermere in the Lake District, where street architecture, people, and light form a compact travel moment."
@@ -3939,6 +4571,10 @@
     {
       "key": "动图/20251026.heic",
       "title": "泰晤士河通勤船窗",
+      "titles": {
+        "zh-CN": "泰晤士河通勤船窗",
+        "en": "Commuter Boat Window on the Thames"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，渡轮、码头和水面记录了城市之间的移动感。",
         "en": "Photographed in London, where ferry, pier, and water record motion between places."
@@ -3964,6 +4600,10 @@
     {
       "key": "城市/20251023162001.jpeg",
       "title": "特拉法加广场人群",
+      "titles": {
+        "zh-CN": "特拉法加广场人群",
+        "en": "Crowds in Trafalgar Square"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -3989,6 +4629,10 @@
     {
       "key": "城市/20251023161243.jpeg",
       "title": "特拉法加广场电话亭",
+      "titles": {
+        "zh-CN": "特拉法加广场电话亭",
+        "en": "Phone Box in Trafalgar Square"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4014,6 +4658,10 @@
     {
       "key": "城市/20251023161053.jpeg",
       "title": "纳尔逊纪念柱窗景",
+      "titles": {
+        "zh-CN": "纳尔逊纪念柱窗景",
+        "en": "Window View of Nelson’s Column"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4039,6 +4687,10 @@
     {
       "key": "随手/20251023145246.jpeg",
       "title": "美术馆里的向日葵",
+      "titles": {
+        "zh-CN": "美术馆里的向日葵",
+        "en": "Sunflowers in the Gallery"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，室内展品和观看的人群形成一个安静的观察瞬间。",
         "en": "Photographed in London, where the artwork and viewers make a quiet moment of looking."
@@ -4064,6 +4716,10 @@
     {
       "key": "城市/20251016170828.jpeg",
       "title": "伦敦酒馆街角",
+      "titles": {
+        "zh-CN": "伦敦酒馆街角",
+        "en": "London Pub Street Corner"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -4089,6 +4745,10 @@
     {
       "key": "城市/20251012180917.jpeg",
       "title": "牛津街暮色车流",
+      "titles": {
+        "zh-CN": "牛津街暮色车流",
+        "en": "Dusk Traffic on Oxford Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -4114,6 +4774,10 @@
     {
       "key": "城市/20251012172656.jpeg",
       "title": "伦敦街头远望BT塔",
+      "titles": {
+        "zh-CN": "伦敦街头远望BT塔",
+        "en": "BT Tower Seen from a London Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -4139,6 +4803,10 @@
     {
       "key": "城市/20251012151953.jpeg",
       "title": "伦敦教堂街景",
+      "titles": {
+        "zh-CN": "伦敦教堂街景",
+        "en": "London Church Street Scene"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in London, where historic architecture and street life create a layered city memory."
@@ -4164,6 +4832,10 @@
     {
       "key": "城市/20251012151729.jpeg",
       "title": "伦敦街边绿地",
+      "titles": {
+        "zh-CN": "伦敦街边绿地",
+        "en": "Green Space by a London Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Photographed in London, where trees, lawns, and water slow the frame down inside the park."
@@ -4189,6 +4861,10 @@
     {
       "key": "城市/20251011095128.jpeg",
       "title": "威斯敏斯特大本钟",
+      "titles": {
+        "zh-CN": "威斯敏斯特大本钟",
+        "en": "Big Ben in Westminster"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4214,6 +4890,10 @@
     {
       "key": "城市/20251011093801.jpeg",
       "title": "泰晤士河畔议会大厦",
+      "titles": {
+        "zh-CN": "泰晤士河畔议会大厦",
+        "en": "Palace of Westminster by the Thames"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4239,6 +4919,10 @@
     {
       "key": "城市/20251004122125.jpeg",
       "title": "伦敦唐人街入口",
+      "titles": {
+        "zh-CN": "伦敦唐人街入口",
+        "en": "Entrance to London Chinatown"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -4264,6 +4948,10 @@
     {
       "key": "动图/20250928.heic",
       "title": "奥林匹克公园夕光",
+      "titles": {
+        "zh-CN": "奥林匹克公园夕光",
+        "en": "Evening Light in Olympic Park"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in London, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4289,6 +4977,10 @@
     {
       "key": "城市/20250928150610.jpeg",
       "title": "伦敦雾中出租车",
+      "titles": {
+        "zh-CN": "伦敦雾中出租车",
+        "en": "London Taxi in the Fog"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in London, where street architecture, people, and light form a compact travel moment."
@@ -4314,6 +5006,10 @@
     {
       "key": "随手/20250925070521.jpeg",
       "title": "盖特威克停机坪",
+      "titles": {
+        "zh-CN": "盖特威克停机坪",
+        "en": "Gatwick Airport Apron"
+      },
       "descriptions": {
         "zh-CN": "拍摄于伦敦盖特威克机场，机坪与晨光记录了出发前后的短暂停顿。",
         "en": "Photographed at London Gatwick Airport, where the apron and morning light capture a brief pause around travel."
@@ -4339,6 +5035,10 @@
     {
       "key": "动图/20250925(2).heic",
       "title": "云层上的机翼",
+      "titles": {
+        "zh-CN": "云层上的机翼",
+        "en": "Wing Above the Clouds"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为航班途中，机窗外的天空、云层和机翼记录了旅途中的过渡时刻。",
         "en": "Inferred from nearby photos and the image context as in flight, where sky, clouds, and wing outside the window mark an in-between travel moment."
@@ -4364,6 +5064,10 @@
     {
       "key": "随手/20250925011027.jpeg",
       "title": "机窗边的香槟",
+      "titles": {
+        "zh-CN": "机窗边的香槟",
+        "en": "Champagne by the Airplane Window"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州花都，饮品和周围环境一起记录了旅途中的短暂停留。",
         "en": "Photographed in Huadu, Guangzhou, where a drink and its surroundings record a brief travel pause."
@@ -4389,6 +5093,10 @@
     {
       "key": "城市/20250727203236.jpeg",
       "title": "维港夜色天际线",
+      "titles": {
+        "zh-CN": "维港夜色天际线",
+        "en": "Victoria Harbour Skyline at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where night lights from the towers reflect across water and streets."
@@ -4414,6 +5122,10 @@
     {
       "key": "城市/20250727190018.jpeg",
       "title": "维港暮色山影",
+      "titles": {
+        "zh-CN": "维港暮色山影",
+        "en": "Mountain Shadows at Dusk in Victoria Harbour"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where the skyline opens across the water with a clear urban silhouette."
@@ -4439,6 +5151,10 @@
     {
       "key": "城市/20250727185554.jpeg",
       "title": "维港橙色落日",
+      "titles": {
+        "zh-CN": "维港橙色落日",
+        "en": "Orange Sunset Over Victoria Harbour"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where the skyline and water are layered in warm sunset light."
@@ -4464,6 +5180,10 @@
     {
       "key": "城市/20250727184844.jpeg",
       "title": "维港金色岸线",
+      "titles": {
+        "zh-CN": "维港金色岸线",
+        "en": "Golden Shoreline of Victoria Harbour"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where the skyline opens across the water with a clear urban silhouette."
@@ -4489,6 +5209,10 @@
     {
       "key": "城市/20250727145052.jpeg",
       "title": "太平山俯瞰香港",
+      "titles": {
+        "zh-CN": "太平山俯瞰香港",
+        "en": "Hong Kong from Victoria Peak"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -4514,6 +5238,10 @@
     {
       "key": "城市/20250727103803.jpeg",
       "title": "维港晴日水面",
+      "titles": {
+        "zh-CN": "维港晴日水面",
+        "en": "Victoria Harbour Water on a Clear Day"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where the skyline opens across the water with a clear urban silhouette."
@@ -4539,6 +5267,10 @@
     {
       "key": "城市/20250528141706.jpeg",
       "title": "沈阳故宫屋檐",
+      "titles": {
+        "zh-CN": "沈阳故宫屋檐",
+        "en": "Eaves of Shenyang Imperial Palace"
+      },
       "descriptions": {
         "zh-CN": "拍摄于沈阳，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Shenyang, where historic architecture and street life create a layered city memory."
@@ -4564,6 +5296,10 @@
     {
       "key": "风光/20250523145949.jpeg",
       "title": "长白山阴云峡谷",
+      "titles": {
+        "zh-CN": "长白山阴云峡谷",
+        "en": "Cloudy Valley in Changbai Mountain"
+      },
       "descriptions": {
         "zh-CN": "拍摄于长白山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Changbai Mountain, where mountains, trees, and mist build a layered natural scene."
@@ -4589,6 +5325,10 @@
     {
       "key": "风光/20250523145849.jpeg",
       "title": "长白山雪壁瀑布",
+      "titles": {
+        "zh-CN": "长白山雪壁瀑布",
+        "en": "Snowy Cliff Waterfall in Changbai Mountain"
+      },
       "descriptions": {
         "zh-CN": "拍摄于长白山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Changbai Mountain, where snow covers slopes and branches under clear winter light."
@@ -4614,6 +5354,10 @@
     {
       "key": "风光/20250523141511.jpeg",
       "title": "长白山山间屋舍",
+      "titles": {
+        "zh-CN": "长白山山间屋舍",
+        "en": "Mountain Lodge in Changbai Mountain"
+      },
       "descriptions": {
         "zh-CN": "拍摄于长白山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Changbai Mountain, where mountains, trees, and mist build a layered natural scene."
@@ -4639,6 +5383,10 @@
     {
       "key": "风光/20250523134932.jpeg",
       "title": "长白山雪坡远眺",
+      "titles": {
+        "zh-CN": "长白山雪坡远眺",
+        "en": "Distant View of a Snowy Changbai Slope"
+      },
       "descriptions": {
         "zh-CN": "拍摄于长白山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Changbai Mountain, where snow covers slopes and branches under clear winter light."
@@ -4664,6 +5412,10 @@
     {
       "key": "风光/20250523133059.jpeg",
       "title": "长白山雪谷",
+      "titles": {
+        "zh-CN": "长白山雪谷",
+        "en": "Snow Valley in Changbai Mountain"
+      },
       "descriptions": {
         "zh-CN": "拍摄于长白山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Changbai Mountain, where snow covers slopes and branches under clear winter light."
@@ -4689,6 +5441,10 @@
     {
       "key": "城市/20250503210545.jpeg",
       "title": "深圳湾夜色海岸",
+      "titles": {
+        "zh-CN": "深圳湾夜色海岸",
+        "en": "Shenzhen Bay Coast at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于深圳湾，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Shenzhen Bay, where night lights from the towers reflect across water and streets."
@@ -4714,6 +5470,10 @@
     {
       "key": "城市/20250503200206.jpeg",
       "title": "深圳湾夜色建筑",
+      "titles": {
+        "zh-CN": "深圳湾夜色建筑",
+        "en": "Night Buildings in Shenzhen Bay"
+      },
       "descriptions": {
         "zh-CN": "拍摄于深圳湾，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Shenzhen Bay, where night lights from the towers reflect across water and streets."
@@ -4739,6 +5499,10 @@
     {
       "key": "城市/20250502201728.jpeg",
       "title": "珠海海岸夜景",
+      "titles": {
+        "zh-CN": "珠海海岸夜景",
+        "en": "Zhuhai Coastal Nightscape"
+      },
       "descriptions": {
         "zh-CN": "拍摄于珠海，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Zhuhai, where night lights from the towers reflect across water and streets."
@@ -4764,6 +5528,10 @@
     {
       "key": "城市/20250322184242.jpeg",
       "title": "珠江口傍晚车窗",
+      "titles": {
+        "zh-CN": "珠江口傍晚车窗",
+        "en": "Pearl River Estuary at Dusk from the Car Window"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Foshan, where street architecture, people, and light form a compact travel moment."
@@ -4789,6 +5557,10 @@
     {
       "key": "城市/20250322183034.jpeg",
       "title": "佛山河岸拱桥",
+      "titles": {
+        "zh-CN": "佛山河岸拱桥",
+        "en": "Foshan Riverside Arch Bridge"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，桥梁与城市背景交织，线条把视线引向远处。",
         "en": "Photographed in Foshan, where bridge lines lead the eye into the city beyond."
@@ -4814,6 +5586,10 @@
     {
       "key": "城市/20250322175054.jpeg",
       "title": "佛山河畔日落",
+      "titles": {
+        "zh-CN": "佛山河畔日落",
+        "en": "Sunset by the River in Foshan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in Foshan, where the skyline and water are layered in warm sunset light."
@@ -4839,6 +5615,10 @@
     {
       "key": "城市/20250322175042.jpeg",
       "title": "佛山水岸夕阳",
+      "titles": {
+        "zh-CN": "佛山水岸夕阳",
+        "en": "Foshan Waterfront Sunset"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in Foshan, where the skyline and water are layered in warm sunset light."
@@ -4864,6 +5644,10 @@
     {
       "key": "城市/20250322165325.jpeg",
       "title": "佛山江边灯塔",
+      "titles": {
+        "zh-CN": "佛山江边灯塔",
+        "en": "Lighthouse by the River in Foshan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，河道穿过楼群，水面和建筑形成纵深。",
         "en": "Photographed in Foshan, where the river cuts through the buildings and adds depth to the scene."
@@ -4889,6 +5673,10 @@
     {
       "key": "城市/20250322163213.jpeg",
       "title": "佛山桥塔花影",
+      "titles": {
+        "zh-CN": "佛山桥塔花影",
+        "en": "Bridge Tower and Flowers in Foshan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，桥梁与城市背景交织，线条把视线引向远处。",
         "en": "Photographed in Foshan, where bridge lines lead the eye into the city beyond."
@@ -4914,6 +5702,10 @@
     {
       "key": "随手/20241221210143.jpeg",
       "title": "广州塔夜间灯幕",
+      "titles": {
+        "zh-CN": "广州塔夜间灯幕",
+        "en": "Night Light Curtain on Canton Tower"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Guangzhou, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4939,6 +5731,10 @@
     {
       "key": "随手/20241221184532.jpeg",
       "title": "广州塔灯光秀",
+      "titles": {
+        "zh-CN": "广州塔灯光秀",
+        "en": "Canton Tower Light Show"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Guangzhou, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -4964,6 +5760,10 @@
     {
       "key": "风光/20240825062936.jpg",
       "title": "海陵岛海上日出",
+      "titles": {
+        "zh-CN": "海陵岛海上日出",
+        "en": "Sunrise Over the Sea at Hailing Island"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where the sea catches warm sunset light under layered clouds."
@@ -4989,6 +5789,10 @@
     {
       "key": "风光/20240825062553.jpg",
       "title": "海陵岛云缝日光",
+      "titles": {
+        "zh-CN": "海陵岛云缝日光",
+        "en": "Sunlight Through Clouds at Hailing Island"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where the sea catches warm sunset light under layered clouds."
@@ -5014,6 +5818,10 @@
     {
       "key": "风光/20240825062405.jpg",
       "title": "海陵岛橙色海面",
+      "titles": {
+        "zh-CN": "海陵岛橙色海面",
+        "en": "Orange Sea at Hailing Island"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where the sea catches warm sunset light under layered clouds."
@@ -5039,6 +5847,10 @@
     {
       "key": "风光/20240825055651.jpg",
       "title": "海陵岛晨光海岸",
+      "titles": {
+        "zh-CN": "海陵岛晨光海岸",
+        "en": "Morning Coast of Hailing Island"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where the sea catches warm sunset light under layered clouds."
@@ -5064,6 +5876,10 @@
     {
       "key": "风光/20240825055113.jpeg",
       "title": "海陵岛海岸暮光",
+      "titles": {
+        "zh-CN": "海陵岛海岸暮光",
+        "en": "Twilight Coast of Hailing Island"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阳江海陵岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Photographed in Hailing Island, Yangjiang, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -5089,6 +5905,10 @@
     {
       "key": "风光/20240824182644.jpg",
       "title": "海面粉色云影",
+      "titles": {
+        "zh-CN": "海面粉色云影",
+        "en": "Pink Cloud Shadows Over the Sea"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -5114,6 +5934,10 @@
     {
       "key": "风光/20240824182043.jpg",
       "title": "海上远船与薄雾",
+      "titles": {
+        "zh-CN": "海上远船与薄雾",
+        "en": "Distant Boats and Mist at Sea"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -5139,6 +5963,10 @@
     {
       "key": "风光/20240824180848.jpg",
       "title": "海陵岛夏云",
+      "titles": {
+        "zh-CN": "海陵岛夏云",
+        "en": "Summer Clouds at Hailing Island"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -5164,6 +5992,10 @@
     {
       "key": "风光/20240824180023.jpg",
       "title": "海边云塔",
+      "titles": {
+        "zh-CN": "海边云塔",
+        "en": "Towering Clouds by the Sea"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阳江海陵岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Inferred from nearby photos and the image context as Hailing Island, Yangjiang, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -5189,6 +6021,10 @@
     {
       "key": "风光/20240809080947.jpeg",
       "title": "富士山麓云海",
+      "titles": {
+        "zh-CN": "富士山麓云海",
+        "en": "Sea of Clouds at the Foot of Mount Fuji"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Fujikawaguchiko, where mountains, trees, and mist build a layered natural scene."
@@ -5214,6 +6050,10 @@
     {
       "key": "风光/20240809080657.jpeg",
       "title": "河口湖镇上远云",
+      "titles": {
+        "zh-CN": "河口湖镇上远云",
+        "en": "Distant Clouds Over Fujikawaguchiko"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Fujikawaguchiko, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -5239,6 +6079,10 @@
     {
       "key": "风光/20240808165458.jpeg",
       "title": "富士山脚雨云",
+      "titles": {
+        "zh-CN": "富士山脚雨云",
+        "en": "Rain Clouds at the Foot of Mount Fuji"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Fujikawaguchiko, where mountains, trees, and mist build a layered natural scene."
@@ -5264,6 +6108,10 @@
     {
       "key": "风光/20240808163151.jpeg",
       "title": "富士山脚水渠",
+      "titles": {
+        "zh-CN": "富士山脚水渠",
+        "en": "Water Channel at the Foot of Mount Fuji"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Fujikawaguchiko, where mountains, trees, and mist build a layered natural scene."
@@ -5289,6 +6137,10 @@
     {
       "key": "风光/20240808162454.jpeg",
       "title": "富士山脚绿谷",
+      "titles": {
+        "zh-CN": "富士山脚绿谷",
+        "en": "Green Valley at the Foot of Mount Fuji"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Fujikawaguchiko, where mountains, trees, and mist build a layered natural scene."
@@ -5314,6 +6166,10 @@
     {
       "key": "城市/20240808152409.jpeg",
       "title": "富士山麓神木",
+      "titles": {
+        "zh-CN": "富士山麓神木",
+        "en": "Sacred Tree at the Foot of Mount Fuji"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，鸟居、参道和树影把神社的安静气氛留住。",
         "en": "Photographed in Fujikawaguchiko, where torii gates, paths, and trees preserve the shrine’s quiet atmosphere."
@@ -5339,6 +6195,10 @@
     {
       "key": "城市/20240808152234.jpeg",
       "title": "富士山神社鸟居",
+      "titles": {
+        "zh-CN": "富士山神社鸟居",
+        "en": "Shrine Torii at Mount Fuji"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，鸟居、参道和树影把神社的安静气氛留住。",
         "en": "Photographed in Fujikawaguchiko, where torii gates, paths, and trees preserve the shrine’s quiet atmosphere."
@@ -5364,6 +6224,10 @@
     {
       "key": "风光/20240808151929.jpeg",
       "title": "神社苔石细节",
+      "titles": {
+        "zh-CN": "神社苔石细节",
+        "en": "Mossy Stone Detail at the Shrine"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Photographed in Fujikawaguchiko, where a close detail is singled out as a small note from the trip."
@@ -5389,6 +6253,10 @@
     {
       "key": "风光/20240808151907.jpeg",
       "title": "神社苔藓木桩",
+      "titles": {
+        "zh-CN": "神社苔藓木桩",
+        "en": "Mossy Wooden Post at the Shrine"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Photographed in Fujikawaguchiko, where a close detail is singled out as a small note from the trip."
@@ -5414,6 +6282,10 @@
     {
       "key": "风光/20240808151229.jpeg",
       "title": "神社参道林荫",
+      "titles": {
+        "zh-CN": "神社参道林荫",
+        "en": "Shaded Shrine Approach"
+      },
       "descriptions": {
         "zh-CN": "拍摄于富士河口湖，鸟居、参道和树影把神社的安静气氛留住。",
         "en": "Photographed in Fujikawaguchiko, where torii gates, paths, and trees preserve the shrine’s quiet atmosphere."
@@ -5439,6 +6311,10 @@
     {
       "key": "风光/20240807165433.jpeg",
       "title": "箱根芦之湖鸟居",
+      "titles": {
+        "zh-CN": "箱根芦之湖鸟居",
+        "en": "Torii Gate at Lake Ashi, Hakone"
+      },
       "descriptions": {
         "zh-CN": "拍摄于箱根芦之湖，鸟居、参道和树影把神社的安静气氛留住。",
         "en": "Photographed in Lake Ashi, Hakone, where torii gates, paths, and trees preserve the shrine’s quiet atmosphere."
@@ -5464,6 +6340,10 @@
     {
       "key": "风光/20240807162151.jpeg",
       "title": "芦之湖水上鸟居",
+      "titles": {
+        "zh-CN": "芦之湖水上鸟居",
+        "en": "Torii Gate on Lake Ashi"
+      },
       "descriptions": {
         "zh-CN": "拍摄于箱根芦之湖，鸟居、参道和树影把神社的安静气氛留住。",
         "en": "Photographed in Lake Ashi, Hakone, where torii gates, paths, and trees preserve the shrine’s quiet atmosphere."
@@ -5489,6 +6369,10 @@
     {
       "key": "风光/20240807085059.jpeg",
       "title": "箱根山间草坪",
+      "titles": {
+        "zh-CN": "箱根山间草坪",
+        "en": "Mountain Lawn in Hakone"
+      },
       "descriptions": {
         "zh-CN": "拍摄于箱根芦之湖，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Lake Ashi, Hakone, where mountains, trees, and mist build a layered natural scene."
@@ -5514,6 +6398,10 @@
     {
       "key": "风光/20240807082358.jpeg",
       "title": "箱根晴空草地",
+      "titles": {
+        "zh-CN": "箱根晴空草地",
+        "en": "Sunny Grassland in Hakone"
+      },
       "descriptions": {
         "zh-CN": "拍摄于箱根芦之湖，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Lake Ashi, Hakone, where mountains, trees, and mist build a layered natural scene."
@@ -5539,6 +6427,10 @@
     {
       "key": "风光/20240806161034.jpeg",
       "title": "芦之湖雾色水面",
+      "titles": {
+        "zh-CN": "芦之湖雾色水面",
+        "en": "Misty Water of Lake Ashi"
+      },
       "descriptions": {
         "zh-CN": "拍摄于箱根芦之湖，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Photographed in Lake Ashi, Hakone, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -5564,6 +6456,10 @@
     {
       "key": "风光/20240806154602.jpeg",
       "title": "芦之湖阴天码头",
+      "titles": {
+        "zh-CN": "芦之湖阴天码头",
+        "en": "Cloudy Pier on Lake Ashi"
+      },
       "descriptions": {
         "zh-CN": "拍摄于箱根芦之湖，湖面、岸线和阴晴不定的天空组成安静风景。",
         "en": "Photographed in Lake Ashi, Hakone, where the lake, shoreline, and shifting sky make a quiet landscape."
@@ -5589,6 +6485,10 @@
     {
       "key": "城市/20240805174619.jpeg",
       "title": "东京街头路口",
+      "titles": {
+        "zh-CN": "东京街头路口",
+        "en": "Tokyo Street Intersection"
+      },
       "descriptions": {
         "zh-CN": "拍摄于东京，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Tokyo, where street architecture, people, and light form a compact travel moment."
@@ -5614,6 +6514,10 @@
     {
       "key": "城市/20240804164059.jpeg",
       "title": "东京高处城市景",
+      "titles": {
+        "zh-CN": "东京高处城市景",
+        "en": "Tokyo City View from Above"
+      },
       "descriptions": {
         "zh-CN": "拍摄于东京，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Tokyo, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -5639,6 +6543,10 @@
     {
       "key": "风光/20240730115607.jpeg",
       "title": "澳门海边岩壁",
+      "titles": {
+        "zh-CN": "澳门海边岩壁",
+        "en": "Seaside Rock Wall in Macau"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Photographed in Macau, where a close detail is singled out as a small note from the trip."
@@ -5664,6 +6572,10 @@
     {
       "key": "城市/20240729145857.jpeg",
       "title": "澳门大三巴遗址",
+      "titles": {
+        "zh-CN": "澳门大三巴遗址",
+        "en": "Ruins of St. Paul’s in Macau"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Macau, where historic architecture and street life create a layered city memory."
@@ -5688,6 +6600,10 @@
     {
       "key": "城市/20240729145544.jpeg",
       "title": "澳门山城步道",
+      "titles": {
+        "zh-CN": "澳门山城步道",
+        "en": "Hillside Walkway in Macau"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Macau, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -5713,6 +6629,10 @@
     {
       "key": "城市/20240709191010.jpg",
       "title": "广州塔江畔傍晚",
+      "titles": {
+        "zh-CN": "广州塔江畔傍晚",
+        "en": "Canton Tower by the River at Dusk"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广州，河道穿过楼群，水面和建筑形成纵深。",
         "en": "Photographed in Guangzhou, where the river cuts through the buildings and adds depth to the scene."
@@ -5738,6 +6658,10 @@
     {
       "key": "城市/20240707190353.jpeg",
       "title": "广州日落阳台",
+      "titles": {
+        "zh-CN": "广州日落阳台",
+        "en": "Guangzhou Sunset Balcony"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in Foshan, where the skyline and water are layered in warm sunset light."
@@ -5763,6 +6687,10 @@
     {
       "key": "风光/20240215111534.jpeg",
       "title": "梅州山城远眺",
+      "titles": {
+        "zh-CN": "梅州山城远眺",
+        "en": "Distant View of Meizhou Mountain Town"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广东梅州一带，高处视角把山地、城镇和道路铺成开阔层次。",
         "en": "Photographed around Meizhou, Guangdong, where a high viewpoint spreads mountains, town, and roads into open layers."
@@ -5788,6 +6716,10 @@
     {
       "key": "风光/20240201094538.jpeg",
       "title": "阿尔山冬日溪流",
+      "titles": {
+        "zh-CN": "阿尔山冬日溪流",
+        "en": "Winter Stream in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5813,6 +6745,10 @@
     {
       "key": "风光/20240201094114.jpeg",
       "title": "阿尔山雾气河面",
+      "titles": {
+        "zh-CN": "阿尔山雾气河面",
+        "en": "Misty River in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5838,6 +6774,10 @@
     {
       "key": "风光/20240201093447.jpeg",
       "title": "阿尔山雪河暖阳",
+      "titles": {
+        "zh-CN": "阿尔山雪河暖阳",
+        "en": "Warm Sun Over a Snowy Arxan River"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5863,6 +6803,10 @@
     {
       "key": "风光/20240201090119.jpg",
       "title": "阿尔山雪原公路",
+      "titles": {
+        "zh-CN": "阿尔山雪原公路",
+        "en": "Snowfield Road in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5888,6 +6832,10 @@
     {
       "key": "风光/20240131145813.jpeg",
       "title": "阿尔山冰湖人影",
+      "titles": {
+        "zh-CN": "阿尔山冰湖人影",
+        "en": "Figures on an Icy Arxan Lake"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5913,6 +6861,10 @@
     {
       "key": "风光/20240131145810.jpeg",
       "title": "阿尔山冰面剪影",
+      "titles": {
+        "zh-CN": "阿尔山冰面剪影",
+        "en": "Silhouettes on Arxan Ice"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5938,6 +6890,10 @@
     {
       "key": "风光/20240131131808.jpg",
       "title": "阿尔山粉色雪原",
+      "titles": {
+        "zh-CN": "阿尔山粉色雪原",
+        "en": "Pink Snowfield in Arxan"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Inferred from nearby photos and the image context as Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5963,6 +6919,10 @@
     {
       "key": "风光/20240130170736.jpeg",
       "title": "阿尔山雪路落日",
+      "titles": {
+        "zh-CN": "阿尔山雪路落日",
+        "en": "Sunset Over a Snow Road in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -5988,6 +6948,10 @@
     {
       "key": "风光/20240130164747.jpeg",
       "title": "阿尔山冰原夕阳",
+      "titles": {
+        "zh-CN": "阿尔山冰原夕阳",
+        "en": "Sunset Over the Icy Plain in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6013,6 +6977,10 @@
     {
       "key": "风光/20240130164745.jpeg",
       "title": "阿尔山雪原车影",
+      "titles": {
+        "zh-CN": "阿尔山雪原车影",
+        "en": "Vehicle Shadows on the Arxan Snowfield"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6038,6 +7006,10 @@
     {
       "key": "风光/20240130161715.jpeg",
       "title": "阿尔山雪路金光",
+      "titles": {
+        "zh-CN": "阿尔山雪路金光",
+        "en": "Golden Light on an Arxan Snow Road"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6063,6 +7035,10 @@
     {
       "key": "风光/20240130160604.jpeg",
       "title": "阿尔山雪地路标",
+      "titles": {
+        "zh-CN": "阿尔山雪地路标",
+        "en": "Road Sign in Arxan Snow"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6088,6 +7064,10 @@
     {
       "key": "风光/20240130155956.jpeg",
       "title": "阿尔山雪坡低阳",
+      "titles": {
+        "zh-CN": "阿尔山雪坡低阳",
+        "en": "Low Sun Over an Arxan Snow Slope"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6113,6 +7093,10 @@
     {
       "key": "风光/20240130155953.jpeg",
       "title": "阿尔山雪原界桩",
+      "titles": {
+        "zh-CN": "阿尔山雪原界桩",
+        "en": "Boundary Post on the Arxan Snowfield"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6138,6 +7122,10 @@
     {
       "key": "风光/20240130151206.jpg",
       "title": "阿尔山冰雪牧场",
+      "titles": {
+        "zh-CN": "阿尔山冰雪牧场",
+        "en": "Ice and Snow Pasture in Arxan"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Inferred from nearby photos and the image context as Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6163,6 +7151,10 @@
     {
       "key": "风光/20240130144151.jpg",
       "title": "阿尔山雪地足迹",
+      "titles": {
+        "zh-CN": "阿尔山雪地足迹",
+        "en": "Footprints in Arxan Snow"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6188,6 +7180,10 @@
     {
       "key": "风光/20240129165024.jpeg",
       "title": "阿尔山山顶日落",
+      "titles": {
+        "zh-CN": "阿尔山山顶日落",
+        "en": "Sunset on an Arxan Mountaintop"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Arxan, where snow covers slopes and branches under clear winter light."
@@ -6213,6 +7209,10 @@
     {
       "key": "风光/20240129164618.jpeg",
       "title": "阿尔山雪亭剪影",
+      "titles": {
+        "zh-CN": "阿尔山雪亭剪影",
+        "en": "Snow Pavilion Silhouette in Arxan"
+      },
       "descriptions": {
         "zh-CN": "地点按相邻照片与画面推断为阿尔山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Inferred from nearby photos and the image context as Arxan, where snow covers slopes and branches under clear winter light."
@@ -6238,6 +7238,10 @@
     {
       "key": "风光/20240129160317.jpeg",
       "title": "阿尔山雾凇白树",
+      "titles": {
+        "zh-CN": "阿尔山雾凇白树",
+        "en": "Rime-Covered White Trees in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Arxan, where snow covers slopes and branches under clear winter light."
@@ -6263,6 +7267,10 @@
     {
       "key": "风光/20240129155549.jpeg",
       "title": "阿尔山冬山远眺",
+      "titles": {
+        "zh-CN": "阿尔山冬山远眺",
+        "en": "Distant Winter Mountains in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Arxan, where snow covers slopes and branches under clear winter light."
@@ -6288,6 +7296,10 @@
     {
       "key": "风光/20240129155238.jpeg",
       "title": "阿尔山雪山日光",
+      "titles": {
+        "zh-CN": "阿尔山雪山日光",
+        "en": "Sunlight on Arxan Snow Mountains"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，积雪覆盖山坡和树枝，冬日光线干净清透。",
         "en": "Photographed in Arxan, where snow covers slopes and branches under clear winter light."
@@ -6313,6 +7325,10 @@
     {
       "key": "风光/20240128092721.jpeg",
       "title": "阿尔山雪中小站",
+      "titles": {
+        "zh-CN": "阿尔山雪中小站",
+        "en": "Small Station in Arxan Snow"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，站台、轨道和天光组成出行中的安静间隔。",
         "en": "Photographed in Arxan, where platform, tracks, and sky make a quiet interval in transit."
@@ -6338,6 +7354,10 @@
     {
       "key": "风光/20240128082819.jpeg",
       "title": "阿尔山冬日湿地",
+      "titles": {
+        "zh-CN": "阿尔山冬日湿地",
+        "en": "Winter Wetland in Arxan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿尔山，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Arxan, where snow, low sun, and horizon give the scene a crisp openness."
@@ -6363,6 +7383,10 @@
     {
       "key": "城市/20240127195700.jpeg",
       "title": "沈阳夜色车站",
+      "titles": {
+        "zh-CN": "沈阳夜色车站",
+        "en": "Shenyang Station at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于沈阳，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Shenyang, where historic architecture and street life create a layered city memory."
@@ -6388,6 +7412,10 @@
     {
       "key": "城市/20231223232937.jpeg",
       "title": "澳门巴黎人铁塔",
+      "titles": {
+        "zh-CN": "澳门巴黎人铁塔",
+        "en": "Parisian Macau Eiffel Tower"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Macau, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -6413,6 +7441,10 @@
     {
       "key": "随手/20231223200903.jpeg",
       "title": "澳门室内演出",
+      "titles": {
+        "zh-CN": "澳门室内演出",
+        "en": "Indoor Performance in Macau"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，舞台光线和观众席把现场氛围压缩在一帧里。",
         "en": "Photographed in Macau, where stage light and audience compress the live atmosphere into one frame."
@@ -6438,6 +7470,10 @@
     {
       "key": "城市/20231223165020.jpeg",
       "title": "澳门历史街口",
+      "titles": {
+        "zh-CN": "澳门历史街口",
+        "en": "Historic Street Corner in Macau"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Macau, where historic architecture and street life create a layered city memory."
@@ -6463,6 +7499,10 @@
     {
       "key": "风光/20230813105708.jpeg",
       "title": "上海温室绿意",
+      "titles": {
+        "zh-CN": "上海温室绿意",
+        "en": "Greenery in a Shanghai Greenhouse"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海松江，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Photographed in Songjiang, Shanghai, where trees, lawns, and water slow the frame down inside the park."
@@ -6488,6 +7528,10 @@
     {
       "key": "城市/20230812172729.jpeg",
       "title": "上海松江酒店山景",
+      "titles": {
+        "zh-CN": "上海松江酒店山景",
+        "en": "Mountain View from a Songjiang Hotel"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海松江，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Songjiang, Shanghai, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -6513,6 +7557,10 @@
     {
       "key": "城市/20230811142638.jpeg",
       "title": "上海武康大楼街角",
+      "titles": {
+        "zh-CN": "上海武康大楼街角",
+        "en": "Street Corner by Wukang Mansion"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Shanghai, where historic architecture and street life create a layered city memory."
@@ -6538,6 +7586,10 @@
     {
       "key": "城市/20230810213918.jpeg",
       "title": "上海外滩夜景",
+      "titles": {
+        "zh-CN": "上海外滩夜景",
+        "en": "Night View of the Bund, Shanghai"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Shanghai, where historic architecture and street life create a layered city memory."
@@ -6563,6 +7615,10 @@
     {
       "key": "城市/20230810193911.jpeg",
       "title": "上海桥上夜景",
+      "titles": {
+        "zh-CN": "上海桥上夜景",
+        "en": "Shanghai Night View from a Bridge"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，桥梁与城市背景交织，线条把视线引向远处。",
         "en": "Photographed in Shanghai, where bridge lines lead the eye into the city beyond."
@@ -6588,6 +7644,10 @@
     {
       "key": "城市/20230810190440.jpeg",
       "title": "陆家嘴夜色天际线",
+      "titles": {
+        "zh-CN": "陆家嘴夜色天际线",
+        "en": "Lujiazui Skyline at Night"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，夜色里的高楼灯光倒映在水面和街区之间。",
         "en": "Photographed in Shanghai, where night lights from the towers reflect across water and streets."
@@ -6613,6 +7673,10 @@
     {
       "key": "城市/20230727163103.jpeg",
       "title": "澳门大三巴正面",
+      "titles": {
+        "zh-CN": "澳门大三巴正面",
+        "en": "Front View of the Ruins of St. Paul’s"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Macau, where historic architecture and street life create a layered city memory."
@@ -6638,6 +7702,10 @@
     {
       "key": "城市/20230716164243.jpeg",
       "title": "佛山广场云色",
+      "titles": {
+        "zh-CN": "佛山广场云色",
+        "en": "Cloud Colors Over a Foshan Square"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Foshan, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -6663,6 +7731,10 @@
     {
       "key": "风光/20230710162648.jpeg",
       "title": "黄果树瀑布近景",
+      "titles": {
+        "zh-CN": "黄果树瀑布近景",
+        "en": "Close View of Huangguoshu Waterfall"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄果树瀑布，瀑布从山体和绿意间铺开，水雾让画面更有力量。",
         "en": "Photographed in Huangguoshu Waterfall, where waterfalls spread through the green cliffs with a forceful mist."
@@ -6688,6 +7760,10 @@
     {
       "key": "风光/20230710162205.jpeg",
       "title": "黄果树瀑布全景",
+      "titles": {
+        "zh-CN": "黄果树瀑布全景",
+        "en": "Panorama of Huangguoshu Waterfall"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄果树瀑布，瀑布从山体和绿意间铺开，水雾让画面更有力量。",
         "en": "Photographed in Huangguoshu Waterfall, where waterfalls spread through the green cliffs with a forceful mist."
@@ -6713,6 +7789,10 @@
     {
       "key": "城市/20230708195007.jpeg",
       "title": "贵阳甲秀楼暮色",
+      "titles": {
+        "zh-CN": "贵阳甲秀楼暮色",
+        "en": "Jiaxiu Tower at Dusk in Guiyang"
+      },
       "descriptions": {
         "zh-CN": "拍摄于贵阳，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Guiyang, where historic architecture and street life create a layered city memory."
@@ -6738,6 +7818,10 @@
     {
       "key": "城市/20230707205326.jpg",
       "title": "贵阳雨云双塔",
+      "titles": {
+        "zh-CN": "贵阳雨云双塔",
+        "en": "Twin Towers Under Rain Clouds in Guiyang"
+      },
       "descriptions": {
         "zh-CN": "拍摄于贵阳，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Guiyang, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -6763,6 +7847,10 @@
     {
       "key": "城市/20230325102504.jpeg",
       "title": "阴天维多利亚港",
+      "titles": {
+        "zh-CN": "阴天维多利亚港",
+        "en": "Victoria Harbour on a Cloudy Day"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where the skyline opens across the water with a clear urban silhouette."
@@ -6788,6 +7876,10 @@
     {
       "key": "城市/20230325101949.jpeg",
       "title": "香港铜锣湾街角",
+      "titles": {
+        "zh-CN": "香港铜锣湾街角",
+        "en": "Causeway Bay Street Corner in Hong Kong"
+      },
       "descriptions": {
         "zh-CN": "拍摄于香港维多利亚港，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Victoria Harbour, Hong Kong, where street architecture, people, and light form a compact travel moment."
@@ -6813,6 +7905,10 @@
     {
       "key": "城市/20221030180155.jpeg",
       "title": "广州窗外晚霞",
+      "titles": {
+        "zh-CN": "广州窗外晚霞",
+        "en": "Guangzhou Sunset Outside the Window"
+      },
       "descriptions": {
         "zh-CN": "拍摄于佛山，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in Foshan, where the skyline and water are layered in warm sunset light."
@@ -6838,6 +7934,10 @@
     {
       "key": "随手/20220813124634.jpeg",
       "title": "合肥赛车展品",
+      "titles": {
+        "zh-CN": "合肥赛车展品",
+        "en": "Racing Car Exhibit in Hefei"
+      },
       "descriptions": {
         "zh-CN": "拍摄于合肥，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Photographed in Hefei, where a close detail is singled out as a small note from the trip."
@@ -6863,6 +7963,10 @@
     {
       "key": "风光/20220811104743.jpeg",
       "title": "黄山云雾奇峰",
+      "titles": {
+        "zh-CN": "黄山云雾奇峰",
+        "en": "Strange Peaks in Huangshan Clouds"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Huangshan, where mountains, trees, and mist build a layered natural scene."
@@ -6888,6 +7992,10 @@
     {
       "key": "风光/20220811104421.jpeg",
       "title": "黄山松与云",
+      "titles": {
+        "zh-CN": "黄山松与云",
+        "en": "Pines and Clouds in Huangshan"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Huangshan, where mountains, trees, and mist build a layered natural scene."
@@ -6913,6 +8021,10 @@
     {
       "key": "风光/20220811103942.jpeg",
       "title": "黄山云瀑山峰",
+      "titles": {
+        "zh-CN": "黄山云瀑山峰",
+        "en": "Cloud Waterfall Over Huangshan Peaks"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄山，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in Huangshan, where mountains, trees, and mist build a layered natural scene."
@@ -6938,6 +8050,10 @@
     {
       "key": "风光/20220811053702.jpeg",
       "title": "黄山日出峰影",
+      "titles": {
+        "zh-CN": "黄山日出峰影",
+        "en": "Peak Shadows at Huangshan Sunrise"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄山，晚霞从山脊背后展开，轮廓和云层都被染亮。",
         "en": "Photographed in Huangshan, where sunset spreads behind the ridges, lighting the silhouettes and clouds."
@@ -6963,6 +8079,10 @@
     {
       "key": "风光/20220810185919.jpeg",
       "title": "黄山晚霞山色",
+      "titles": {
+        "zh-CN": "黄山晚霞山色",
+        "en": "Huangshan Mountains in Evening Glow"
+      },
       "descriptions": {
         "zh-CN": "拍摄于黄山，晚霞从山脊背后展开，轮廓和云层都被染亮。",
         "en": "Photographed in Huangshan, where sunset spreads behind the ridges, lighting the silhouettes and clouds."
@@ -6988,6 +8108,10 @@
     {
       "key": "城市/20220629110228.jpeg",
       "title": "三亚海棠湾酒店",
+      "titles": {
+        "zh-CN": "三亚海棠湾酒店",
+        "en": "Hotel in Haitang Bay, Sanya"
+      },
       "descriptions": {
         "zh-CN": "拍摄于三亚，高处视角把街区、楼群和天空组织成清晰层次。",
         "en": "Photographed in Sanya, where a higher viewpoint organizes blocks, towers, and sky into clear layers."
@@ -7013,6 +8137,10 @@
     {
       "key": "风光/20220627110853.jpeg",
       "title": "三亚高处看海",
+      "titles": {
+        "zh-CN": "三亚高处看海",
+        "en": "Sea View from Above in Sanya"
+      },
       "descriptions": {
         "zh-CN": "拍摄于三亚，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in Sanya, where the sea catches warm sunset light under layered clouds."
@@ -7038,6 +8166,10 @@
     {
       "key": "风光/20220626170343.jpeg",
       "title": "三亚椰影海湾",
+      "titles": {
+        "zh-CN": "三亚椰影海湾",
+        "en": "Palm Shadows by a Sanya Bay"
+      },
       "descriptions": {
         "zh-CN": "拍摄于三亚，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in Sanya, where the sea catches warm sunset light under layered clouds."
@@ -7063,6 +8195,10 @@
     {
       "key": "城市/20220624202712.jpeg",
       "title": "海口骑楼老街",
+      "titles": {
+        "zh-CN": "海口骑楼老街",
+        "en": "Haikou Qilou Old Street"
+      },
       "descriptions": {
         "zh-CN": "拍摄于海口，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Haikou, where historic architecture and street life create a layered city memory."
@@ -7088,6 +8224,10 @@
     {
       "key": "风光/20220624174305.jpeg",
       "title": "海口港口渡船",
+      "titles": {
+        "zh-CN": "海口港口渡船",
+        "en": "Ferry at Haikou Harbor"
+      },
       "descriptions": {
         "zh-CN": "拍摄于海口，渡轮、码头和水面记录了城市之间的移动感。",
         "en": "Photographed in Haikou, where ferry, pier, and water record motion between places."
@@ -7113,6 +8253,10 @@
     {
       "key": "风光/20210814190511.jpg",
       "title": "粤东北山谷小镇",
+      "titles": {
+        "zh-CN": "粤东北山谷小镇",
+        "en": "Valley Town in Northeastern Guangdong"
+      },
       "descriptions": {
         "zh-CN": "拍摄于粤东北山区，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in the mountains of northeastern Guangdong, where mountains, trees, and mist build a layered natural scene."
@@ -7138,6 +8282,10 @@
     {
       "key": "风光/20210501183243.jpg",
       "title": "澳门山城夕阳",
+      "titles": {
+        "zh-CN": "澳门山城夕阳",
+        "en": "Sunset Over the Hillside City of Macau"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，夕阳下的城市天际线和水面形成温暖层次。",
         "en": "Photographed in Macau, where the skyline and water are layered in warm sunset light."
@@ -7163,6 +8311,10 @@
     {
       "key": "城市/20210501172011.jpg",
       "title": "澳门大三巴雨天",
+      "titles": {
+        "zh-CN": "澳门大三巴雨天",
+        "en": "Ruins of St. Paul’s on a Rainy Day"
+      },
       "descriptions": {
         "zh-CN": "拍摄于澳门，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Macau, where historic architecture and street life create a layered city memory."
@@ -7188,6 +8340,10 @@
     {
       "key": "城市/20201221204601.jpg",
       "title": "上海夜色航拍",
+      "titles": {
+        "zh-CN": "上海夜色航拍",
+        "en": "Shanghai Night Aerial"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，夜间航拍把街灯、路口和楼群压成明亮的图案。",
         "en": "Photographed in Shanghai, where a night aerial view turns streets and towers into a bright pattern."
@@ -7213,6 +8369,10 @@
     {
       "key": "城市/20201221160327.jpeg",
       "title": "上海双塔仰望",
+      "titles": {
+        "zh-CN": "上海双塔仰望",
+        "en": "Looking Up at Shanghai Twin Towers"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Shanghai, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -7238,6 +8398,10 @@
     {
       "key": "城市/20201221115704.jpeg",
       "title": "上海浦东天际线",
+      "titles": {
+        "zh-CN": "上海浦东天际线",
+        "en": "Pudong Skyline in Shanghai"
+      },
       "descriptions": {
         "zh-CN": "拍摄于上海，隔着水面望向高楼天际线，城市轮廓清晰展开。",
         "en": "Photographed in Shanghai, where the skyline opens across the water with a clear urban silhouette."
@@ -7263,6 +8427,10 @@
     {
       "key": "风光/20200729115443.jpg",
       "title": "粤东北山岭风机",
+      "titles": {
+        "zh-CN": "粤东北山岭风机",
+        "en": "Wind Turbines in Northeastern Guangdong Hills"
+      },
       "descriptions": {
         "zh-CN": "拍摄于粤东北山区，山体、树木和云雾铺开了层次丰富的自然风景。",
         "en": "Photographed in the mountains of northeastern Guangdong, where mountains, trees, and mist build a layered natural scene."
@@ -7288,6 +8456,10 @@
     {
       "key": "风光/20200728185613.jpeg",
       "title": "粤东北山间落日",
+      "titles": {
+        "zh-CN": "粤东北山间落日",
+        "en": "Mountain Sunset in Northeastern Guangdong"
+      },
       "descriptions": {
         "zh-CN": "拍摄于粤东北山区，晚霞从山脊背后展开，轮廓和云层都被染亮。",
         "en": "Photographed in the mountains of northeastern Guangdong, where sunset spreads behind the ridges, lighting the silhouettes and clouds."
@@ -7313,6 +8485,10 @@
     {
       "key": "风光/20200728183217.jpeg",
       "title": "粤东北芦草夕阳",
+      "titles": {
+        "zh-CN": "粤东北芦草夕阳",
+        "en": "Reeds at Sunset in Northeastern Guangdong"
+      },
       "descriptions": {
         "zh-CN": "拍摄于粤东北山区，晚霞从山脊背后展开，轮廓和云层都被染亮。",
         "en": "Photographed in the mountains of northeastern Guangdong, where sunset spreads behind the ridges, lighting the silhouettes and clouds."
@@ -7338,6 +8514,10 @@
     {
       "key": "随手/20191228153658.jpg",
       "title": "深圳展厅屏幕",
+      "titles": {
+        "zh-CN": "深圳展厅屏幕",
+        "en": "Showroom Screen in Shenzhen"
+      },
       "descriptions": {
         "zh-CN": "拍摄于深圳湾，近处细节被单独拎出，给旅途留下轻巧的注脚。",
         "en": "Photographed in Shenzhen Bay, where a close detail is singled out as a small note from the trip."
@@ -7363,6 +8543,10 @@
     {
       "key": "随手/20191228153207.jpg",
       "title": "深圳蔚来中心",
+      "titles": {
+        "zh-CN": "深圳蔚来中心",
+        "en": "NIO House in Shenzhen"
+      },
       "descriptions": {
         "zh-CN": "拍摄于深圳湾，橱窗和室内陈列捕捉了城市漫游中的小片段。",
         "en": "Photographed in Shenzhen Bay, where the shopfront and display catch a small fragment of city wandering."
@@ -7388,6 +8572,10 @@
     {
       "key": "风光/20191225141229.jpg",
       "title": "德天瀑布远景",
+      "titles": {
+        "zh-CN": "德天瀑布远景",
+        "en": "Distant View of Detian Waterfall"
+      },
       "descriptions": {
         "zh-CN": "拍摄于德天瀑布，瀑布从山体和绿意间铺开，水雾让画面更有力量。",
         "en": "Photographed in Detian Waterfall, where waterfalls spread through the green cliffs with a forceful mist."
@@ -7413,6 +8601,10 @@
     {
       "key": "风光/20191225132758.jpg",
       "title": "德天瀑布水潭",
+      "titles": {
+        "zh-CN": "德天瀑布水潭",
+        "en": "Pool Below Detian Waterfall"
+      },
       "descriptions": {
         "zh-CN": "拍摄于德天瀑布，瀑布从山体和绿意间铺开，水雾让画面更有力量。",
         "en": "Photographed in Detian Waterfall, where waterfalls spread through the green cliffs with a forceful mist."
@@ -7438,6 +8630,10 @@
     {
       "key": "风光/20191225110635.jpg",
       "title": "崇左喀斯特田园",
+      "titles": {
+        "zh-CN": "崇左喀斯特田园",
+        "en": "Karst Countryside in Chongzuo"
+      },
       "descriptions": {
         "zh-CN": "拍摄于广西崇左一带，喀斯特山影、田地和薄雾构成柔和的边境风景。",
         "en": "Photographed around Chongzuo, Guangxi, where karst hills, fields, and mist create a soft borderland landscape."
@@ -7463,6 +8659,10 @@
     {
       "key": "城市/20190728042344.jpg",
       "title": "纽约时报广场高楼",
+      "titles": {
+        "zh-CN": "纽约时报广场高楼",
+        "en": "Towers in New York Times Square"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in New York City, where street architecture, people, and light form a compact travel moment."
@@ -7488,6 +8688,10 @@
     {
       "key": "城市/20190727232605.jpg",
       "title": "自由女神像水上远望",
+      "titles": {
+        "zh-CN": "自由女神像水上远望",
+        "en": "Statue of Liberty Seen Across the Water"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in New York Harbor, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -7513,6 +8717,10 @@
     {
       "key": "城市/20190727220611.jpg",
       "title": "纽约证券交易所街景",
+      "titles": {
+        "zh-CN": "纽约证券交易所街景",
+        "en": "New York Stock Exchange Street Scene"
+      },
       "descriptions": {
         "zh-CN": "拍摄于纽约港，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in New York Harbor, where historic architecture and street life create a layered city memory."
@@ -7538,6 +8746,10 @@
     {
       "key": "随手/20190726202523.jpg",
       "title": "波特兰机场雨天",
+      "titles": {
+        "zh-CN": "波特兰机场雨天",
+        "en": "Rainy Day at Portland Airport"
+      },
       "descriptions": {
         "zh-CN": "拍摄于波特兰，机场与机坪记录了出发或抵达前后的短暂停顿。",
         "en": "Photographed in Portland, where the airport and apron capture a pause around departure or arrival."
@@ -7563,6 +8775,10 @@
     {
       "key": "风光/20190721061206.jpg",
       "title": "波特兰清晨路灯",
+      "titles": {
+        "zh-CN": "波特兰清晨路灯",
+        "en": "Morning Streetlight in Portland"
+      },
       "descriptions": {
         "zh-CN": "拍摄于波特兰，街头建筑、人流和光线构成旅途中的城市切片。",
         "en": "Photographed in Portland, where street architecture, people, and light form a compact travel moment."
@@ -7588,6 +8804,10 @@
     {
       "key": "随手/20190719203408.jpg",
       "title": "迪士尼银河边缘",
+      "titles": {
+        "zh-CN": "迪士尼银河边缘",
+        "en": "Disney Galaxy’s Edge"
+      },
       "descriptions": {
         "zh-CN": "拍摄于阿纳海姆迪士尼乐园，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Disneyland Anaheim, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -7613,6 +8833,10 @@
     {
       "key": "风光/20190120181337.jpg",
       "title": "亚庇海滩夕阳",
+      "titles": {
+        "zh-CN": "亚庇海滩夕阳",
+        "en": "Sunset on a Kota Kinabalu Beach"
+      },
       "descriptions": {
         "zh-CN": "拍摄于亚庇，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in Kota Kinabalu, where the sea catches warm sunset light under layered clouds."
@@ -7638,6 +8862,10 @@
     {
       "key": "风光/20181231154252.jpg",
       "title": "粤东北寒雾树影",
+      "titles": {
+        "zh-CN": "粤东北寒雾树影",
+        "en": "Cold Mist and Tree Shadows in Northeastern Guangdong"
+      },
       "descriptions": {
         "zh-CN": "拍摄于粤东北山区，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in the mountains of northeastern Guangdong, where snow, low sun, and horizon give the scene a crisp openness."
@@ -7663,6 +8891,10 @@
     {
       "key": "城市/20180803181039.jpg",
       "title": "北京圆明园遗址",
+      "titles": {
+        "zh-CN": "北京圆明园遗址",
+        "en": "Ruins of the Old Summer Palace in Beijing"
+      },
       "descriptions": {
         "zh-CN": "拍摄于北京，历史建筑与街头人群并置，形成层次鲜明的城市记忆。",
         "en": "Photographed in Beijing, where historic architecture and street life create a layered city memory."
@@ -7687,6 +8919,10 @@
     {
       "key": "城市/20180801095820.jpg",
       "title": "北京天坛祈年殿",
+      "titles": {
+        "zh-CN": "北京天坛祈年殿",
+        "en": "Hall of Prayer for Good Harvests in Beijing"
+      },
       "descriptions": {
         "zh-CN": "拍摄于北京，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Beijing, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -7712,6 +8948,10 @@
     {
       "key": "城市/20180731094558.jpg",
       "title": "北京故宫午门",
+      "titles": {
+        "zh-CN": "北京故宫午门",
+        "en": "Meridian Gate of the Forbidden City"
+      },
       "descriptions": {
         "zh-CN": "拍摄于北京，地标建筑占据画面中心，现场氛围清晰可见。",
         "en": "Photographed in Beijing, where a landmark anchors the frame with the surrounding atmosphere intact."
@@ -7737,6 +8977,10 @@
     {
       "key": "风光/20160713192105.jpg",
       "title": "济州岛雾中海岸",
+      "titles": {
+        "zh-CN": "济州岛雾中海岸",
+        "en": "Jeju Coast in the Fog"
+      },
       "descriptions": {
         "zh-CN": "拍摄于济州岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Photographed in Jeju Island, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -7762,6 +9006,10 @@
     {
       "key": "风光/20160712113146.jpg",
       "title": "济州岛绿地松影",
+      "titles": {
+        "zh-CN": "济州岛绿地松影",
+        "en": "Pine Shadows on Jeju Greenery"
+      },
       "descriptions": {
         "zh-CN": "拍摄于济州岛，公园里的树影、草地和水面让画面放慢下来。",
         "en": "Photographed in Jeju Island, where trees, lawns, and water slow the frame down inside the park."
@@ -7787,6 +9035,10 @@
     {
       "key": "风光/20160712092621.jpg",
       "title": "济州岛黑礁海岸",
+      "titles": {
+        "zh-CN": "济州岛黑礁海岸",
+        "en": "Black Reef Coast of Jeju Island"
+      },
       "descriptions": {
         "zh-CN": "拍摄于济州岛，海岸、云层和远处船影让画面保持柔和的流动感。",
         "en": "Photographed in Jeju Island, where coast, clouds, and distant ships keep a soft sense of movement."
@@ -7812,6 +9064,10 @@
     {
       "key": "风光/20150203085149.jpg",
       "title": "哈尔滨雪原村舍",
+      "titles": {
+        "zh-CN": "哈尔滨雪原村舍",
+        "en": "Snowfield Cottages in Harbin"
+      },
       "descriptions": {
         "zh-CN": "拍摄于哈尔滨，雪地、低阳和远处地平线让画面显得清冽开阔。",
         "en": "Photographed in Harbin, where snow, low sun, and horizon give the scene a crisp openness."
@@ -7837,6 +9093,10 @@
     {
       "key": "风光/20140805183814.jpg",
       "title": "三亚海面剪影",
+      "titles": {
+        "zh-CN": "三亚海面剪影",
+        "en": "Silhouette Over the Sea in Sanya"
+      },
       "descriptions": {
         "zh-CN": "拍摄于三亚，海面接住落日和云层的暖光，气氛安静而开阔。",
         "en": "Photographed in Sanya, where the sea catches warm sunset light under layered clouds."

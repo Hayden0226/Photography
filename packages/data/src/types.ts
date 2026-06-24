@@ -1,1 +1,8 @@
-export type { AfilmoryIndexManifest, GalleryExif, PhotoManifestIndexItem } from './index'
+export type {
+  AfilmoryIndexManifest,
+  GalleryExif,
+  PhotoManifestIndexItem,
+  PhotoTextEntry,
+  PhotoTextPack,
+  ResolvedPhotoText,
+} from './index'
