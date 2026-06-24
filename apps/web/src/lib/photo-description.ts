@@ -11,27 +11,11 @@ const DEFAULT_FALLBACK_PHOTO_TEXT_LANGUAGE = 'en'
 const languageCandidatesCache = new Map<string, string[]>()
 
 export function getLocalizedPhotoDescription(photo: PhotoWithDescriptions, language: string): string {
-  const { descriptions } = photo
-  if (!descriptions) return photo.description ?? ''
-
-  for (const candidate of getLanguageCandidates(language)) {
-    const description = trimText(descriptions[candidate])
-    if (description) return description
-  }
-
-  return photo.description ?? ''
+  return getLocalizedPhotoText(photo.descriptions, photo.description, language)
 }
 
 export function getLocalizedPhotoTitle(photo: PhotoWithDescriptions, language: string): string {
-  const { titles } = photo
-  if (!titles) return photo.title ?? ''
-
-  for (const candidate of getLanguageCandidates(language)) {
-    const title = trimText(titles[candidate])
-    if (title) return title
-  }
-
-  return photo.title ?? ''
+  return getLocalizedPhotoText(photo.titles, photo.title, language)
 }
 
 export function getSearchablePhotoTitles(photo: PhotoWithDescriptions): string[] {
@@ -78,6 +62,32 @@ function getLanguageCandidates(language: string): string[] {
   const uniqueCandidates = Array.from(new Set(candidates.filter(Boolean)))
   languageCandidatesCache.set(normalized, uniqueCandidates)
   return uniqueCandidates
+}
+
+function getLocalizedPhotoText(
+  values: Record<string, string> | undefined,
+  legacyInlineText: string | undefined,
+  language: string,
+): string {
+  const legacyText = trimText(legacyInlineText)
+  if (!values) return legacyText
+
+  const shouldPreferInlineFallback = isInlinePhotoTextLanguage(language)
+
+  for (const candidate of getLanguageCandidates(language)) {
+    const value = trimText(values[candidate])
+    if (value) return value
+
+    if (shouldPreferInlineFallback && candidate === DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE && legacyText) {
+      return legacyText
+    }
+  }
+
+  return legacyText
+}
+
+function isInlinePhotoTextLanguage(language: string): boolean {
+  return language.trim().split('-')[0]?.toLowerCase() === 'zh'
 }
 
 function trimText(value: unknown): string {

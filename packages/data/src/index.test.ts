@@ -62,6 +62,10 @@ describe('photoLoader photo text packs', () => {
       title: 'English title',
       description: 'English description',
     })
+    expect(photoLoader.getPhotoText(photo, 'zh-CN')).toEqual({
+      title: '中文标题',
+      description: '中文描述',
+    })
     expect(photoLoader.getSearchablePhotoText(photo)).toEqual([
       '中文标题',
       '中文描述',
