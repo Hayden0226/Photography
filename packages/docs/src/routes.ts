@@ -51,7 +51,7 @@ export const routes: RouteConfig[] = [
       title: 'GitHub Action',
       description: "Current GitHub Actions validation and deployment workflow for Jacky's Photography.",
       createdAt: '2025-07-20T22:35:03+08:00',
-      lastModified: '2026-06-25T01:07:09+08:00',
+      lastModified: '2026-06-26T01:16:22+08:00',
     },
   },
   {

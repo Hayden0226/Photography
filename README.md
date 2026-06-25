@@ -171,7 +171,7 @@ PR 会执行：
 
 - 将标准化后的照片变更 push 回 `Jackyhq/Photography-Photos`
 - 使用 `aws s3 sync --size-only --delete` 同步 `./photos` 到 Cloudflare R2 的 `photos/` prefix
-- 生成 `googlesitemap.xml`、README 预览图和可选 IndexNow 验证文件
+- 生成 `googlesitemap.xml` 和 README 预览图
 - 同步 `apps/web/dist/` 到 `Jackyhq/Photography-Web`
 
 主仓库需要这些 secrets：
@@ -182,7 +182,6 @@ PR 会执行：
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
 - `CLOUDFLARE_R2_ENDPOINT`
 - `CLOUDFLARE_R2_BUCKET`
-- `INDEXNOW_KEY`，可选
 
 Vercel Preview 使用 `vercel.json` 中的 `pnpm run vercel:build`。Preview 只拉取私有照片仓库并构建静态预览，不同步 R2、不回写照片仓库、不同步生产部署仓库。不要授权不可信 fork 使用带私有 token 的 Preview 构建。
 

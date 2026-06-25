@@ -176,7 +176,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     env:
-      HAS_INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY != '' }}
       HAS_DEPLOY_REPO_TOKEN: ${{ secrets.DEPLOY_REPO_TOKEN != '' }}
       HAS_PHOTO_REPO_TOKEN: ${{ secrets.PHOTO_REPO_TOKEN != '' }}
       HAS_R2_ACCESS_KEY_ID: ${{ secrets.CLOUDFLARE_R2_ACCESS_KEY_ID != '' }}
@@ -359,20 +358,6 @@ jobs:
           latest_og_image="${og_images[$((${#og_images[@]} - 1))]}"
           cp "$latest_og_image" apps/web/dist/readme-og-image.png
           echo "Copied $latest_og_image to apps/web/dist/readme-og-image.png"
-
-      - name: Publish IndexNow key file
-        if: env.HAS_INDEXNOW_KEY == 'true'
-        shell: bash
-        env:
-          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-        run: |
-          if [[ ! "$INDEXNOW_KEY" =~ ^[A-Za-z0-9-]{8,128}$ ]]; then
-            echo "INDEXNOW_KEY must be 8-128 characters and contain only letters, numbers, or dashes."
-            exit 1
-          fi
-
-          printf '%s' "$INDEXNOW_KEY" > "./apps/web/dist/${INDEXNOW_KEY}.txt"
-          echo "Created IndexNow key file in apps/web/dist."
 
       - name: Checkout deployment repository
         uses: actions/checkout@v6
