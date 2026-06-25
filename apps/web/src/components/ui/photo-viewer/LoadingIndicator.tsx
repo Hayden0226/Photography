@@ -1,4 +1,4 @@
-import { useCallback, useImperativeHandle, useState } from 'react'
+import * as React from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface LoadingState {
@@ -47,11 +47,13 @@ const initialLoadingState: LoadingState = {
 
 export const LoadingIndicator = ({ ref }: { ref?: React.Ref<LoadingIndicatorRef | null> }) => {
   const { t } = useTranslation()
-  const [loadingState, setLoadingState] = useState<LoadingState>(initialLoadingState)
+  const [loadingState, setLoadingState] = React.useState<LoadingState>(initialLoadingState)
+  const loadingPercent = Math.round(loadingState.loadingProgress)
+  const shouldShowImageProgress = loadingState.totalBytes > 0 && loadingPercent > 0
 
-  useImperativeHandle(
+  React.useImperativeHandle(
     ref,
-    useCallback(
+    React.useCallback(
       () => ({
         updateLoadingState: (partialState: Partial<LoadingState>) => {
           setLoadingState((prev) => {
@@ -133,7 +135,9 @@ export const LoadingIndicator = ({ ref }: { ref?: React.Ref<LoadingIndicatorRef 
                 <p className="text-xs font-medium text-white">
                   {loadingState.isHeicFormat ? t('loading.heic.main') : t('loading.default')}
                 </p>
-                <span className="text-xs text-white/60 tabular-nums">{Math.round(loadingState.loadingProgress)}%</span>
+                {shouldShowImageProgress && (
+                  <span className="text-xs text-white/60 tabular-nums">{loadingPercent}%</span>
+                )}
               </div>
               {loadingState.totalBytes > 0 && (
                 <p className="text-xs text-white/70 tabular-nums">
