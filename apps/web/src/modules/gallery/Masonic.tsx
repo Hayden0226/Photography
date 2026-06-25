@@ -28,19 +28,15 @@ export const Masonry = <Item,>(props: MasonryProps<Item> & { ref?: React.Ref<Mas
   React.useEffect(() => {
     if (!scrollElement) return
 
-    const scrollTimer: number | null = null
     const handleScroll = throttle(() => {
       setIsScrolling(true)
       setScrollTop(scrollElement.scrollTop)
     }, 1000 / fps)
 
-    scrollElement.addEventListener('scroll', handleScroll)
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
       scrollElement.removeEventListener('scroll', handleScroll)
-      if (scrollTimer) {
-        clearTimeout(scrollTimer)
-      }
     }
   }, [fps, scrollElement])
   const didMount = React.useRef(0)
@@ -198,28 +194,34 @@ function useContainerPosition(
   }, deps)
 
   React.useEffect(() => {
+    if (!elementRef.current) return
+
     const resizeObserver = new ResizeObserver(() => {
       setContainerPosition((prev) => {
         const next = {
           ...prev,
           width: elementRef.current?.offsetWidth || 0,
+          height: elementRef.current?.offsetHeight || 0,
         }
         if (isEqual(next, prev)) return prev
         return next
       })
     })
-    resizeObserver.observe(elementRef.current as HTMLElement)
+    resizeObserver.observe(elementRef.current)
     return () => {
       resizeObserver.disconnect()
     }
-  }, [containerPosition, elementRef])
+  }, [elementRef])
 
   return containerPosition
 }
 
 function useResizeObserver(positioner: Positioner) {
   const [forceUpdate] = useForceUpdate()
-  const resizeObserver = createResizeObserver(positioner, throttle(forceUpdate, 1000 / 12))
+  const resizeObserver = React.useMemo(
+    () => createResizeObserver(positioner, throttle(forceUpdate, 1000 / 12)),
+    [forceUpdate, positioner],
+  )
   // Cleans up the resize observers when they change or the
   // component unmounts
   React.useEffect(() => () => resizeObserver.disconnect(), [resizeObserver])

@@ -14,18 +14,32 @@ interface VisibleRange {
   end: number
 }
 
+const EMPTY_DATE_RANGE: DateRange = {
+  startDate: null,
+  endDate: null,
+  formattedRange: '',
+}
+
+const isSameDateRange = (previous: DateRange, next: DateRange) => {
+  return (
+    previous.formattedRange === next.formattedRange &&
+    previous.startDate?.getTime() === next.startDate?.getTime() &&
+    previous.endDate?.getTime() === next.endDate?.getTime()
+  )
+}
+
 /**
  * Hook to calculate the date range of currently visible photos in the viewport
  * Works with masonry onRender callback
  */
 export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
-  const [dateRange, setDateRange] = useState<DateRange>({
-    startDate: null,
-    endDate: null,
-    formattedRange: '',
-  })
+  const [dateRange, setDateRange] = useState<DateRange>(EMPTY_DATE_RANGE)
 
   const currentRange = useRef<VisibleRange>({ start: 0, end: 0 })
+
+  const updateDateRange = useCallback((nextRange: DateRange) => {
+    setDateRange((previousRange) => (isSameDateRange(previousRange, nextRange) ? previousRange : nextRange))
+  }, [])
 
   const getPhotoDate = useCallback((photo: PhotoManifest): Date => {
     if (photo.sortTime) {
@@ -94,11 +108,7 @@ export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
   const calculateDateRange = useCallback(
     (startIndex: number, endIndex: number, items: any[]) => {
       if (!items || items.length === 0) {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-          formattedRange: '',
-        })
+        updateDateRange(EMPTY_DATE_RANGE)
         return
       }
 
@@ -108,11 +118,7 @@ export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
         .filter((item): item is PhotoManifest => item && typeof item === 'object' && 'id' in item)
 
       if (visiblePhotos.length === 0) {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-          formattedRange: '',
-        })
+        updateDateRange(EMPTY_DATE_RANGE)
         return
       }
 
@@ -123,17 +129,13 @@ export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
       const endDate = dates.at(-1)
 
       if (!startDate || !endDate) {
-        setDateRange({
-          startDate: null,
-          endDate: null,
-          formattedRange: '',
-        })
+        updateDateRange(EMPTY_DATE_RANGE)
         return
       }
 
       const formattedRange = formatDateRange(startDate, endDate)
 
-      setDateRange({
+      updateDateRange({
         startDate,
         endDate,
         formattedRange,
@@ -142,7 +144,7 @@ export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
       // 更新当前范围
       currentRange.current = { start: startIndex, end: endIndex }
     },
-    [getPhotoDate, formatDateRange],
+    [getPhotoDate, formatDateRange, updateDateRange],
   )
 
   // 用于传递给 masonry 的 onRender 回调
