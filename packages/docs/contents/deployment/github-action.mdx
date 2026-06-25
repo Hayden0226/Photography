@@ -2,7 +2,7 @@
 title: GitHub Action
 description: Current GitHub Actions validation and deployment workflow for Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-06-25T01:07:09+08:00
+lastModified: 2026-06-26T01:21:40+08:00
 ---
 
 # GitHub Action Deployment
@@ -55,8 +55,7 @@ Pushes to `main`, manual runs, and photo-repository dispatches run the `build-an
 2. Syncs `./photos` to Cloudflare R2 under the `photos/` prefix.
 3. Builds the manifest and web app.
 4. Prepares `googlesitemap.xml` and the README preview image.
-5. Publishes the optional IndexNow verification file.
-6. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
+5. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
 
 ## Required Secrets
 
@@ -68,7 +67,6 @@ The source repository requires:
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`: Cloudflare R2 S3 API secret key.
 - `CLOUDFLARE_R2_ENDPOINT`: R2 S3 API endpoint, such as `https://<account_id>.r2.cloudflarestorage.com`.
 - `CLOUDFLARE_R2_BUCKET`: bucket name only, such as `jackywhq`.
-- `INDEXNOW_KEY`: optional key for IndexNow verification output.
 
 The private photo repository requires `MAIN_REPO_DISPATCH_TOKEN`, a token that can send `repository_dispatch` events to `Jackyhq/Photography`.
 
