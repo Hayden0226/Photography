@@ -1,4 +1,3 @@
-import { photoLoader } from '@afilmory/data'
 import { ScrollArea, ScrollElementContext } from '@afilmory/ui'
 import { useAtomValue, useSetAtom } from 'jotai'
 import { useEffect, useRef } from 'react'
@@ -64,8 +63,9 @@ let isRestored = false
 const useStateRestoreFromUrl = () => {
   const triggerOnceRef = useRef(false)
 
-  const { openViewer } = usePhotoViewer()
+  const { openViewerByPhotoId } = usePhotoViewer()
   const { photoId } = useParams()
+  const gallerySetting = useAtomValue(gallerySettingAtom)
   const setGallerySetting = useSetAtom(gallerySettingAtom)
 
   const [searchParams] = useSearchParams()
@@ -74,18 +74,29 @@ const useStateRestoreFromUrl = () => {
     triggerOnceRef.current = true
     isRestored = true
 
-    if (photoId) {
-      const photo = photoLoader.getPhotos().find((photo) => photo.id === photoId)
-      if (photo) {
-        openViewer(photoLoader.getPhotos().indexOf(photo))
-      }
+    const getListFromSearchParams = (key: string) => {
+      const value = searchParams.get(key)
+      if (!value) return
+
+      const values = value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+
+      if (values.length > 0) return values
     }
 
-    const tagsFromSearchParams = searchParams.get('tags')?.split(',')
-    const camerasFromSearchParams = searchParams.get('cameras')?.split(',')
-    const lensesFromSearchParams = searchParams.get('lenses')?.split(',')
-    const ratingsFromSearchParams = searchParams.get('rating') ? Number(searchParams.get('rating')) : null
-    const tagModeFromSearchParams = searchParams.get('tag_mode') as 'union' | 'intersection' | null
+    const tagsFromSearchParams = getListFromSearchParams('tags')
+    const camerasFromSearchParams = getListFromSearchParams('cameras')
+    const lensesFromSearchParams = getListFromSearchParams('lenses')
+    const ratingParam = searchParams.get('rating')
+    const parsedRating = ratingParam ? Number(ratingParam) : null
+    const ratingsFromSearchParams = parsedRating !== null && Number.isFinite(parsedRating) ? parsedRating : null
+    const rawTagModeFromSearchParams = searchParams.get('tag_mode')
+    const tagModeFromSearchParams =
+      rawTagModeFromSearchParams === 'intersection' || rawTagModeFromSearchParams === 'union'
+        ? rawTagModeFromSearchParams
+        : null
 
     if (
       tagsFromSearchParams ||
@@ -94,16 +105,30 @@ const useStateRestoreFromUrl = () => {
       ratingsFromSearchParams !== null ||
       tagModeFromSearchParams
     ) {
-      setGallerySetting((prev) => ({
-        ...prev,
-        selectedTags: tagsFromSearchParams || prev.selectedTags,
-        selectedCameras: camerasFromSearchParams || prev.selectedCameras,
-        selectedLenses: lensesFromSearchParams || prev.selectedLenses,
-        selectedRatings: ratingsFromSearchParams ?? prev.selectedRatings,
-        tagFilterMode: tagModeFromSearchParams || prev.tagFilterMode,
-      }))
+      const restoredGallerySetting = {
+        ...gallerySetting,
+        selectedTags: tagsFromSearchParams || gallerySetting.selectedTags,
+        selectedCameras: camerasFromSearchParams || gallerySetting.selectedCameras,
+        selectedLenses: lensesFromSearchParams || gallerySetting.selectedLenses,
+        selectedRatings: ratingsFromSearchParams ?? gallerySetting.selectedRatings,
+        tagFilterMode: tagModeFromSearchParams || gallerySetting.tagFilterMode,
+      }
+
+      setGallerySetting(restoredGallerySetting)
+
+      if (photoId) {
+        openViewerByPhotoId(photoId, {
+          gallerySetting: restoredGallerySetting,
+          resetFiltersIfHidden: true,
+        })
+      }
+      return
     }
-  }, [openViewer, photoId, searchParams, setGallerySetting])
+
+    if (photoId) {
+      openViewerByPhotoId(photoId, { resetFiltersIfHidden: true })
+    }
+  }, [gallerySetting, openViewerByPhotoId, photoId, searchParams, setGallerySetting])
 }
 
 const useSyncStateToUrl = () => {

@@ -86,15 +86,26 @@ export async function saveManifest(
 // 检测并处理已删除的图片
 export async function handleDeletedPhotos(items: PhotoManifestItem[]): Promise<number> {
   logger.main.info('🔍 检查已删除的图片...')
+  const thumbnailsDir = path.join(workdir, 'public/thumbnails')
   if (items.length === 0) {
     // Clear all thumbnails
-    await fs.rm(path.join(workdir, 'public/thumbnails'), { recursive: true, force: true })
+    await fs.rm(thumbnailsDir, { recursive: true, force: true })
     logger.main.info('🔍 没有图片，清空缩略图...')
     return 0
   }
 
   let deletedCount = 0
-  const allThumbnails = await fs.readdir(path.join(workdir, 'public/thumbnails'))
+  let allThumbnails: string[]
+  try {
+    allThumbnails = await fs.readdir(thumbnailsDir)
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
+      await fs.mkdir(thumbnailsDir, { recursive: true })
+      return 0
+    }
+
+    throw error
+  }
 
   const expectedThumbnailFileSet = new Set(
     items.flatMap((item) => [`${item.id}.jpg`, `${item.id}-360.webp`, `${item.id}-640.webp`]),
@@ -102,7 +113,7 @@ export async function handleDeletedPhotos(items: PhotoManifestItem[]): Promise<n
 
   for (const thumbnail of allThumbnails) {
     if (!expectedThumbnailFileSet.has(basename(thumbnail))) {
-      await fs.unlink(path.join(workdir, 'public/thumbnails', thumbnail))
+      await fs.unlink(path.join(thumbnailsDir, thumbnail))
       deletedCount++
     }
   }
