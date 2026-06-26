@@ -73,7 +73,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
   const { i18n, t } = useTranslation()
   const [gallerySetting, setGallerySetting] = useAtom(gallerySettingAtom)
   const navigate = useNavigate()
-  const { openViewer } = usePhotoViewer()
+  const { openViewerByPhotoId } = usePhotoViewer()
 
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -305,10 +305,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
             />
           ),
           action: () => {
-            const allPhotos = photoLoader.getPhotos()
-            const photoIndex = allPhotos.findIndex((p) => p.id === photo.id)
-            if (photoIndex !== -1) {
-              openViewer(photoIndex)
+            if (openViewerByPhotoId(photo.id, { resetFiltersIfHidden: true })) {
               navigate(getPhotoDetailPath(photo.id))
               onClose()
             }
@@ -327,7 +324,7 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     navigate,
     onClose,
     setGallerySetting,
-    openViewer,
+    openViewerByPhotoId,
     updateTagFilterMode,
     searchTextRevision,
   ])

@@ -116,8 +116,14 @@ const MIGRATION_STEPS: MigrationStep[] = [
   },
 ]
 
-function noOpBumpVersion(raw: any, _target: ManifestVersion): AfilmoryManifest {
-  return raw
+function bumpVersionOnly(raw: any, target: ManifestVersion): AfilmoryManifest {
+  return {
+    ...raw,
+    version: target,
+    data: Array.isArray(raw?.data) ? raw.data : [],
+    cameras: Array.isArray(raw?.cameras) ? raw.cameras : [],
+    lenses: Array.isArray(raw?.lenses) ? raw.lenses : [],
+  }
 }
 
 export function migrateManifest(
@@ -135,7 +141,7 @@ export function migrateManifest(
     const guardKey = `${String(current)}->${String(target)}`
     if (guard.has(guardKey)) {
       logger.main.warn('⚠️ 检测到潜在迁移循环，使用占位升级直接跳转到目标版本')
-      return noOpBumpVersion(working, target)
+      return bumpVersionOnly(working, target)
     }
     guard.add(guardKey)
 
@@ -143,7 +149,7 @@ export function migrateManifest(
     if (!step) {
       // No concrete step for this source version; do a simple version bump once.
       logger.main.info(`🔄 迁移占位：${String(current)} -> ${target}（无匹配步骤，直接提升版本）`)
-      return noOpBumpVersion(working, target)
+      return bumpVersionOnly(working, target)
     }
 
     const ctx: MigrationContext = { from: step.from, to: step.to }

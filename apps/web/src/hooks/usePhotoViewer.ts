@@ -1,5 +1,6 @@
 import { photoLoader } from '@afilmory/data'
-import { atom, useAtom, useAtomValue } from 'jotai'
+import type { ExtractAtomValue } from 'jotai'
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { use, useCallback, useMemo } from 'react'
 
 import { gallerySettingAtom } from '~/atoms/app'
@@ -13,6 +14,7 @@ const openAtom = atom(false)
 const currentIndexAtom = atom(0)
 const triggerElementAtom = atom<HTMLElement | null>(null)
 const data = photoLoader.getPhotos()
+type GallerySetting = ExtractAtomValue<typeof gallerySettingAtom>
 
 // 抽取照片筛选和排序逻辑为独立函数
 const filterAndSortPhotos = (
@@ -34,18 +36,30 @@ const filterAndSortPhotos = (
   )
 }
 
+const filterAndSortPhotosBySetting = (setting: GallerySetting) =>
+  filterAndSortPhotos(
+    setting.selectedTags,
+    setting.selectedCameras,
+    setting.selectedLenses,
+    setting.selectedRatings,
+    setting.sortOrder,
+    setting.tagFilterMode,
+  )
+
+const resetGalleryFilters = (setting: GallerySetting): GallerySetting => ({
+  ...setting,
+  selectedTags: [],
+  selectedCameras: [],
+  selectedLenses: [],
+  selectedRatings: null,
+  tagFilterMode: 'union',
+})
+
 // 提供一个 getter 函数供非 UI 组件使用
 export const getFilteredPhotos = () => {
   // 直接从 jotaiStore 中读取当前状态
   const currentGallerySetting = jotaiStore.get(gallerySettingAtom)
-  return filterAndSortPhotos(
-    currentGallerySetting.selectedTags,
-    currentGallerySetting.selectedCameras,
-    currentGallerySetting.selectedLenses,
-    currentGallerySetting.selectedRatings,
-    currentGallerySetting.sortOrder,
-    currentGallerySetting.tagFilterMode,
-  )
+  return filterAndSortPhotosBySetting(currentGallerySetting)
 }
 
 export const usePhotos = () => {
@@ -72,6 +86,7 @@ export const usePhotoViewer = () => {
   const [isOpen, setIsOpen] = useAtom(openAtom)
   const [currentIndex, setCurrentIndex] = useAtom(currentIndexAtom)
   const [triggerElement, setTriggerElement] = useAtom(triggerElementAtom)
+  const setGallerySetting = useSetAtom(gallerySettingAtom)
 
   const openViewer = useCallback(
     (index: number, element?: HTMLElement) => {
@@ -95,6 +110,49 @@ export const usePhotoViewer = () => {
     }
   }, [isOpen, setIsOpen, setTriggerElement])
 
+  const openViewerByPhotoId = useCallback(
+    (
+      photoId: string,
+      options: {
+        element?: HTMLElement
+        gallerySetting?: GallerySetting
+        resetFiltersIfHidden?: boolean
+      } = {},
+    ) => {
+      const currentGallerySetting = jotaiStore.get(gallerySettingAtom)
+      let targetGallerySetting = options.gallerySetting ?? currentGallerySetting
+      let targetPhotos = filterAndSortPhotosBySetting(targetGallerySetting)
+      let nextIndex = targetPhotos.findIndex((photo) => photo.id === photoId)
+      let shouldApplyGallerySetting = Boolean(options.gallerySetting)
+
+      if (nextIndex === -1 && options.resetFiltersIfHidden) {
+        targetGallerySetting = resetGalleryFilters(targetGallerySetting)
+        targetPhotos = filterAndSortPhotosBySetting(targetGallerySetting)
+        nextIndex = targetPhotos.findIndex((photo) => photo.id === photoId)
+        shouldApplyGallerySetting = true
+      }
+
+      if (nextIndex === -1) {
+        return false
+      }
+
+      if (shouldApplyGallerySetting) {
+        setGallerySetting(targetGallerySetting)
+      }
+
+      setCurrentIndex(nextIndex)
+      setTriggerElement(options.element || null)
+      setIsOpen(true)
+      if (!isOpen) {
+        lockBodyScroll()
+      }
+
+      trackView(photoId)
+      return true
+    },
+    [isOpen, setCurrentIndex, setGallerySetting, setIsOpen, setTriggerElement],
+  )
+
   const goToIndex = useCallback(
     (index: number) => {
       if (index >= 0 && index < photos.length) {
@@ -110,6 +168,7 @@ export const usePhotoViewer = () => {
     currentIndex,
     triggerElement,
     openViewer,
+    openViewerByPhotoId,
     closeViewer,
 
     goToIndex,

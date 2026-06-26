@@ -126,7 +126,11 @@ export class ClusterPool<T> extends EventEmitter {
 
     // 等待所有任务完成
     return new Promise((resolve, reject) => {
-      this.on('allTasksCompleted', () => {
+      let isSettled = false
+
+      this.once('allTasksCompleted', () => {
+        if (isSettled) return
+        isSettled = true
         this.logger.main.success(`所有任务完成，开始关闭进程池`)
         this.shutdown()
           .then(() => {
@@ -135,7 +139,15 @@ export class ClusterPool<T> extends EventEmitter {
           .catch(reject)
       })
 
-      this.on('error', reject)
+      this.once('error', (error) => {
+        if (isSettled) return
+        isSettled = true
+        this.shutdown()
+          .catch((shutdownError) => {
+            this.logger.main.warn('关闭进程池时出现错误：', shutdownError)
+          })
+          .finally(() => reject(error))
+      })
     })
   }
 
@@ -419,7 +431,10 @@ export class ClusterPool<T> extends EventEmitter {
         })
       } else if (taskResult.type === 'error') {
         workerLogger.error(`任务执行失败：${taskResult.taskId}`, taskResult.error)
-        pendingTask.reject(new Error(taskResult.error))
+        const error = new Error(taskResult.error || `Worker ${workerId} task failed`)
+        pendingTask.reject(error)
+        this.emit('error', error)
+        return
       }
     }
 
@@ -489,7 +504,10 @@ export class ClusterPool<T> extends EventEmitter {
       }
     } else if (message.type === 'error') {
       workerLogger.error(`任务执行失败：${message.taskId}`, message.error)
-      pendingTask.reject(new Error(message.error))
+      const error = new Error(message.error || `Worker ${workerId} task failed`)
+      pendingTask.reject(error)
+      this.emit('error', error)
+      return
     }
 
     // 为该 worker 分配下一批任务

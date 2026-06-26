@@ -79,19 +79,51 @@ export const useImageLoader = (
 ) => {
   const { t } = useTranslation()
   const imageLoaderManagerRef = useRef<ImageLoaderManager | null>(null)
+  const highResLoadedRef = useRef(highResLoaded)
+  const errorRef = useRef(error)
+  const loadingErrorTextRef = useRef(t('photo.error.loading'))
+  const callbacksRef = useRef({
+    onBlobSrcChange,
+    onError,
+    onProgress,
+  })
 
   useEffect(() => {
-    if (highResLoaded || error || !isCurrentImage) return
+    highResLoadedRef.current = highResLoaded
+  }, [highResLoaded])
 
-    // Create new image loader manager
+  useEffect(() => {
+    errorRef.current = error
+  }, [error])
+
+  useEffect(() => {
+    loadingErrorTextRef.current = t('photo.error.loading')
+  }, [t])
+
+  useEffect(() => {
+    callbacksRef.current = {
+      onBlobSrcChange,
+      onError,
+      onProgress,
+    }
+  }, [onBlobSrcChange, onError, onProgress])
+
+  useEffect(() => {
+    if (!isCurrentImage) return
+
+    imageLoaderManagerRef.current?.cleanup()
+
     const imageLoaderManager = new ImageLoaderManager()
     imageLoaderManagerRef.current = imageLoaderManager
+    let isCancelled = false
 
     function cleanup() {
+      highResLoadedRef.current = false
+      errorRef.current = false
       setHighResLoaded?.(false)
       setBlobSrc?.(null)
       setError?.(false)
-      onBlobSrcChange?.(null)
+      callbacksRef.current.onBlobSrcChange?.(null)
       setIsHighResImageRendered?.(false)
 
       // Reset loading indicator
@@ -101,25 +133,31 @@ export const useImageLoader = (
     const loadImage = async () => {
       try {
         const result = await imageLoaderManager.loadImage(src, {
-          onProgress,
-          onError,
+          onProgress: (progress) => callbacksRef.current.onProgress?.(progress),
+          onError: () => callbacksRef.current.onError?.(),
           onLoadingStateUpdate: (state) => {
             loadingIndicatorRef?.current?.updateLoadingState(state)
           },
         })
 
+        if (isCancelled) return
+
         setBlobSrc?.(result.blobSrc)
-        onBlobSrcChange?.(result.blobSrc)
+        callbacksRef.current.onBlobSrcChange?.(result.blobSrc)
+        highResLoadedRef.current = true
         setHighResLoaded?.(true)
       } catch (loadError) {
+        if (isCancelled) return
+
         console.error('Failed to load image:', loadError)
+        errorRef.current = true
         setError?.(true)
 
         // 显示错误状态，而不是完全隐藏图片
         loadingIndicatorRef?.current?.updateLoadingState({
           isVisible: true,
           isError: true,
-          errorMessage: t('photo.error.loading'),
+          errorMessage: loadingErrorTextRef.current,
         })
       }
     }
@@ -128,23 +166,14 @@ export const useImageLoader = (
     loadImage()
 
     return () => {
+      isCancelled = true
       imageLoaderManager.cleanup()
+      if (imageLoaderManagerRef.current === imageLoaderManager) {
+        imageLoaderManagerRef.current = null
+      }
+      cleanup()
     }
-  }, [
-    highResLoaded,
-    error,
-    onProgress,
-    src,
-    onError,
-    isCurrentImage,
-    onBlobSrcChange,
-    loadingIndicatorRef,
-    t,
-    setBlobSrc,
-    setHighResLoaded,
-    setError,
-    setIsHighResImageRendered,
-  ])
+  }, [src, isCurrentImage, loadingIndicatorRef, setBlobSrc, setHighResLoaded, setError, setIsHighResImageRendered])
 
   return imageLoaderManagerRef
 }

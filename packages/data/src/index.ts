@@ -152,7 +152,10 @@ class PhotoLoader {
     }
 
     if (!this.fullManifestPromise) {
-      this.fullManifestPromise = this.fetchFullManifest()
+      this.fullManifestPromise = this.fetchFullManifest().catch((error) => {
+        this.fullManifestPromise = null
+        throw error
+      })
     }
 
     return this.fullManifestPromise
