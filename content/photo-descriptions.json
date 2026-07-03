@@ -4,6 +4,10 @@
     {
       "key": "风光/20260701060701.jpg",
       "title": "苔痕里的石龛",
+      "titles": {
+        "zh-CN": "苔痕里的石龛",
+        "en": "Moss-Covered Stone Niches"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都都江堰，岩壁上的石龛覆着苔痕，栏杆与树影在上方透出一线亮光。",
         "en": "Photographed in Dujiangyan, Chengdu, where moss-covered stone niches rise beneath a railing and a strip of forest light."
@@ -14,22 +18,25 @@
         "历史建筑"
       ],
       "aiContext": {
-        "currentTitle": "20260701060701",
+        "currentTitle": "苔痕里的石龛",
         "dateTaken": "2026-07-01T06:07:01.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "都江堰",
+          "历史建筑"
         ]
-      },
-      "titles": {
-        "zh-CN": "苔痕里的石龛",
-        "en": "Moss-Covered Stone Niches"
       }
     },
     {
       "key": "风光/20260701054816.jpg",
       "title": "红绸间的香烟",
+      "titles": {
+        "zh-CN": "红绸间的香烟",
+        "en": "Incense Smoke Among Red Ribbons"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都都江堰，红色祈福绸带与香烟围住神像，竹墙前的光线安静而浓烈。",
         "en": "Photographed in Dujiangyan, Chengdu, where red prayer ribbons and incense smoke surround a shrine figure against a bamboo wall."
@@ -40,22 +47,25 @@
         "祈福"
       ],
       "aiContext": {
-        "currentTitle": "20260701054816",
+        "currentTitle": "红绸间的香烟",
         "dateTaken": "2026-07-01T05:48:16.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "都江堰",
+          "祈福"
         ]
-      },
-      "titles": {
-        "zh-CN": "红绸间的香烟",
-        "en": "Incense Smoke Among Red Ribbons"
       }
     },
     {
       "key": "风光/20260701044827.jpg",
       "title": "林间小桥",
+      "titles": {
+        "zh-CN": "林间小桥",
+        "en": "Small Bridge in the Forest"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，细窄小桥藏在层层绿意之间，山林把路径收进阴影里。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a narrow bridge sits deep inside layered greenery and forest shade."
@@ -66,22 +76,25 @@
         "自然"
       ],
       "aiContext": {
-        "currentTitle": "20260701044827",
+        "currentTitle": "林间小桥",
         "dateTaken": "2026-07-01T04:48:27.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
         ]
-      },
-      "titles": {
-        "zh-CN": "林间小桥",
-        "en": "Small Bridge in the Forest"
       }
     },
     {
       "key": "风光/20260701043355.jpg",
       "title": "青城山的绿荫",
+      "titles": {
+        "zh-CN": "青城山的绿荫",
+        "en": "Green Shade on Qingcheng Mountain"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，密集枝叶在山路上方交错，铺出一片湿润安静的绿荫。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where dense branches cross above the path in a damp, quiet canopy."
@@ -92,22 +105,25 @@
         "自然"
       ],
       "aiContext": {
-        "currentTitle": "20260701043355",
+        "currentTitle": "青城山的绿荫",
         "dateTaken": "2026-07-01T04:33:55.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
         ]
-      },
-      "titles": {
-        "zh-CN": "青城山的绿荫",
-        "en": "Green Shade on Qingcheng Mountain"
       }
     },
     {
       "key": "风光/20260701043144.jpg",
       "title": "雾绿山林",
+      "titles": {
+        "zh-CN": "雾绿山林",
+        "en": "Misty Green Forest"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，树干与藤枝在薄雾般的绿意中层层展开，显出山林的纵深。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where trunks and vines recede through misty green layers of forest."
@@ -118,22 +134,25 @@
         "山景"
       ],
       "aiContext": {
-        "currentTitle": "20260701043144",
+        "currentTitle": "雾绿山林",
         "dateTaken": "2026-07-01T04:31:44.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "山景"
         ]
-      },
-      "titles": {
-        "zh-CN": "雾绿山林",
-        "en": "Misty Green Forest"
       }
     },
     {
       "key": "风光/20260701040301.jpg",
       "title": "林峡里的游船",
+      "titles": {
+        "zh-CN": "林峡里的游船",
+        "en": "Boat Through the Forest Gorge"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，游船缓缓穿过被浓密树影夹住的水道，倒影把山色映成深绿。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a tour boat moves through a tree-lined waterway reflected in deep green."
@@ -144,22 +163,25 @@
         "自然"
       ],
       "aiContext": {
-        "currentTitle": "20260701040301",
+        "currentTitle": "林峡里的游船",
         "dateTaken": "2026-07-01T04:03:01.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
         ]
-      },
-      "titles": {
-        "zh-CN": "林峡里的游船",
-        "en": "Boat Through the Forest Gorge"
       }
     },
     {
       "key": "风光/20260701033617.jpg",
       "title": "青城山林道",
+      "titles": {
+        "zh-CN": "青城山林道",
+        "en": "Forest Path on Qingcheng Mountain"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，木栈道沿着林间向前延伸，潮湿绿意把山路包围起来。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a wooden path leads forward through humid layers of green."
@@ -170,22 +192,25 @@
         "自然"
       ],
       "aiContext": {
-        "currentTitle": "20260701033617",
+        "currentTitle": "青城山林道",
         "dateTaken": "2026-07-01T03:36:17.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
         ]
-      },
-      "titles": {
-        "zh-CN": "青城山林道",
-        "en": "Forest Path on Qingcheng Mountain"
       }
     },
     {
       "key": "人文/20260701-S08.jpg",
       "title": "山路旁的摊位",
+      "titles": {
+        "zh-CN": "山路旁的摊位",
+        "en": "Stall Beside the Mountain Path"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，山路旁的摊主坐在苔石之间，身后的石阶继续通向林深处。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a stallholder sits among mossy stones beside steps leading deeper into the forest."
@@ -196,22 +221,24 @@
         "人文"
       ],
       "aiContext": {
-        "currentTitle": "20260701 S08",
+        "currentTitle": "山路旁的摊位",
         "dateTaken": "2026-07-01T03:28:01.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "人文"
+          "人文",
+          "四川",
+          "青城山"
         ]
-      },
-      "titles": {
-        "zh-CN": "山路旁的摊位",
-        "en": "Stall Beside the Mountain Path"
       }
     },
     {
       "key": "风光/20260701031909.jpg",
       "title": "木桥通向林深处",
+      "titles": {
+        "zh-CN": "木桥通向林深处",
+        "en": "Wooden Bridge Into the Forest"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，木桥与山路在浓绿枝叶下转折，带出林间步道的幽静层次。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a wooden bridge bends into dense foliage and a quiet forest path."
@@ -222,22 +249,25 @@
         "自然"
       ],
       "aiContext": {
-        "currentTitle": "20260701031909",
+        "currentTitle": "木桥通向林深处",
         "dateTaken": "2026-07-01T03:19:09.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
         ]
-      },
-      "titles": {
-        "zh-CN": "木桥通向林深处",
-        "en": "Wooden Bridge Into the Forest"
       }
     },
     {
       "key": "风光/20260701030444.jpg",
       "title": "石间白瀑",
+      "titles": {
+        "zh-CN": "石间白瀑",
+        "en": "White Falls Over Stone"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，白色瀑流从苔石间落下，水声把幽深山谷衬得更安静。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a white cascade drops over mossy rocks in a quiet ravine."
@@ -248,22 +278,25 @@
         "瀑布"
       ],
       "aiContext": {
-        "currentTitle": "20260701030444",
+        "currentTitle": "石间白瀑",
         "dateTaken": "2026-07-01T03:04:44.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "瀑布"
         ]
-      },
-      "titles": {
-        "zh-CN": "石间白瀑",
-        "en": "White Falls Over Stone"
       }
     },
     {
       "key": "风光/20260701025251.jpg",
       "title": "苔石间的溪瀑",
+      "titles": {
+        "zh-CN": "苔石间的溪瀑",
+        "en": "Cascade Among Mossy Rocks"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，溪水从苔石与石缝间分层流下，留下清凉的山谷细节。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where water slips in layers through mossy rocks and narrow stone gaps."
@@ -274,22 +307,54 @@
         "瀑布"
       ],
       "aiContext": {
-        "currentTitle": "20260701025251",
+        "currentTitle": "苔石间的溪瀑",
         "dateTaken": "2026-07-01T02:52:51.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "瀑布"
         ]
-      },
+      }
+    },
+    {
+      "key": "风光/20260701025128.jpeg",
+      "title": "溪上木桥",
       "titles": {
-        "zh-CN": "苔石间的溪瀑",
-        "en": "Cascade Among Mossy Rocks"
+        "zh-CN": "溪上木桥",
+        "en": "Wooden Bridge Over the Stream"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于成都青城山，木桥横过林间溪水，苔石与石阶把山路引向更深的绿意。",
+        "en": "Photographed on Qingcheng Mountain in Chengdu, where a wooden bridge crosses a forest stream among mossy rocks and steps."
+      },
+      "tags": [
+        "四川",
+        "青城山",
+        "自然"
+      ],
+      "aiContext": {
+        "currentTitle": "溪上木桥",
+        "dateTaken": "2026-07-01T02:51:28.431Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
+        ]
       }
     },
     {
       "key": "风光/20260630123630.jpg",
       "title": "廊下夜色",
+      "titles": {
+        "zh-CN": "廊下夜色",
+        "en": "Night Under the Corridor"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，廊下暖光照亮长凳与陶罐，窗外山色沉入蓝黑夜色。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where warm corridor light falls on a bench and jar as the mountain outside turns blue-black."
@@ -300,22 +365,25 @@
         "夜景"
       ],
       "aiContext": {
-        "currentTitle": "20260630123630",
+        "currentTitle": "廊下夜色",
         "dateTaken": "2026-06-30T12:36:30.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "夜景"
         ]
-      },
-      "titles": {
-        "zh-CN": "廊下夜色",
-        "en": "Night Under the Corridor"
       }
     },
     {
       "key": "风光/20260630120920.jpg",
       "title": "灯影里的山阶",
+      "titles": {
+        "zh-CN": "灯影里的山阶",
+        "en": "Steps in Lamplight"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，山阶在林间灯光里向上延伸，四周绿意被夜色轻轻压暗。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where steps climb through lamplit forest as the surrounding green fades into night."
@@ -326,22 +394,25 @@
         "石阶"
       ],
       "aiContext": {
-        "currentTitle": "20260630120920",
+        "currentTitle": "灯影里的山阶",
         "dateTaken": "2026-06-30T12:09:20.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "石阶"
         ]
-      },
-      "titles": {
-        "zh-CN": "灯影里的山阶",
-        "en": "Steps in Lamplight"
       }
     },
     {
       "key": "风光/20260630120826.jpg",
       "title": "树隙里的山水",
+      "titles": {
+        "zh-CN": "树隙里的山水",
+        "en": "Mountain Water Through the Trees"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，树枝与竹影之间露出远处水面，山林色调安静而清凉。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where water appears through branches and bamboo in a cool, quiet forest palette."
@@ -352,22 +423,25 @@
         "自然"
       ],
       "aiContext": {
-        "currentTitle": "20260630120826",
+        "currentTitle": "树隙里的山水",
         "dateTaken": "2026-06-30T12:08:26.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "自然"
         ]
-      },
-      "titles": {
-        "zh-CN": "树隙里的山水",
-        "en": "Mountain Water Through the Trees"
       }
     },
     {
       "key": "风光/20260630120727.jpg",
       "title": "林道尽头的灯光",
+      "titles": {
+        "zh-CN": "林道尽头的灯光",
+        "en": "Light at the End of the Forest Path"
+      },
       "descriptions": {
         "zh-CN": "拍摄于成都青城山，林道尽头的灯光穿过树影，给傍晚山路留下一点温度。",
         "en": "Photographed on Qingcheng Mountain in Chengdu, where a small light at the end of the forest path warms the evening shade."
@@ -378,69 +452,132 @@
         "夜景"
       ],
       "aiContext": {
-        "currentTitle": "20260630120727",
+        "currentTitle": "林道尽头的灯光",
         "dateTaken": "2026-06-30T12:07:27.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "青城山",
+          "夜景"
         ]
-      },
-      "titles": {
-        "zh-CN": "林道尽头的灯光",
-        "en": "Light at the End of the Forest Path"
       }
     },
     {
       "key": "风光/20260630073732.jpg",
       "title": "长明灯火",
+      "titles": {
+        "zh-CN": "长明灯火",
+        "en": "Rows of Temple Lamps"
+      },
       "descriptions": {
-        "zh-CN": "拍摄于成都青城山，成排红色灯盏在暗处亮起，火光把祈福细节连成温暖节奏。",
-        "en": "Photographed on Qingcheng Mountain in Chengdu, where rows of red temple lamps glow in the dark with a warm devotional rhythm."
+        "zh-CN": "拍摄于成都都江堰，成排红色灯盏在暗处亮起，火光把祈福细节连成温暖节奏。",
+        "en": "Photographed in Dujiangyan, Chengdu, where rows of red temple lamps glow in the dark with a warm devotional rhythm."
       },
       "tags": [
         "四川",
-        "青城山",
+        "都江堰",
         "祈福"
       ],
       "aiContext": {
-        "currentTitle": "20260630073732",
+        "currentTitle": "长明灯火",
         "dateTaken": "2026-06-30T07:37:32.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "都江堰",
+          "祈福"
         ]
-      },
-      "titles": {
-        "zh-CN": "长明灯火",
-        "en": "Rows of Temple Lamps"
       }
     },
     {
       "key": "风光/20260630073346.jpg",
       "title": "林中的彩色山门",
+      "titles": {
+        "zh-CN": "林中的彩色山门",
+        "en": "Colorful Gate in the Forest"
+      },
       "descriptions": {
-        "zh-CN": "拍摄于成都青城山，彩色山门半掩在树影之间，石狮与斑驳墙面留住道观的古意。",
-        "en": "Photographed on Qingcheng Mountain in Chengdu, where a colorful gate sits among trees with stone lions and weathered walls."
+        "zh-CN": "拍摄于成都都江堰，彩色山门半掩在树影之间，石狮与斑驳墙面留住道观的古意。",
+        "en": "Photographed in Dujiangyan, Chengdu, where a colorful gate sits among trees with stone lions and weathered walls."
       },
       "tags": [
         "四川",
-        "青城山",
+        "都江堰",
         "历史建筑"
       ],
       "aiContext": {
-        "currentTitle": "20260630073346",
+        "currentTitle": "林中的彩色山门",
         "dateTaken": "2026-06-30T07:33:46.000Z",
         "camera": "OM Digital Solutions OM-5",
         "lens": "OM 14-150mm F4.0-5.6 II",
         "categoryTags": [
-          "风光"
+          "风光",
+          "四川",
+          "都江堰",
+          "历史建筑"
         ]
-      },
+      }
+    },
+    {
+      "key": "风光/20260630072311.jpeg",
+      "title": "都江堰江景",
       "titles": {
-        "zh-CN": "林中的彩色山门",
-        "en": "Colorful Gate in the Forest"
+        "zh-CN": "都江堰江景",
+        "en": "River View at Dujiangyan"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于成都都江堰，高处望向江水与远山，层叠山色在阴天里显得安静而开阔。",
+        "en": "Photographed in Dujiangyan, Chengdu, where the river and distant hills open out beneath a soft overcast sky."
+      },
+      "tags": [
+        "四川",
+        "都江堰",
+        "河流"
+      ],
+      "aiContext": {
+        "currentTitle": "都江堰江景",
+        "dateTaken": "2026-06-30T07:23:11.820Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "风光",
+          "四川",
+          "都江堰",
+          "河流"
+        ]
+      }
+    },
+    {
+      "key": "随手/20260629130247.jpeg",
+      "title": "IFS夜色里的熊猫",
+      "titles": {
+        "zh-CN": "IFS夜色里的熊猫",
+        "en": "Panda at IFS by Night"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于成都 IFS，夜色中的发光立面与攀爬熊猫一起组成醒目的城市街景。",
+        "en": "Photographed at Chengdu IFS, where the glowing facade and climbing panda create a bright city night scene."
+      },
+      "tags": [
+        "四川",
+        "地标",
+        "夜景"
+      ],
+      "aiContext": {
+        "currentTitle": "IFS夜色里的熊猫",
+        "dateTaken": "2026-06-29T13:02:47.573Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "随手",
+          "四川",
+          "地标",
+          "夜景"
+        ]
       }
     },
     {
