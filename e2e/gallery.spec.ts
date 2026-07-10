@@ -30,6 +30,31 @@ test('renders the masonry gallery and opens the photo viewer', async ({ page }) 
   await expect(page.getByLabel(/close photo viewer/i)).toBeVisible()
 })
 
+test('keeps the preview visible and reports when the original image is blocked', async ({ page }) => {
+  await page.goto('/')
+
+  const firstPhoto = page.locator('[data-photo-id]').first()
+  await expect(firstPhoto).toBeVisible()
+  const photoId = await firstPhoto.getAttribute('data-photo-id')
+  const originalUrl = await page.evaluate((id) => {
+    const runtime = window as typeof window & {
+      __MANIFEST__?: { data?: Array<{ id: string; originalUrl: string }> }
+    }
+    return runtime.__MANIFEST__?.data?.find((photo) => photo.id === id)?.originalUrl
+  }, photoId)
+  expect(originalUrl).toBeTruthy()
+
+  await page.route(originalUrl!, (route) => route.abort('blockedbyclient'))
+  await firstPhoto.click()
+
+  const viewer = page.getByRole('dialog')
+  await expect(viewer).toBeVisible()
+  const loadAlert = page.getByRole('alert')
+  await expect(loadAlert).toContainText(/original image unavailable|原图加载失败/i)
+  await expect(loadAlert).toContainText(/showing the preview image instead|当前显示的是预览图/i)
+  await expect(viewer.locator('img').first()).toBeVisible()
+})
+
 test('opens and closes the viewer with only the keyboard, traps focus, and restores the trigger', async ({ page }) => {
   await page.goto('/')
 

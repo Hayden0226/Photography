@@ -47,6 +47,7 @@ export interface WebGLImageViewerProps {
   velocityAnimation?: VelocityAnimationConfig
   onZoomChange?: (originalScale: number, relativeScale: number) => void
   onImageCopied?: () => void
+  onImageLoadError?: (error: Error) => void
   onLoadingStateChange?: (
     isLoading: boolean,
     state?: LoadingState,

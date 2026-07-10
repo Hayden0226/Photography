@@ -62,6 +62,7 @@ export const ProgressiveImage = ({
     isThumbnailLoaded,
     isLivePhotoPlaying,
   } = state
+  const { setError, setHighResLoaded, setIsHighResImageRendered } = setState
 
   const isActiveImage = Boolean(isCurrentImage && shouldRenderHighRes)
 
@@ -103,6 +104,19 @@ export const ProgressiveImage = ({
   const handleThumbnailLoad = useCallback(() => {
     setState.setIsThumbnailLoaded(true)
   }, [setState])
+
+  const handleHighResError = useCallback(() => {
+    setError(true)
+    setHighResLoaded(false)
+    setIsHighResImageRendered(false)
+    onBlobSrcChange?.(null)
+    onError?.()
+    loadingIndicatorRef.current?.updateLoadingState({
+      isVisible: true,
+      isError: true,
+      errorMessage: t('photo.error.original'),
+    })
+  }, [loadingIndicatorRef, onBlobSrcChange, onError, setError, setHighResLoaded, setIsHighResImageRendered, t])
 
   const showContextMenu = useShowContextMenu()
 
@@ -155,6 +169,7 @@ export const ProgressiveImage = ({
               alt={alt}
               highResLoaded={highResLoaded}
               onLoad={() => setState.setIsHighResImageRendered(true)}
+              onError={handleHighResError}
             >
               {/* LivePhoto/Motion Photo 视频组件作为 children，跟随图片的变换 */}
               {hasVideo && videoSource && imageLoaderManagerRef.current && (
@@ -185,6 +200,7 @@ export const ProgressiveImage = ({
                 centerOnInit={true}
                 smooth={true}
                 onZoomChange={onTransformed}
+                onImageLoadError={handleHighResError}
                 onLoadingStateChange={handleWebGLLoadingStateChange}
                 debug={import.meta.env.DEV}
               />

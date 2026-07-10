@@ -52,4 +52,25 @@ describe('LoadingIndicator', () => {
 
     expect(container.textContent).toContain('12%')
   })
+
+  it('explains that the preview remains visible when the original image fails', () => {
+    let indicatorRef: LoadingIndicatorRef | null = null
+    const setIndicatorRef: React.RefCallback<LoadingIndicatorRef> = (instance) => {
+      indicatorRef = instance
+    }
+    const { container } = render(<LoadingIndicator ref={setIndicatorRef} />)
+
+    React.act(() => {
+      indicatorRef?.updateLoadingState({
+        isVisible: true,
+        isError: true,
+        errorMessage: 'photo.error.original',
+      })
+    })
+
+    expect(container.textContent).toContain('photo.error.original')
+    expect(container.textContent).toContain('photo.error.thumbnailFallback')
+    expect(container.textContent).not.toContain('loading.default')
+    expect(container.querySelector('[role="alert"]')).not.toBeNull()
+  })
 })

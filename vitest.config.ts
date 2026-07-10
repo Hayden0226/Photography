@@ -21,6 +21,7 @@ export default defineConfig({
       'apps/web/src/**/*.test.tsx',
       'apps/web/plugins/**/*.test.ts',
       'packages/**/*.test.ts',
+      'packages/**/*.test.tsx',
       'scripts/**/*.test.ts',
     ],
     coverage: {

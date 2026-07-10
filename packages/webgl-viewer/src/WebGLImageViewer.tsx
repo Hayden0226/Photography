@@ -42,6 +42,7 @@ export const WebGLImageViewer = ({
   velocityAnimation = defaultVelocityAnimation,
   onZoomChange,
   onImageCopied,
+  onImageLoadError,
   onLoadingStateChange,
   debug = false,
   ...divProps
@@ -81,6 +82,7 @@ export const WebGLImageViewer = ({
       velocityAnimation: { ...defaultVelocityAnimation, ...velocityAnimation },
       onZoomChange: onZoomChange || (() => {}),
       onImageCopied: onImageCopied || (() => {}),
+      onImageLoadError: onImageLoadError || (() => {}),
       onLoadingStateChange: onLoadingStateChange || (() => {}),
       debug: debug || false,
     }),
@@ -103,6 +105,7 @@ export const WebGLImageViewer = ({
       velocityAnimation,
       onZoomChange,
       onImageCopied,
+      onImageLoadError,
       onLoadingStateChange,
       debug,
     ],
@@ -117,6 +120,7 @@ export const WebGLImageViewer = ({
 
   useEffect(() => {
     if (!canvasRef.current) return
+    let isActive = true
 
     const webGLImageViewerEngine = new WebGLImageViewerEngine(
       canvasRef.current,
@@ -128,14 +132,22 @@ export const WebGLImageViewer = ({
       // 如果提供了尺寸，传递给loadImage进行优化
       const preknownWidth = config.width > 0 ? config.width : undefined
       const preknownHeight = config.height > 0 ? config.height : undefined
-      webGLImageViewerEngine.loadImage(src, preknownWidth, preknownHeight).catch(console.error)
+      webGLImageViewerEngine.loadImage(src, preknownWidth, preknownHeight).catch((error: unknown) => {
+        if (!isActive) return
+        const loadError = error instanceof Error ? error : new Error('Failed to load image in WebGL viewer')
+        console.error('Failed to load image in WebGL viewer:', loadError)
+        config.onImageLoadError(loadError)
+      })
       viewerRef.current = webGLImageViewerEngine
       setTileOutlineEnabled(webGLImageViewerEngine.isTileOutlineEnabled())
     } catch (error) {
-      console.error('Failed to initialize WebGL Image Viewer:', error)
+      const initializationError = error instanceof Error ? error : new Error('Failed to initialize WebGL Image Viewer')
+      console.error('Failed to initialize WebGL Image Viewer:', initializationError)
+      config.onImageLoadError(initializationError)
     }
 
     return () => {
+      isActive = false
       webGLImageViewerEngine?.destroy()
       viewerRef.current = null
     }
