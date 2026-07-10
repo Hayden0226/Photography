@@ -306,6 +306,7 @@ export class AfilmoryBuilder {
             totalTasks: tasksToProcess.length,
             workerConcurrency: this.config.system.observability.performance.worker.workerConcurrency,
             timeout: this.config.system.observability.performance.worker.timeout,
+            taskTimeout: this.config.system.observability.performance.worker.taskTimeout,
             maxRetries: this.config.system.observability.performance.worker.maxRetries,
             workerEnv: {
               FORCE_MODE: processorOptions.isForceMode.toString(),

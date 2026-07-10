@@ -16,6 +16,7 @@ export interface LoggingConfig {
 
 export interface WorkerPerformanceConfig {
   timeout: number
+  taskTimeout: number
   useClusterMode: boolean
   workerConcurrency: number
   workerCount: number

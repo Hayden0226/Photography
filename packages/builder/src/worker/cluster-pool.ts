@@ -16,6 +16,7 @@ export interface ClusterPoolOptions<T> {
   workerEnv?: Record<string, string> // 传递给 worker 的环境变量
   workerConcurrency?: number // 每个 worker 内部的并发数
   timeout?: number // worker 启动超时
+  taskTimeout?: number // 一批媒体任务的处理超时
   maxRetries?: number // worker/task 失败后的最大重试次数
   // 新增：传递给 worker 的共享数据
   sharedData?: {
@@ -108,6 +109,7 @@ export class ClusterPool<T> extends EventEmitter {
   private workerEnv: Record<string, string>
   private workerConcurrency: number
   private timeout: number
+  private taskTimeout: number
   private maxRetries: number
   private logger: Logger
   private sharedData?: ClusterPoolOptions<T>['sharedData']
@@ -136,6 +138,7 @@ export class ClusterPool<T> extends EventEmitter {
     this.workerEnv = options.workerEnv || {}
     this.workerConcurrency = options.workerConcurrency || 5 // 默认每个 worker 同时处理 5 个任务
     this.timeout = options.timeout ?? 30_000
+    this.taskTimeout = options.taskTimeout ?? 120_000
     this.maxRetries = options.maxRetries ?? 2
     this.logger = logger
     this.sharedData = options.sharedData
@@ -602,12 +605,12 @@ export class ClusterPool<T> extends EventEmitter {
       const pendingCount = this.workerPendingTasks.get(workerId)?.size ?? 0
       if (pendingCount === 0 || this.isShuttingDown) return
 
-      this.logger.worker(workerId).error(`Worker ${workerId} 处理任务超时 (${this.timeout}ms)`)
+      this.logger.worker(workerId).error(`Worker ${workerId} 处理任务超时 (${this.taskTimeout}ms)`)
       const worker = this.workers.get(workerId)
       if (worker && !worker.isDead()) {
         worker.kill('SIGKILL')
       }
-    }, this.timeout)
+    }, this.taskTimeout)
     this.workerTaskTimers.set(workerId, timer)
   }
 

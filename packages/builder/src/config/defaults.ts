@@ -22,6 +22,7 @@ export function createDefaultBuilderConfig(): BuilderConfig {
           worker: {
             workerCount: os.cpus().length * 2,
             timeout: 30_000,
+            taskTimeout: 120_000,
             useClusterMode: true,
             workerConcurrency: 2,
             maxRetries: 2,

@@ -22,6 +22,25 @@ describe('ClusterPool retry and timeout policy', () => {
     expect(resolveShutdownTimeout(30_000)).toBe(10_000)
   })
 
+  it('keeps media task timeout independent from worker startup timeout', () => {
+    const defaults = new ClusterPool<number>({
+      concurrency: 1,
+      totalTasks: 1,
+      timeout: 30_000,
+    }) as unknown as { taskTimeout: number; timeout: number }
+    const configured = new ClusterPool<number>({
+      concurrency: 1,
+      totalTasks: 1,
+      timeout: 10_000,
+      taskTimeout: 45_000,
+    }) as unknown as { taskTimeout: number; timeout: number }
+
+    expect(defaults.timeout).toBe(30_000)
+    expect(defaults.taskTimeout).toBe(120_000)
+    expect(configured.timeout).toBe(10_000)
+    expect(configured.taskTimeout).toBe(45_000)
+  })
+
   it('settles worker startup once when online, error and exit events race', () => {
     const settle = createSingleSettlementGuard()
     const online = vi.fn()
