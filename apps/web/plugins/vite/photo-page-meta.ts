@@ -16,6 +16,10 @@ interface PhotoPageMeta {
   description: string
   url: string
   image?: string
+  mediaType: 'photo' | 'video'
+  jsonLd: Record<string, unknown>
+  preload: string
+  noscript: string
 }
 
 export function createPhotoPageMetaPlugin(siteConfig: SiteConfig): Plugin {
@@ -46,15 +50,22 @@ export function createPhotoPageMetaPlugin(siteConfig: SiteConfig): Plugin {
   }
 }
 
-function createPhotoPageMeta(photo: PhotoManifestItem, siteConfig: SiteConfig): PhotoPageMeta {
+export function createPhotoPageMeta(photo: PhotoManifestItem, siteConfig: SiteConfig): PhotoPageMeta {
   const title = `${getPhotoTitle(photo) || photo.id} | ${siteConfig.name}`
   const baseUrl = siteConfig.url.replace(/\/+$/, '')
+  const description = getPhotoDescription(photo) || siteConfig.description
+  const url = `${baseUrl}/photos/${toSafePathSegment(photo.id)}/`
+  const mediaType = photo.mediaType === 'video' ? 'video' : 'photo'
 
   return {
     title,
-    description: getPhotoDescription(photo) || siteConfig.description,
-    url: `${baseUrl}/photos/${toSafePathSegment(photo.id)}/`,
+    description,
+    url,
     image: toAbsoluteUrl(photo.thumbnailUrl || photo.originalUrl, siteConfig.url),
+    mediaType,
+    jsonLd: createPhotoStructuredData(photo, siteConfig, { title, description, url, mediaType }),
+    preload: createPhotoPreloadLink(photo),
+    noscript: createPhotoNoscriptFigure(photo, description),
   }
 }
 
@@ -62,11 +73,13 @@ function getPhotoTitle(photo: PhotoManifestItem): string {
   return photo.titles?.['zh-CN']?.trim() || photo.titles?.en?.trim() || photo.title?.trim() || ''
 }
 
-function applyPhotoPageMeta(html: string, meta: PhotoPageMeta): string {
-  let next = html.replace(/<title>.*?<\/title>/i, `<title>${escapeHtmlText(meta.title)}</title>`)
+export function applyPhotoPageMeta(html: string, meta: PhotoPageMeta): string {
+  let next = html
+    .replaceAll(/<link[^>]+data-afilmory-preload=["']gallery["'][^>]*>/gi, '')
+    .replace(/<title>.*?<\/title>/i, `<title>${escapeHtmlText(meta.title)}</title>`)
 
   next = upsertMeta(next, 'name', 'description', meta.description)
-  next = upsertMeta(next, 'property', 'og:type', 'article')
+  next = upsertMeta(next, 'property', 'og:type', meta.mediaType === 'video' ? 'video.other' : 'article')
   next = upsertMeta(next, 'property', 'og:url', meta.url)
   next = upsertMeta(next, 'property', 'og:title', meta.title)
   next = upsertMeta(next, 'property', 'og:description', meta.description)
@@ -80,7 +93,114 @@ function applyPhotoPageMeta(html: string, meta: PhotoPageMeta): string {
     next = upsertMeta(next, 'property', 'twitter:image', meta.image)
   }
 
+  const headContent = `${meta.preload}<script type="application/ld+json" data-afilmory-photo-jsonld>${serializeJsonLd(meta.jsonLd)}</script>`
+  next = next.replace('</head>', `${headContent}</head>`)
+  next = next.replace('</body>', `${meta.noscript}</body>`)
+
   return next
+}
+
+export function createPhotoPreloadLink(
+  photo: Pick<PhotoManifestItem, 'thumbnailUrl' | 'thumbnailSrcSet' | 'thumbnailWebpSrcSet'>,
+): string {
+  const webpSrcSet = photo.thumbnailWebpSrcSet?.trim()
+  const srcSet = webpSrcSet || photo.thumbnailSrcSet?.trim()
+  const href = (srcSet ? getFirstSrcFromSrcSet(srcSet) : '') || photo.thumbnailUrl
+  if (!href) return ''
+
+  const attributes = [
+    'rel="preload"',
+    'as="image"',
+    'data-afilmory-preload="photo"',
+    `href="${escapeAttribute(href)}"`,
+    'imagesizes="(max-width: 1024px) 100vw, 1024px"',
+    'fetchpriority="high"',
+  ]
+
+  if (srcSet) attributes.push(`imagesrcset="${escapeAttribute(srcSet)}"`)
+  if (webpSrcSet) attributes.push('type="image/webp"')
+
+  return `<link ${attributes.join(' ')}>`
+}
+
+function createPhotoStructuredData(
+  photo: PhotoManifestItem,
+  siteConfig: SiteConfig,
+  meta: Pick<PhotoPageMeta, 'title' | 'description' | 'url' | 'mediaType'>,
+): Record<string, unknown> {
+  const contentUrl = toAbsoluteUrl(
+    meta.mediaType === 'video' ? photo.videoUrl || photo.originalUrl : photo.originalUrl,
+    siteConfig.url,
+  )
+  const thumbnailUrl = toAbsoluteUrl(photo.thumbnailUrl, siteConfig.url)
+  const uploadDate = toIsoDate(photo.dateTaken || photo.lastModified)
+
+  const result: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': meta.mediaType === 'video' ? 'VideoObject' : 'ImageObject',
+    name: meta.title,
+    description: meta.description,
+    url: meta.url,
+    contentUrl,
+    thumbnailUrl,
+    uploadDate,
+    encodingFormat: photo.mimeType,
+    width: photo.width > 0 ? photo.width : undefined,
+    height: photo.height > 0 ? photo.height : undefined,
+  }
+
+  if (meta.mediaType === 'video' && typeof photo.duration === 'number' && Number.isFinite(photo.duration)) {
+    result.duration = `PT${Math.max(0, photo.duration)}S`
+  }
+
+  return Object.fromEntries(Object.entries(result).filter(([, value]) => value !== undefined))
+}
+
+function createPhotoNoscriptFigure(photo: PhotoManifestItem, description: string): string {
+  const title = getPhotoTitle(photo) || photo.id
+  const caption = description && description !== title ? `${title} — ${description}` : title
+  const dimensions = [
+    photo.width > 0 ? `width="${photo.width}"` : '',
+    photo.height > 0 ? `height="${photo.height}"` : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  let media: string
+  if (photo.mediaType === 'video') {
+    const source = photo.videoUrl || photo.originalUrl
+    const type = photo.mimeType ? ` type="${escapeAttribute(photo.mimeType)}"` : ''
+    const poster = photo.thumbnailUrl ? ` poster="${escapeAttribute(photo.thumbnailUrl)}"` : ''
+    media = `<video controls preload="metadata"${poster} ${dimensions}><source src="${escapeAttribute(source)}"${type}></video>`
+  } else {
+    const fallback = photo.thumbnailUrl || photo.originalUrl
+    const webpSource = photo.thumbnailWebpSrcSet
+      ? `<source type="image/webp" srcset="${escapeAttribute(photo.thumbnailWebpSrcSet)}">`
+      : ''
+    const srcSet = photo.thumbnailSrcSet ? ` srcset="${escapeAttribute(photo.thumbnailSrcSet)}"` : ''
+    media = `<picture>${webpSource}<img src="${escapeAttribute(fallback)}"${srcSet} alt="${escapeAttribute(title)}" ${dimensions}></picture>`
+  }
+
+  return `<noscript><figure data-afilmory-photo-noscript>${media}<figcaption>${escapeHtmlText(caption)}</figcaption></figure></noscript>`
+}
+
+function serializeJsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replaceAll('<', '\\u003C')
+    .replaceAll('>', '\\u003E')
+    .replaceAll('&', '\\u0026')
+    .replaceAll('\u2028', '\\u2028')
+    .replaceAll('\u2029', '\\u2029')
+}
+
+function getFirstSrcFromSrcSet(srcSet: string): string {
+  return srcSet.split(',')[0]?.trim().split(/\s+/)[0] ?? ''
+}
+
+function toIsoDate(value: string | undefined): string | undefined {
+  if (!value) return undefined
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? undefined : date.toISOString()
 }
 
 function upsertMeta(html: string, attribute: 'name' | 'property', key: string, content: string): string {

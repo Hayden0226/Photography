@@ -56,6 +56,7 @@ export const GalleryThumbnail: FC<{
 
   const isMobile = useMobile()
   const { i18n } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
 
   const itemSize = isMobile ? thumbnailSize.mobile : thumbnailSize.desktop
   const itemGap = isMobile ? thumbnailGapSize.mobile : thumbnailGapSize.desktop
@@ -244,7 +245,7 @@ export const GalleryThumbnail: FC<{
                 {photo.thumbHash && <Thumbhash thumbHash={photo.thumbHash} className="size-fill absolute inset-0" />}
                 <img
                   src={photo.thumbnailUrl}
-                  alt={getPhotoAltText(photo, i18n.language)}
+                  alt={getPhotoAltText(photo, locale)}
                   className="absolute inset-0 h-full w-full object-cover"
                   loading="lazy"
                   decoding="async"

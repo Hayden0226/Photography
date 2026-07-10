@@ -85,6 +85,8 @@ export interface BuilderPluginEventPayloads {
       newCount: number
       processedCount: number
       skippedCount: number
+      failedCount: number
+      failedKeys: string[]
     }
   }
   afterCleanup: {

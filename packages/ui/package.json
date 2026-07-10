@@ -5,7 +5,11 @@
   "private": true,
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/*"
+    "./*": "./src/*",
+    "./dialog/radix": "./src/dialog/radix.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
     "react": "^19.1.1",

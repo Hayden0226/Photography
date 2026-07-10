@@ -1,7 +1,8 @@
 import { clsxm } from '@afilmory/utils'
 import { m, useAnimationControls } from 'motion/react'
-import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
+import { isAbortError } from '~/lib/abort-error'
 import type { ImageLoaderManager } from '~/lib/image-loader-manager'
 
 import type { LoadingIndicatorRef } from './LoadingIndicator'
@@ -49,6 +50,27 @@ export const LivePhotoVideo = ({
   const videoRef = useRef<HTMLVideoElement>(null)
   const videoAnimateController = useAnimationControls()
   const presentationTimestampRef = useRef<number | undefined>(undefined)
+  const videoType = videoSource.type
+  const motionImageUrl = videoSource.type === 'motion-photo' ? videoSource.imageUrl : undefined
+  const motionOffset = videoSource.type === 'motion-photo' ? videoSource.offset : undefined
+  const motionSize = videoSource.type === 'motion-photo' ? videoSource.size : undefined
+  const motionTimestamp = videoSource.type === 'motion-photo' ? videoSource.presentationTimestamp : undefined
+  const liveVideoUrl = videoSource.type === 'live-photo' ? videoSource.videoUrl : undefined
+  const stableVideoSource = useMemo<VideoSource>(() => {
+    if (videoType === 'motion-photo' && motionImageUrl !== undefined && motionOffset !== undefined) {
+      return {
+        type: 'motion-photo',
+        imageUrl: motionImageUrl,
+        offset: motionOffset,
+        size: motionSize,
+        presentationTimestamp: motionTimestamp,
+      }
+    }
+    if (videoType === 'live-photo' && liveVideoUrl !== undefined) {
+      return { type: 'live-photo', videoUrl: liveVideoUrl }
+    }
+    return { type: 'none' }
+  }, [videoType, motionImageUrl, motionOffset, motionSize, motionTimestamp, liveVideoUrl])
 
   useEffect(() => {
     onPlayingChange?.(isPlayingLivePhoto)
@@ -56,41 +78,48 @@ export const LivePhotoVideo = ({
 
   // Extract and track presentationTimestamp for Motion Photo
   useEffect(() => {
-    if (videoSource.type === 'motion-photo' && videoSource.presentationTimestamp) {
+    if (stableVideoSource.type === 'motion-photo' && stableVideoSource.presentationTimestamp) {
       // Convert microseconds to seconds
-      presentationTimestampRef.current = videoSource.presentationTimestamp / 1_000_000
+      presentationTimestampRef.current = stableVideoSource.presentationTimestamp / 1_000_000
     } else {
       presentationTimestampRef.current = undefined
     }
-  }, [videoSource])
+  }, [stableVideoSource])
 
   useEffect(() => {
-    if (!isCurrentImage || livePhotoVideoLoaded || isConvertingVideo || !videoRef.current) {
-      return
-    }
-    // 如果没有视频源，直接返回
-    if (videoSource.type === 'none') {
+    if (!isCurrentImage || !videoRef.current || stableVideoSource.type === 'none') {
       return
     }
 
+    const controller = new AbortController()
+    let isCancelled = false
+    setLivePhotoVideoLoaded(false)
     setIsConvertingVideo(true)
     const processVideo = async () => {
       try {
-        await imageLoaderManager.processVideo(videoSource, videoRef.current!, {
+        await imageLoaderManager.processVideo(stableVideoSource, videoRef.current!, {
+          signal: controller.signal,
           onLoadingStateUpdate: (state) => {
             loadingIndicatorRef.current?.updateLoadingState(state)
           },
         })
 
-        setLivePhotoVideoLoaded(true)
+        if (!isCancelled) setLivePhotoVideoLoaded(true)
       } catch (videoError) {
-        console.error('Failed to process video:', videoError)
+        if (!isAbortError(videoError)) {
+          console.error('Failed to process video:', videoError)
+        }
       } finally {
-        setIsConvertingVideo(false)
+        if (!isCancelled) setIsConvertingVideo(false)
       }
     }
-    processVideo()
-  }, [isCurrentImage, livePhotoVideoLoaded, isConvertingVideo, videoSource, imageLoaderManager, loadingIndicatorRef])
+    void processVideo()
+
+    return () => {
+      isCancelled = true
+      controller.abort()
+    }
+  }, [isCurrentImage, stableVideoSource, imageLoaderManager, loadingIndicatorRef])
 
   useEffect(() => {
     if (!isCurrentImage) {
@@ -164,7 +193,7 @@ export const LivePhotoVideo = ({
     const timestamp = presentationTimestampRef.current
 
     // Only handle Motion Photo with valid timestamp
-    if (!video || timestamp === undefined || videoSource.type !== 'motion-photo') {
+    if (!video || timestamp === undefined || stableVideoSource.type !== 'motion-photo') {
       return
     }
 
@@ -172,7 +201,7 @@ export const LivePhotoVideo = ({
     if (video.currentTime >= timestamp) {
       stop()
     }
-  }, [videoSource, stop])
+  }, [stableVideoSource.type, stop])
 
   return (
     <m.video

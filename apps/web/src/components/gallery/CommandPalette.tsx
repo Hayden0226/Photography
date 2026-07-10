@@ -1,13 +1,14 @@
 import { photoLoader } from '@afilmory/data'
+import * as DialogPrimitive from '@afilmory/ui/dialog/radix'
 import { clsxm } from '@afilmory/utils'
 import { useAtom } from 'jotai'
 import * as React from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router'
+import { useLocation, useNavigate } from 'react-router'
 
 import { gallerySettingAtom } from '~/atoms/app'
-import { usePhotoViewer } from '~/hooks/usePhotoViewer'
+import { useOpenPhotoViewer } from '~/hooks/usePhotoViewer'
 import { MageLens } from '~/icons'
 import { getLocalizedPhotoDescription, getLocalizedPhotoTitle, getPhotoAltText } from '~/lib/photo-description'
 import { getPhotoDetailPath } from '~/lib/photo-route'
@@ -73,13 +74,16 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
   const { i18n, t } = useTranslation()
   const [gallerySetting, setGallerySetting] = useAtom(gallerySettingAtom)
   const navigate = useNavigate()
-  const { openViewerByPhotoId } = usePhotoViewer()
+  const location = useLocation()
+  const { openViewerByPhotoId } = useOpenPhotoViewer()
+  const locale = i18n.resolvedLanguage ?? i18n.language
 
   const [query, setQuery] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [searchTextRevision, setSearchTextRevision] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const triggerElementRef = useRef<HTMLElement | null>(null)
   const dialogTitleId = React.useId()
   const listboxId = React.useId()
 
@@ -111,8 +115,6 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     if (isOpen) {
       setQuery('')
       setSelectedIndex(0)
-      const timer = setTimeout(() => inputRef.current?.focus(), 50)
-      return () => clearTimeout(timer)
     }
   }, [isOpen])
 
@@ -135,17 +137,6 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
       isCancelled = true
     }
   }, [isOpen])
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose()
-      }
-    }
-    window.addEventListener('keydown', handleEscape)
-    return () => window.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
 
   // Generate commands
   const commands = useMemo((): Command[] => {
@@ -290,8 +281,8 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     if (query.trim()) {
       const photos = searchPhotos(photoLoader.getPhotos(), query)
       photos.slice(0, 10).forEach((photo) => {
-        const photoTitle = getLocalizedPhotoTitle(photo, i18n.language)
-        const photoDescription = getLocalizedPhotoDescription(photo, i18n.language)
+        const photoTitle = getLocalizedPhotoTitle(photo, locale)
+        const photoDescription = getLocalizedPhotoDescription(photo, locale)
         cmds.push({
           id: `photo-${photo.id}`,
           type: 'photo',
@@ -300,13 +291,13 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
           icon: (
             <img
               src={photo.thumbnailUrl}
-              alt={getPhotoAltText(photo, i18n.language)}
+              alt={getPhotoAltText(photo, locale)}
               className="h-6 w-6 rounded object-cover"
             />
           ),
           action: () => {
             if (openViewerByPhotoId(photo.id, { resetFiltersIfHidden: true })) {
-              navigate(getPhotoDetailPath(photo.id))
+              navigate({ pathname: getPhotoDetailPath(photo.id), search: location.search })
               onClose()
             }
           },
@@ -318,9 +309,10 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     return cmds
   }, [
     t,
-    i18n.language,
+    locale,
     gallerySetting,
     query,
+    location.search,
     navigate,
     onClose,
     setGallerySetting,
@@ -402,198 +394,221 @@ export const CommandPalette = ({ isOpen, onClose }: CommandPaletteProps) => {
     setSelectedIndex(0)
   }, [filteredCommands.length])
 
-  if (!isOpen) return null
-
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby={dialogTitleId}
-      className="fixed inset-0 z-9999 flex items-end justify-center lg:items-start lg:pt-[15vh]"
-      onClick={onClose}
+    <DialogPrimitive.Root
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
     >
-      {/* Backdrop with blur */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-xl transition-all duration-200" />
+      <DialogPrimitive.Portal>
+        {/* Backdrop with blur */}
+        <DialogPrimitive.Overlay className="fixed inset-0 z-9999 bg-black/40 backdrop-blur-xl transition-all duration-200" />
 
-      {/* Command Palette Panel */}
-      <div
-        className="animate-in fade-in slide-in-from-bottom-4 border-accent/20 lg:slide-in-from-top-4 relative w-full max-w-2xl overflow-hidden rounded-2xl rounded-b-none border backdrop-blur-2xl duration-200 lg:rounded-2xl!"
-        style={{
-          backgroundImage:
-            'linear-gradient(to bottom right, color-mix(in srgb, var(--color-background) 98%, transparent), color-mix(in srgb, var(--color-background) 95%, transparent))',
-          boxShadow:
-            '0 8px 32px color-mix(in srgb, var(--color-accent) 8%, transparent), 0 4px 16px color-mix(in srgb, var(--color-accent) 6%, transparent), 0 2px 8px rgba(0, 0, 0, 0.1)',
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h2 id={dialogTitleId} className="sr-only">
-          {t('action.search.unified.title')}
-        </h2>
-        {/* Inner glow layer */}
-        <div
-          className="pointer-events-none absolute inset-0 rounded-2xl"
-          style={{
-            background:
-              'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent) 5%, transparent), transparent, color-mix(in srgb, var(--color-accent) 5%, transparent))',
+        {/* Command Palette Panel */}
+        <DialogPrimitive.Content
+          aria-labelledby={dialogTitleId}
+          aria-describedby={undefined}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault()
+            if (document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+              triggerElementRef.current = document.activeElement
+            }
+            inputRef.current?.focus()
           }}
-        />
-        {/* Search Input */}
-        <div className="border-accent/20 relative flex items-center gap-3 border-b px-4 py-4">
-          <i className="i-mingcute-search-line text-text-tertiary shrink-0 text-xl" />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={t('action.search.placeholder')}
-            aria-label={t('action.search.placeholder')}
-            aria-controls={listboxId}
-            aria-activedescendant={activeOptionId}
-            className="text-text placeholder-text-tertiary flex-1 bg-transparent text-base outline-none"
-          />
-          <button
-            type="button"
-            onClick={handleReset}
-            aria-label={t('action.search.reset')}
-            className="glassmorphic-btn border-accent/20 text-text-secondary inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200"
-          >
-            <i className="i-mingcute-refresh-1-line text-sm" />
-            {t('action.search.reset')}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={t('action.search.close')}
-            className="glassmorphic-btn border-accent/20 text-text-secondary inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200"
-          >
-            <i className="i-mingcute-close-line text-sm" />
-            {t('action.search.close')}
-          </button>
-        </div>
-
-        <div className="border-accent/20 bg-accent/3 text-text-secondary relative flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
-          <div className="flex items-center gap-2">
-            <i className="i-mingcute-filter-3-line text-sm" />
-            <span>{t('action.tag.match.label')}</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              type="button"
-              onClick={() => updateTagFilterMode('union')}
-              aria-pressed={gallerySetting.tagFilterMode === 'union'}
-              className={clsxm(
-                'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
-                gallerySetting.tagFilterMode === 'union'
-                  ? 'bg-accent text-white'
-                  : 'glassmorphic-btn text-text-secondary',
-              )}
-            >
-              {t('action.tag.match.any')}
-            </button>
-            <button
-              type="button"
-              onClick={() => updateTagFilterMode('intersection')}
-              aria-pressed={gallerySetting.tagFilterMode === 'intersection'}
-              className={clsxm(
-                'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
-                gallerySetting.tagFilterMode === 'intersection'
-                  ? 'bg-accent text-white'
-                  : 'glassmorphic-btn text-text-secondary',
-              )}
-            >
-              {t('action.tag.match.all')}
-            </button>
-          </div>
-        </div>
-
-        {/* Commands List */}
-        <div
-          id={listboxId}
-          ref={listRef}
-          role="listbox"
-          aria-label={t('action.search.resultsList')}
-          className="max-h-[60vh] overflow-y-auto overscroll-contain py-2"
+          onCloseAutoFocus={(event) => {
+            event.preventDefault()
+            const triggerElement = triggerElementRef.current
+            triggerElementRef.current = null
+            requestAnimationFrame(() => {
+              const { activeElement, body } = document
+              if (activeElement instanceof HTMLElement && activeElement !== body && activeElement.isConnected) {
+                return
+              }
+              if (triggerElement?.isConnected) {
+                triggerElement.focus({ preventScroll: true })
+              }
+            })
+          }}
+          className="animate-in fade-in slide-in-from-bottom-4 border-accent/20 lg:slide-in-from-top-4 fixed right-0 bottom-0 left-0 z-10000 mx-auto w-full max-w-2xl overflow-hidden rounded-2xl rounded-b-none border backdrop-blur-2xl duration-200 lg:top-[15vh] lg:right-auto lg:bottom-auto lg:left-1/2 lg:-translate-x-1/2 lg:rounded-2xl!"
+          style={{
+            backgroundImage:
+              'linear-gradient(to bottom right, color-mix(in srgb, var(--color-background) 98%, transparent), color-mix(in srgb, var(--color-background) 95%, transparent))',
+            boxShadow:
+              '0 8px 32px color-mix(in srgb, var(--color-accent) 8%, transparent), 0 4px 16px color-mix(in srgb, var(--color-accent) 6%, transparent), 0 2px 8px rgba(0, 0, 0, 0.1)',
+          }}
         >
-          {filteredCommands.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <i className="i-mingcute-search-line text-text-quaternary mb-3 text-4xl" />
-              <p className="text-text-secondary text-sm">{t('action.search.no-results')}</p>
+          <DialogPrimitive.Title asChild>
+            <h2 id={dialogTitleId} className="sr-only">
+              {t('action.search.unified.title')}
+            </h2>
+          </DialogPrimitive.Title>
+          {/* Inner glow layer */}
+          <div
+            className="pointer-events-none absolute inset-0 rounded-2xl"
+            style={{
+              background:
+                'linear-gradient(to bottom right, color-mix(in srgb, var(--color-accent) 5%, transparent), transparent, color-mix(in srgb, var(--color-accent) 5%, transparent))',
+            }}
+          />
+          {/* Search Input */}
+          <div className="border-accent/20 relative flex items-center gap-3 border-b px-4 py-4">
+            <i className="i-mingcute-search-line text-text-tertiary shrink-0 text-xl" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={t('action.search.placeholder')}
+              aria-label={t('action.search.placeholder')}
+              aria-controls={listboxId}
+              aria-activedescendant={activeOptionId}
+              className="text-text placeholder-text-tertiary flex-1 bg-transparent text-base outline-none"
+            />
+            <button
+              type="button"
+              onClick={handleReset}
+              aria-label={t('action.search.reset')}
+              className="glassmorphic-btn border-accent/20 text-text-secondary inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200"
+            >
+              <i className="i-mingcute-refresh-1-line text-sm" />
+              {t('action.search.reset')}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label={t('action.search.close')}
+              className="glassmorphic-btn border-accent/20 text-text-secondary inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs font-medium transition-all duration-200"
+            >
+              <i className="i-mingcute-close-line text-sm" />
+              {t('action.search.close')}
+            </button>
+          </div>
+
+          <div className="border-accent/20 bg-accent/3 text-text-secondary relative flex items-center justify-between gap-3 border-b px-4 py-2 text-xs">
+            <div className="flex items-center gap-2">
+              <i className="i-mingcute-filter-3-line text-sm" />
+              <span>{t('action.tag.match.label')}</span>
             </div>
-          ) : (
-            filteredCommands.map((cmd, index) => (
+            <div className="flex items-center gap-1">
               <button
-                id={filteredOptionId(cmd.id)}
-                key={cmd.id}
                 type="button"
-                role="option"
-                aria-selected={selectedIndex === index}
-                onClick={cmd.action}
-                onMouseEnter={() => setSelectedIndex(index)}
+                onClick={() => updateTagFilterMode('union')}
+                aria-pressed={gallerySetting.tagFilterMode === 'union'}
                 className={clsxm(
-                  'command-item group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200',
-                  selectedIndex === index && 'selected',
+                  'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
+                  gallerySetting.tagFilterMode === 'union'
+                    ? 'bg-accent text-white'
+                    : 'glassmorphic-btn text-text-secondary',
                 )}
               >
-                {/* Icon */}
-                <div
-                  className={clsxm(
-                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg transition-all duration-200',
-                    cmd.active ? 'bg-accent/10 text-accent' : 'bg-background/95 text-text-secondary',
-                  )}
-                  style={
-                    cmd.active
-                      ? {
-                          boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)',
-                        }
-                      : undefined
-                  }
-                >
-                  {typeof cmd.icon === 'string' ? <i className={cmd.icon} /> : cmd.icon}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 overflow-hidden">
-                  <div className="flex items-center gap-2">
-                    <span className="text-text truncate text-sm font-medium">{cmd.title}</span>
-                    {cmd.badge !== undefined && (
-                      <span className="bg-fill-tertiary text-text-secondary rounded-full px-2 py-0.5 text-xs">
-                        {cmd.badge}
-                      </span>
-                    )}
-                    {cmd.active && (
-                      <span className="bg-accent flex h-5 w-5 items-center justify-center rounded-full text-white">
-                        <i className="i-mingcute-check-line text-xs" />
-                      </span>
-                    )}
-                  </div>
-                  {cmd.subtitle && <p className="text-text-secondary truncate text-xs">{cmd.subtitle}</p>}
-                </div>
+                {t('action.tag.match.any')}
               </button>
-            ))
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="border-accent/20 relative border-t px-4 py-2">
-          <div className="text-text-secondary flex items-center justify-between text-xs">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1">
-                <kbd className="border-accent/20 bg-accent/5 rounded border px-1.5 py-0.5 font-mono">↑↓</kbd>
-                {t('action.search.navigate')}
-              </span>
-              <span className="flex items-center gap-1">
-                <kbd className="border-accent/20 bg-accent/5 rounded border px-1.5 py-0.5 font-mono">↵</kbd>
-                {t('action.search.select')}
-              </span>
+              <button
+                type="button"
+                onClick={() => updateTagFilterMode('intersection')}
+                aria-pressed={gallerySetting.tagFilterMode === 'intersection'}
+                className={clsxm(
+                  'rounded-full px-3 py-1 text-xs font-medium transition-all duration-200',
+                  gallerySetting.tagFilterMode === 'intersection'
+                    ? 'bg-accent text-white'
+                    : 'glassmorphic-btn text-text-secondary',
+                )}
+              >
+                {t('action.tag.match.all')}
+              </button>
             </div>
-            {filteredCommands.length > 0 && (
-              <span>{t('action.search.command.results', { count: filteredCommands.length })}</span>
+          </div>
+
+          {/* Commands List */}
+          <div
+            id={listboxId}
+            ref={listRef}
+            role="listbox"
+            aria-label={t('action.search.resultsList')}
+            className="max-h-[60vh] overflow-y-auto overscroll-contain py-2"
+          >
+            {filteredCommands.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <i className="i-mingcute-search-line text-text-quaternary mb-3 text-4xl" />
+                <p className="text-text-secondary text-sm">{t('action.search.no-results')}</p>
+              </div>
+            ) : (
+              filteredCommands.map((cmd, index) => (
+                <button
+                  id={filteredOptionId(cmd.id)}
+                  key={cmd.id}
+                  type="button"
+                  role="option"
+                  aria-selected={selectedIndex === index}
+                  onClick={cmd.action}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                  className={clsxm(
+                    'command-item group flex w-full items-center gap-3 px-4 py-3 text-left transition-all duration-200',
+                    selectedIndex === index && 'selected',
+                  )}
+                >
+                  {/* Icon */}
+                  <div
+                    className={clsxm(
+                      'flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-lg transition-all duration-200',
+                      cmd.active ? 'bg-accent/10 text-accent' : 'bg-background/95 text-text-secondary',
+                    )}
+                    style={
+                      cmd.active
+                        ? {
+                            boxShadow: 'inset 0 0 0 1px color-mix(in srgb, var(--color-accent) 20%, transparent)',
+                          }
+                        : undefined
+                    }
+                  >
+                    {typeof cmd.icon === 'string' ? <i className={cmd.icon} /> : cmd.icon}
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 overflow-hidden">
+                    <div className="flex items-center gap-2">
+                      <span className="text-text truncate text-sm font-medium">{cmd.title}</span>
+                      {cmd.badge !== undefined && (
+                        <span className="bg-fill-tertiary text-text-secondary rounded-full px-2 py-0.5 text-xs">
+                          {cmd.badge}
+                        </span>
+                      )}
+                      {cmd.active && (
+                        <span className="bg-accent flex h-5 w-5 items-center justify-center rounded-full text-white">
+                          <i className="i-mingcute-check-line text-xs" />
+                        </span>
+                      )}
+                    </div>
+                    {cmd.subtitle && <p className="text-text-secondary truncate text-xs">{cmd.subtitle}</p>}
+                  </div>
+                </button>
+              ))
             )}
           </div>
-        </div>
-      </div>
-    </div>
+
+          {/* Footer */}
+          <div className="border-accent/20 relative border-t px-4 py-2">
+            <div className="text-text-secondary flex items-center justify-between text-xs">
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1">
+                  <kbd className="border-accent/20 bg-accent/5 rounded border px-1.5 py-0.5 font-mono">↑↓</kbd>
+                  {t('action.search.navigate')}
+                </span>
+                <span className="flex items-center gap-1">
+                  <kbd className="border-accent/20 bg-accent/5 rounded border px-1.5 py-0.5 font-mono">↵</kbd>
+                  {t('action.search.select')}
+                </span>
+              </div>
+              {filteredCommands.length > 0 && (
+                <span>{t('action.search.command.results', { count: filteredCommands.length })}</span>
+              )}
+            </div>
+          </div>
+        </DialogPrimitive.Content>
+      </DialogPrimitive.Portal>
+    </DialogPrimitive.Root>
   )
 }
 

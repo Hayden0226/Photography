@@ -7,6 +7,9 @@
     ".": "./src/index.ts",
     "./*": "./src/*"
   },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "peerDependencies": {
     "react": "^19.1.1"
   },

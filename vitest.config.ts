@@ -16,12 +16,58 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./test/setup.ts'],
-    include: ['apps/web/src/**/*.test.ts', 'apps/web/src/**/*.test.tsx', 'apps/web/plugins/**/*.test.ts', 'packages/**/*.test.ts'],
+    include: [
+      'apps/web/src/**/*.test.ts',
+      'apps/web/src/**/*.test.tsx',
+      'apps/web/plugins/**/*.test.ts',
+      'packages/**/*.test.ts',
+      'scripts/**/*.test.ts',
+    ],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
-      include: ['apps/web/src/lib/**/*.ts', 'apps/web/plugins/**/*.ts'],
+      include: [
+        'apps/web/src/lib/**/*.ts',
+        'apps/web/plugins/**/*.ts',
+        'packages/builder/src/builder/failure-policy.ts',
+        'packages/builder/src/fs/atomic-write.ts',
+        'packages/builder/src/storage/providers/local-provider.ts',
+        'packages/builder/src/storage/providers/s3-provider.ts',
+        'packages/builder/src/worker/cluster-pool.ts',
+      ],
       exclude: ['**/*.test.ts', '**/*.test.tsx', '**/*.d.ts'],
+      thresholds: {
+        'packages/builder/src/builder/failure-policy.ts': {
+          branches: 100,
+          functions: 100,
+          lines: 100,
+          statements: 100,
+        },
+        'packages/builder/src/fs/atomic-write.ts': {
+          branches: 80,
+          functions: 100,
+          lines: 95,
+          statements: 95,
+        },
+        'packages/builder/src/storage/providers/local-provider.ts': {
+          branches: 10,
+          functions: 10,
+          lines: 10,
+          statements: 10,
+        },
+        'packages/builder/src/storage/providers/s3-provider.ts': {
+          branches: 15,
+          functions: 20,
+          lines: 15,
+          statements: 15,
+        },
+        'packages/builder/src/worker/cluster-pool.ts': {
+          branches: 15,
+          functions: 15,
+          lines: 20,
+          statements: 20,
+        },
+      },
     },
   },
 })

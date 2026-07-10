@@ -31,6 +31,43 @@ export class S3StorageProvider implements StorageProvider {
     this.limiter = new Semaphore(this.config.downloadConcurrency ?? 16)
   }
 
+  private async listObjects(progressCallback?: ProgressCallback): Promise<_Object[]> {
+    const objects: _Object[] = []
+    const limit = this.config.maxFileLimit
+    let continuationToken: string | undefined
+
+    while (true) {
+      const remaining = limit === undefined ? 1000 : Math.min(1000, limit - objects.length)
+      if (remaining <= 0) break
+
+      const response = await this.s3Client.send(
+        new ListObjectsV2Command({
+          Bucket: this.config.bucket,
+          Prefix: this.config.prefix,
+          MaxKeys: remaining,
+          ContinuationToken: continuationToken,
+        }),
+      )
+
+      objects.push(...(response.Contents ?? []).slice(0, remaining))
+      progressCallback?.({
+        currentPath: this.config.prefix ?? '',
+        filesScanned: objects.length,
+        totalFiles: limit,
+      })
+
+      if (!response.IsTruncated || (limit !== undefined && objects.length >= limit)) {
+        break
+      }
+      if (!response.NextContinuationToken) {
+        throw new Error('S3 返回了截断列表，但未提供 NextContinuationToken')
+      }
+      continuationToken = response.NextContinuationToken
+    }
+
+    return objects
+  }
+
   async getFile(key: string): Promise<Buffer | null> {
     return await this.limiter.run(async () => {
       const maxAttempts = this.config.maxAttempts ?? 3
@@ -130,14 +167,7 @@ export class S3StorageProvider implements StorageProvider {
   }
 
   async listImages(): Promise<StorageObject[]> {
-    const listCommand = new ListObjectsV2Command({
-      Bucket: this.config.bucket,
-      Prefix: this.config.prefix,
-      MaxKeys: this.config.maxFileLimit, // 最多获取 1000 张照片
-    })
-
-    const listResponse = await this.s3Client.send(listCommand)
-    const objects = listResponse.Contents || []
+    const objects = await this.listObjects()
     const excludeRegex = this.config.excludeRegex ? new RegExp(this.config.excludeRegex) : null
 
     // 过滤出图片文件并转换为通用格式
@@ -154,15 +184,8 @@ export class S3StorageProvider implements StorageProvider {
     return imageObjects
   }
 
-  async listAllFiles(_progressCallback?: ProgressCallback): Promise<StorageObject[]> {
-    const listCommand = new ListObjectsV2Command({
-      Bucket: this.config.bucket,
-      Prefix: this.config.prefix,
-      MaxKeys: this.config.maxFileLimit,
-    })
-
-    const listResponse = await this.s3Client.send(listCommand)
-    const objects = listResponse.Contents || []
+  async listAllFiles(progressCallback?: ProgressCallback): Promise<StorageObject[]> {
+    const objects = await this.listObjects(progressCallback)
     const excludeRegex = this.config.excludeRegex ? new RegExp(this.config.excludeRegex) : null
 
     return objects

@@ -24,6 +24,7 @@ export function createDefaultBuilderConfig(): BuilderConfig {
             timeout: 30_000,
             useClusterMode: true,
             workerConcurrency: 2,
+            maxRetries: 2,
           },
         },
       },

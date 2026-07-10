@@ -10,9 +10,10 @@ import { getPhotoDetailPath } from '~/lib/photo-route'
 import type { PhotoMarkerPinProps } from './types'
 
 export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }: PhotoMarkerPinProps) => {
-  const { i18n } = useTranslation()
-  const photoAlt = getPhotoAltText(marker.photo, i18n.language)
-  const photoTitle = getLocalizedPhotoTitle(marker.photo, i18n.language) || marker.photo.id
+  const { i18n, t } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
+  const photoAlt = getPhotoAltText(marker.photo, locale)
+  const photoTitle = getLocalizedPhotoTitle(marker.photo, locale) || marker.photo.id
 
   const handleClick = () => {
     onClick?.(marker)
@@ -31,8 +32,10 @@ export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }:
         closeDelay={isSelected ? 0 : 100} // 选中时不自动关闭
       >
         <HoverCardTrigger asChild>
-          <m.div
-            className="group relative cursor-pointer"
+          <m.button
+            type="button"
+            aria-label={photoTitle}
+            className="group focus-visible:outline-accent relative block cursor-pointer rounded-full border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{
@@ -82,7 +85,7 @@ export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }:
               {/* Subtle inner shadow for depth */}
               <div className="absolute inset-0 rounded-full shadow-inner shadow-black/5" />
             </div>
-          </m.div>
+          </m.button>
         </HoverCardTrigger>
 
         <HoverCardContent
@@ -99,7 +102,11 @@ export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }:
           <div className="relative">
             {/* 选中时显示关闭按钮 */}
             {isSelected && (
-              <GlassButton className="absolute top-3 right-3 z-10 size-8" onClick={handleClose}>
+              <GlassButton
+                className="absolute top-3 right-3 z-10 size-8"
+                aria-label={t('action.close', { defaultValue: 'Close' })}
+                onClick={handleClose}
+              >
                 <i className="i-mingcute-close-line text-lg" />
               </GlassButton>
             )}
@@ -138,7 +145,7 @@ export const PhotoMarkerPin = ({ marker, isSelected = false, onClick, onClose }:
                   <div className="text-text-secondary flex items-center gap-2 text-xs">
                     <i className="i-mingcute-calendar-line text-sm" />
                     <span>
-                      {new Date(marker.photo.exif.DateTimeOriginal).toLocaleDateString('zh-CN', {
+                      {new Date(marker.photo.exif.DateTimeOriginal).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

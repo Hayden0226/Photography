@@ -58,6 +58,7 @@ const FULL_MANIFEST_ROUTE = '/__afilmory_full_manifest.json'
 const PHOTO_TEXT_ROUTE_PREFIX = '/__afilmory_photo_text/'
 const DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE = 'zh-CN'
 const GALLERY_EXIF_KEYS = ['ISO', 'FNumber', 'ExposureTime', 'FocalLength', 'FocalLengthIn35mmFormat'] as const
+const MANIFEST_SCRIPT_MARKER = /<script\s+id=["']manifest["']\s*><\/script>/i
 
 function resolveEmbedPreference(_command: 'serve' | 'build'): boolean {
   const flag = process.env.AFILMORY_EMBED_MANIFEST?.trim().toLowerCase()
@@ -217,6 +218,7 @@ export function createThumbnailPreloadLinks(manifest: { data?: PreloadManifestIt
         const attributes = [
           'rel="preload"',
           'as="image"',
+          'data-afilmory-preload="gallery"',
           `href="${escapeAttribute(href)}"`,
           'imagesizes="(max-width: 640px) 50vw, 350px"',
         ]
@@ -261,10 +263,46 @@ export function serializeForInlineScript(value: unknown): string {
     .replaceAll('\u2029', '\\u2029')
 }
 
+export function createManifestBootstrapScript(
+  lightManifest: ReturnType<typeof createLightManifest>,
+  fullManifestUrl: string,
+  photoTextUrls: Record<string, string>,
+): string {
+  return `window.__MANIFEST__=${serializeForInlineScript(lightManifest)};window.__FULL_MANIFEST_URL__=${serializeForInlineScript(fullManifestUrl)};window.__PHOTO_TEXT_URLS__=${serializeForInlineScript(photoTextUrls)};`
+}
+
+export function injectManifestBootstrap(
+  html: string,
+  options: { preloadLinks?: string; scriptSource?: string; scriptUrl?: string },
+): string {
+  const { preloadLinks = '', scriptSource, scriptUrl } = options
+  if ((scriptSource === undefined) === (scriptUrl === undefined)) {
+    throw new Error('Exactly one manifest bootstrap source must be provided')
+  }
+
+  let next = html.replace(MANIFEST_SCRIPT_MARKER, '')
+  if (preloadLinks) {
+    next = next.replace('</head>', `${preloadLinks}</head>`)
+  }
+
+  const script = scriptUrl
+    ? `<script id="manifest" src="${escapeAttribute(scriptUrl)}"></script>`
+    : `<script id="manifest">${scriptSource}</script>`
+  const moduleScript = next.match(/<script[^>]+type=["']module["'][^>]*>/i)?.[0]
+
+  if (moduleScript) {
+    const moduleScriptIndex = next.indexOf(moduleScript)
+    return `${next.slice(0, moduleScriptIndex)}${script}${next.slice(moduleScriptIndex)}`
+  }
+
+  return next.replace('</head>', `${script}</head>`)
+}
+
 export function manifestInjectPlugin(): Plugin {
   let embedManifest: boolean | undefined
   let resolvedConfig: ResolvedConfig | undefined
   let fullManifestAsset: { fileName: string; source: string } | undefined
+  let photosIndexAsset: { fileName: string; source: string } | undefined
   let photoTextAssets: { fileName: string; source: string; language: string }[] = []
   let buildPayload: ReturnType<typeof buildManifestPayload> | undefined
 
@@ -301,12 +339,22 @@ export function manifestInjectPlugin(): Plugin {
         }
       })
 
+      const photoTextUrls = Object.fromEntries(
+        photoTextAssets.map((asset) => [asset.language, `${base}${asset.fileName}`]),
+      ) as Record<string, string>
+      const fullManifestUrl = `${base}${fileName}`
+      const photosIndexSource = createManifestBootstrapScript(lightManifest, fullManifestUrl, photoTextUrls)
+      const photosIndexFileName = `assets/photos-index.${getContentHash(photosIndexSource)}.js`
+      photosIndexAsset = {
+        fileName: photosIndexFileName,
+        source: photosIndexSource,
+      }
+
       return {
         lightManifest,
-        fullManifestUrl: `${base}${fileName}`,
-        photoTextUrls: Object.fromEntries(
-          photoTextAssets.map((asset) => [asset.language, `${base}${asset.fileName}`]),
-        ) as Record<string, string>,
+        fullManifestUrl,
+        photoTextUrls,
+        photosIndexUrl: `${base}${photosIndexFileName}`,
       }
     }
 
@@ -341,6 +389,14 @@ export function manifestInjectPlugin(): Plugin {
         fileName: fullManifestAsset.fileName,
         source: fullManifestAsset.source,
       })
+
+      if (photosIndexAsset) {
+        this.emitFile({
+          type: 'asset',
+          fileName: photosIndexAsset.fileName,
+          source: photosIndexAsset.source,
+        })
+      }
 
       for (const asset of photoTextAssets) {
         this.emitFile({
@@ -395,25 +451,30 @@ export function manifestInjectPlugin(): Plugin {
       })
     },
 
-    transformIndexHtml(html, ctx) {
-      const command: 'serve' | 'build' = ctx?.server ? 'serve' : 'build'
-      const shouldEmbed = embedManifest ?? resolveEmbedPreference(command)
-      embedManifest = shouldEmbed
-      if (!shouldEmbed) {
-        return html
-      }
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, ctx) {
+        const command: 'serve' | 'build' = ctx?.server ? 'serve' : 'build'
+        const shouldEmbed = embedManifest ?? resolveEmbedPreference(command)
+        embedManifest = shouldEmbed
+        if (!shouldEmbed) {
+          return html
+        }
 
-      const { lightManifest, fullManifestUrl, photoTextUrls } =
-        command === 'build' && buildPayload ? buildPayload : buildManifestPayload(command)
+        const { lightManifest, fullManifestUrl, photoTextUrls, photosIndexUrl } =
+          command === 'build' && buildPayload ? buildPayload : buildManifestPayload(command)
+        const preloadLinks = createThumbnailPreloadLinks(lightManifest)
 
-      // 将 manifest 内容注入到 script#manifest 标签中
-      const scriptContent = `window.__MANIFEST__=${serializeForInlineScript(lightManifest)};window.__FULL_MANIFEST_URL__=${serializeForInlineScript(fullManifestUrl)};window.__PHOTO_TEXT_URLS__=${serializeForInlineScript(photoTextUrls)};`
-      const preloadLinks = createThumbnailPreloadLinks(lightManifest)
+        if (command === 'build') {
+          if (!photosIndexUrl) throw new Error('Manifest bootstrap asset was not created')
+          return injectManifestBootstrap(html, { preloadLinks, scriptUrl: photosIndexUrl })
+        }
 
-      return html.replace(
-        '<script id="manifest"></script>',
-        `${preloadLinks}<script id="manifest">${scriptContent}</script>`,
-      )
+        return injectManifestBootstrap(html, {
+          preloadLinks,
+          scriptSource: createManifestBootstrapScript(lightManifest, fullManifestUrl, photoTextUrls),
+        })
+      },
     },
   }
 }

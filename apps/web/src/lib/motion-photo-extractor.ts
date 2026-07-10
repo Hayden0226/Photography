@@ -3,6 +3,8 @@
  * 从包含嵌入视频的图片中提取 MP4 视频数据
  */
 
+import { isAbortError } from '~/lib/abort-error'
+
 interface MotionPhotoMetadata {
   motionPhotoOffset: number
   motionPhotoVideoSize?: number
@@ -15,30 +17,36 @@ interface MotionPhotoMetadata {
  * @param metadata Motion Photo 元数据（包含 offset 和可选的 size）
  * @returns 视频的 Blob URL，可直接用于 video 元素
  */
-export async function extractMotionPhotoVideo(imageUrl: string, metadata: MotionPhotoMetadata): Promise<string | null> {
+export async function extractMotionPhotoVideo(
+  imageUrl: string,
+  metadata: MotionPhotoMetadata,
+  signal?: AbortSignal,
+): Promise<string | null> {
   try {
     const { motionPhotoOffset, motionPhotoVideoSize } = metadata
 
     // 尝试使用 Range Request 仅获取视频部分
     if (motionPhotoVideoSize && motionPhotoVideoSize > 0) {
       try {
-        const videoBlob = await fetchVideoWithRange(imageUrl, motionPhotoOffset, motionPhotoVideoSize)
+        const videoBlob = await fetchVideoWithRange(imageUrl, motionPhotoOffset, motionPhotoVideoSize, signal)
         if (videoBlob) {
           return URL.createObjectURL(videoBlob)
         }
       } catch (rangeError) {
+        if (isAbortError(rangeError)) throw rangeError
         console.warn('[motion-photo] Range request failed, falling back to full fetch:', rangeError)
       }
     }
 
     // Fallback: 下载完整图片并提取视频部分
-    const videoBlob = await fetchVideoWithFullDownload(imageUrl, motionPhotoOffset, motionPhotoVideoSize)
+    const videoBlob = await fetchVideoWithFullDownload(imageUrl, motionPhotoOffset, motionPhotoVideoSize, signal)
     if (videoBlob) {
       return URL.createObjectURL(videoBlob)
     }
 
     return null
   } catch (error) {
+    if (isAbortError(error)) throw error
     console.error('[motion-photo] Failed to extract video:', error)
     return null
   }
@@ -47,9 +55,15 @@ export async function extractMotionPhotoVideo(imageUrl: string, metadata: Motion
 /**
  * 使用 Range Request 获取视频部分（需要服务器支持）
  */
-async function fetchVideoWithRange(imageUrl: string, offset: number, size: number): Promise<Blob | null> {
+async function fetchVideoWithRange(
+  imageUrl: string,
+  offset: number,
+  size: number,
+  signal?: AbortSignal,
+): Promise<Blob | null> {
   const endByte = offset + size - 1
   const response = await fetch(imageUrl, {
+    signal,
     headers: {
       Range: `bytes=${offset}-${endByte}`,
     },
@@ -73,8 +87,13 @@ async function fetchVideoWithRange(imageUrl: string, offset: number, size: numbe
 /**
  * 下载完整图片并提取视频部分（Fallback 方案）
  */
-async function fetchVideoWithFullDownload(imageUrl: string, offset: number, size?: number): Promise<Blob | null> {
-  const response = await fetch(imageUrl)
+async function fetchVideoWithFullDownload(
+  imageUrl: string,
+  offset: number,
+  size?: number,
+  signal?: AbortSignal,
+): Promise<Blob | null> {
+  const response = await fetch(imageUrl, { signal })
   const arrayBuffer = await response.arrayBuffer()
 
   // 提取视频部分

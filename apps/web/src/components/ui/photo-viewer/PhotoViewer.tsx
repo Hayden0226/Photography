@@ -5,12 +5,13 @@ import 'swiper/css/navigation'
 
 import { photoLoader } from '@afilmory/data'
 import { Thumbhash } from '@afilmory/ui'
+import * as DialogPrimitive from '@afilmory/ui/dialog/radix'
 import { Spring } from '@afilmory/utils'
 import { AnimatePresence, m } from 'motion/react'
 import { Fragment, lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { Swiper as SwiperType } from 'swiper'
-import { Keyboard, Navigation, Virtual } from 'swiper/modules'
+import { Navigation, Virtual } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 
 import { injectConfig } from '~/config'
@@ -48,7 +49,10 @@ export const PhotoViewer = ({
   triggerElement,
 }: PhotoViewerProps) => {
   const { i18n, t } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
   const swiperRef = useRef<SwiperType | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const triggerElementRef = useRef<HTMLElement | null>(triggerElement)
   const [isImageZoomed, setIsImageZoomed] = useState(false)
   const [showExifPanel, setShowExifPanel] = useState(false)
   const [currentBlobSrc, setCurrentBlobSrc] = useState<string | null>(null)
@@ -63,6 +67,12 @@ export const PhotoViewer = ({
   const isCurrentPhotoDetailLoading = Boolean(
     currentPhoto && shouldLoadCurrentPhotoDetail && !detailedCurrentPhoto && loadingPhotoDetailId === currentPhoto.id,
   )
+
+  useEffect(() => {
+    if (triggerElement) {
+      triggerElementRef.current = triggerElement
+    }
+  }, [triggerElement])
 
   const {
     containerRef,
@@ -173,6 +183,9 @@ export const PhotoViewer = ({
     if (!isOpen) return
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      const viewerContainer = containerRef.current
+      if (!(event.target instanceof Node) || !viewerContainer?.contains(event.target)) return
+
       switch (event.key) {
         case 'ArrowLeft': {
           event.preventDefault()
@@ -184,11 +197,6 @@ export const PhotoViewer = ({
           handleNext()
           break
         }
-        case 'Escape': {
-          event.preventDefault()
-          onClose()
-          break
-        }
       }
     }
 
@@ -196,24 +204,31 @@ export const PhotoViewer = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, handlePrevious, handleNext, onClose, showExifPanel])
+  }, [containerRef, isOpen, handlePrevious, handleNext])
 
   if (!currentPhoto) return null
 
   const currentThumbHash = transitionThumbHash
 
   return (
-    <>
+    <DialogPrimitive.Root
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
       <AnimatePresence>
         {shouldRenderBackdrop && (
-          <m.div
-            key="photo-viewer-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isOpen ? 1 : 0 }}
-            exit={{ opacity: 0 }}
-            transition={Spring.presets.snappy}
-            className="bg-material-opaque fixed inset-0"
-          />
+          <DialogPrimitive.Overlay asChild forceMount>
+            <m.div
+              key="photo-viewer-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isOpen ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={Spring.presets.snappy}
+              className="bg-material-opaque fixed inset-0"
+            />
+          </DialogPrimitive.Overlay>
         )}
       </AnimatePresence>
       {/* 固定背景层防止透出 */}
@@ -235,238 +250,258 @@ export const PhotoViewer = ({
 
       <AnimatePresence>
         {isOpen && (
-          <m.div
-            ref={containerRef}
-            className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{
-              touchAction: isMobile ? 'manipulation' : 'none',
-              pointerEvents: !isViewerContentVisible || isEntryAnimating ? 'none' : 'auto',
+          <DialogPrimitive.Content
+            asChild
+            aria-describedby={undefined}
+            onOpenAutoFocus={(event) => {
+              event.preventDefault()
+              closeButtonRef.current?.focus()
             }}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isViewerContentVisible ? 1 : 0 }}
-            exit={{ opacity: 0 }}
-            transition={Spring.presets.snappy}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault()
+              const requestedTrigger = triggerElementRef.current
+              triggerElementRef.current = null
+              const photoId = currentPhoto.id
+              requestAnimationFrame(() => {
+                const fallbackTrigger = Array.from(document.querySelectorAll<HTMLElement>('[data-photo-id]')).find(
+                  (element) => element.dataset.photoId === photoId && element.isConnected,
+                )
+                const focusTarget = requestedTrigger?.isConnected ? requestedTrigger : fallbackTrigger
+                focusTarget?.focus({ preventScroll: true })
+              })
+            }}
           >
-            <div className={`flex size-full ${isMobile ? 'flex-col' : 'flex-row'}`}>
-              <div className="z-1 flex min-h-0 min-w-0 flex-1 flex-col">
-                <m.div
-                  className="group relative flex min-h-0 min-w-0 flex-1"
-                  animate={{ opacity: isViewerContentVisible ? 1 : 0 }}
-                  transition={Spring.presets.snappy}
-                >
-                  {/* 顶部工具栏 */}
+            <m.div
+              ref={containerRef}
+              className="fixed inset-0 z-50 flex items-center justify-center"
+              style={{
+                touchAction: isMobile ? 'manipulation' : 'none',
+                pointerEvents: !isViewerContentVisible || isEntryAnimating ? 'none' : 'auto',
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isViewerContentVisible ? 1 : 0 }}
+              exit={{ opacity: 0 }}
+              transition={Spring.presets.snappy}
+            >
+              <DialogPrimitive.Title className="sr-only">{getPhotoAltText(currentPhoto, locale)}</DialogPrimitive.Title>
+              <div className={`flex size-full ${isMobile ? 'flex-col' : 'flex-row'}`}>
+                <div className="z-1 flex min-h-0 min-w-0 flex-1 flex-col">
                   <m.div
-                    initial={{ opacity: 0 }}
+                    className="group relative flex min-h-0 min-w-0 flex-1"
                     animate={{ opacity: isViewerContentVisible ? 1 : 0 }}
-                    exit={{ opacity: 0 }}
                     transition={Spring.presets.snappy}
-                    className={`pointer-events-none absolute ${isMobile ? 'top-2 right-2 left-2' : 'top-4 right-4 left-4'} z-30 flex items-center justify-between`}
                   >
-                    {/* 左侧工具按钮 */}
-                    <div className="flex items-center gap-2">
-                      {/* 信息按钮 - 在移动设备上显示 */}
-                      {isMobile && (
-                        <button
-                          type="button"
-                          className={`bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40 ${showExifPanel ? 'bg-accent' : ''}`}
-                          aria-pressed={showExifPanel}
-                          aria-label={t('photo.viewer.toggleInfo')}
-                          onClick={() => setShowExifPanel(!showExifPanel)}
-                        >
-                          <i className="i-mingcute-information-line" />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* 右侧按钮组 */}
-                    <div className="flex items-center gap-2">
-                      {/* 分享按钮 */}
-                      <SharePanel
-                        photo={currentPhoto}
-                        blobSrc={currentBlobSrc || undefined}
-                        trigger={
+                    {/* 顶部工具栏 */}
+                    <m.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: isViewerContentVisible ? 1 : 0 }}
+                      exit={{ opacity: 0 }}
+                      transition={Spring.presets.snappy}
+                      className={`pointer-events-none absolute ${isMobile ? 'top-2 right-2 left-2' : 'top-4 right-4 left-4'} z-30 flex items-center justify-between`}
+                    >
+                      {/* 左侧工具按钮 */}
+                      <div className="flex items-center gap-2">
+                        {/* 信息按钮 - 在移动设备上显示 */}
+                        {isMobile && (
                           <button
                             type="button"
-                            className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
-                            aria-label={t('photo.share.title')}
-                            title={t('photo.share.title')}
+                            className={`bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40 ${showExifPanel ? 'bg-accent' : ''}`}
+                            aria-pressed={showExifPanel}
+                            aria-label={t('photo.viewer.toggleInfo')}
+                            onClick={() => setShowExifPanel(!showExifPanel)}
                           >
-                            <i className="i-mingcute-share-2-line" />
+                            <i className="i-mingcute-information-line" />
                           </button>
-                        }
-                      />
+                        )}
+                      </div>
 
-                      {/* 关闭按钮 */}
-                      <button
-                        type="button"
-                        className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
-                        aria-label={t('photo.viewer.close')}
-                        onClick={onClose}
-                      >
-                        <i className="i-mingcute-close-line" />
-                      </button>
-                    </div>
+                      {/* 右侧按钮组 */}
+                      <div className="flex items-center gap-2">
+                        {/* 分享按钮 */}
+                        <SharePanel
+                          photo={currentPhoto}
+                          blobSrc={currentBlobSrc || undefined}
+                          trigger={
+                            <button
+                              type="button"
+                              className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
+                              aria-label={t('photo.share.title')}
+                              title={t('photo.share.title')}
+                            >
+                              <i className="i-mingcute-share-2-line" />
+                            </button>
+                          }
+                        />
+
+                        {/* 关闭按钮 */}
+                        <button
+                          ref={closeButtonRef}
+                          type="button"
+                          className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
+                          aria-label={t('photo.viewer.close')}
+                          onClick={onClose}
+                        >
+                          <i className="i-mingcute-close-line" />
+                        </button>
+                      </div>
+                    </m.div>
+
+                    {shouldRenderReactionButton && (
+                      <Suspense fallback={null}>
+                        <ReactionButton
+                          photoId={currentPhoto.id}
+                          className="absolute right-4 bottom-4"
+                          style={{
+                            opacity: isViewerContentVisible ? 1 : 0,
+                            transition: 'opacity 180ms ease',
+                            pointerEvents: !isViewerContentVisible || isEntryAnimating ? 'none' : 'auto',
+                          }}
+                        />
+                      </Suspense>
+                    )}
+
+                    {/* 加载指示器 */}
+                    <LoadingIndicator ref={loadingIndicatorRef} />
+                    {/* Swiper 容器 */}
+                    <Swiper
+                      modules={[Navigation, Virtual]}
+                      spaceBetween={0}
+                      slidesPerView={1}
+                      initialSlide={currentIndex}
+                      virtual
+                      onSwiper={(swiper) => {
+                        swiperRef.current = swiper
+                        // 初始化时确保触摸滑动是启用的
+                        swiper.allowTouchMove = !isImageZoomed
+                      }}
+                      onSlideChange={(swiper) => {
+                        onIndexChange(swiper.activeIndex)
+                      }}
+                      className="h-full w-full"
+                      style={{ touchAction: isMobile ? 'pan-x' : 'pan-y' }}
+                    >
+                      {photos.map((photo, index) => {
+                        const isCurrentImage = index === currentIndex
+                        const shouldRenderSlideMedia = Math.abs(index - currentIndex) <= 1
+                        const hideCurrentImage = isEntryAnimating && isCurrentImage
+                        return (
+                          <SwiperSlide key={photo.id} className="flex items-center justify-center" virtualIndex={index}>
+                            <m.div
+                              initial={{ opacity: 0.5, scale: 0.95 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0.95 }}
+                              transition={Spring.presets.smooth}
+                              className="relative flex h-full w-full items-center justify-center"
+                              style={{
+                                visibility: hideCurrentImage ? 'hidden' : 'visible',
+                              }}
+                            >
+                              {shouldRenderSlideMedia && photo.mediaType === 'video' ? (
+                                <VideoViewer
+                                  media={photo}
+                                  isCurrent={isCurrentImage}
+                                  className="h-full w-full object-contain"
+                                />
+                              ) : shouldRenderSlideMedia ? (
+                                <ProgressiveImage
+                                  loadingIndicatorRef={loadingIndicatorRef}
+                                  isCurrentImage={isCurrentImage}
+                                  src={photo.originalUrl}
+                                  thumbnailSrc={photo.thumbnailUrl}
+                                  alt={getPhotoAltText(photo, locale)}
+                                  width={isCurrentImage ? currentPhoto.width : undefined}
+                                  height={isCurrentImage ? currentPhoto.height : undefined}
+                                  className="h-full w-full object-contain"
+                                  enablePan={isCurrentImage ? !isMobile || isImageZoomed : true}
+                                  enableZoom={true}
+                                  shouldRenderHighRes={isCurrentImage && isViewerContentVisible && isOpen}
+                                  onZoomChange={isCurrentImage ? handleZoomChange : undefined}
+                                  onBlobSrcChange={isCurrentImage ? handleBlobSrcChange : undefined}
+                                  // Video source (Live Photo or Motion Photo)
+                                  videoSource={
+                                    photo.video?.type === 'motion-photo'
+                                      ? {
+                                          type: 'motion-photo',
+                                          imageUrl: photo.originalUrl,
+                                          offset: photo.video.offset,
+                                          size: photo.video.size,
+                                          presentationTimestamp: photo.video.presentationTimestamp,
+                                        }
+                                      : photo.video?.type === 'live-photo'
+                                        ? {
+                                            type: 'live-photo',
+                                            videoUrl: photo.video.videoUrl,
+                                          }
+                                        : { type: 'none' }
+                                  }
+                                  shouldAutoPlayVideoOnce={isCurrentImage}
+                                  // HDR props
+                                  isHDR={photo.isHDR}
+                                />
+                              ) : null}
+                            </m.div>
+                          </SwiperSlide>
+                        )
+                      })}
+                    </Swiper>
+
+                    {/* 自定义导航按钮 */}
+
+                    {!isMobile && (
+                      <Fragment>
+                        {currentIndex > 0 && (
+                          <button
+                            type="button"
+                            className={`bg-material-medium absolute top-1/2 left-4 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 group-hover:opacity-100 hover:bg-black/40`}
+                            aria-label={t('photo.viewer.previous')}
+                            onClick={handlePrevious}
+                          >
+                            <i className={`i-mingcute-left-line text-xl`} />
+                          </button>
+                        )}
+
+                        {currentIndex < photos.length - 1 && (
+                          <button
+                            type="button"
+                            className={`bg-material-medium absolute top-1/2 right-4 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 group-hover:opacity-100 hover:bg-black/40`}
+                            aria-label={t('photo.viewer.next')}
+                            onClick={handleNext}
+                          >
+                            <i className={`i-mingcute-right-line text-xl`} />
+                          </button>
+                        )}
+                      </Fragment>
+                    )}
                   </m.div>
 
-                  {shouldRenderReactionButton && (
-                    <Suspense fallback={null}>
-                      <ReactionButton
-                        photoId={currentPhoto.id}
-                        className="absolute right-4 bottom-4"
-                        style={{
-                          opacity: isViewerContentVisible ? 1 : 0,
-                          transition: 'opacity 180ms ease',
-                          pointerEvents: !isViewerContentVisible || isEntryAnimating ? 'none' : 'auto',
-                        }}
-                      />
-                    </Suspense>
-                  )}
+                  <Suspense>
+                    <GalleryThumbnail
+                      currentIndex={currentIndex}
+                      photos={photos}
+                      onIndexChange={onIndexChange}
+                      visible={isViewerContentVisible}
+                    />
+                  </Suspense>
+                </div>
 
-                  {/* 加载指示器 */}
-                  <LoadingIndicator ref={loadingIndicatorRef} />
-                  {/* Swiper 容器 */}
-                  <Swiper
-                    modules={[Navigation, Keyboard, Virtual]}
-                    spaceBetween={0}
-                    slidesPerView={1}
-                    initialSlide={currentIndex}
-                    virtual
-                    keyboard={{
-                      enabled: true,
-                      onlyInViewport: true,
-                    }}
-                    onSwiper={(swiper) => {
-                      swiperRef.current = swiper
-                      // 初始化时确保触摸滑动是启用的
-                      swiper.allowTouchMove = !isImageZoomed
-                    }}
-                    onSlideChange={(swiper) => {
-                      onIndexChange(swiper.activeIndex)
-                    }}
-                    className="h-full w-full"
-                    style={{ touchAction: isMobile ? 'pan-x' : 'pan-y' }}
-                  >
-                    {photos.map((photo, index) => {
-                      const isCurrentImage = index === currentIndex
-                      const shouldRenderSlideMedia = Math.abs(index - currentIndex) <= 1
-                      const hideCurrentImage = isEntryAnimating && isCurrentImage
-                      return (
-                        <SwiperSlide key={photo.id} className="flex items-center justify-center" virtualIndex={index}>
-                          <m.div
-                            initial={{ opacity: 0.5, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            transition={Spring.presets.smooth}
-                            className="relative flex h-full w-full items-center justify-center"
-                            style={{
-                              visibility: hideCurrentImage ? 'hidden' : 'visible',
-                            }}
-                          >
-                            {shouldRenderSlideMedia && photo.mediaType === 'video' ? (
-                              <VideoViewer
-                                media={photo}
-                                isCurrent={isCurrentImage}
-                                className="h-full w-full object-contain"
-                              />
-                            ) : shouldRenderSlideMedia ? (
-                              <ProgressiveImage
-                                loadingIndicatorRef={loadingIndicatorRef}
-                                isCurrentImage={isCurrentImage}
-                                src={photo.originalUrl}
-                                thumbnailSrc={photo.thumbnailUrl}
-                                alt={getPhotoAltText(photo, i18n.language)}
-                                width={isCurrentImage ? currentPhoto.width : undefined}
-                                height={isCurrentImage ? currentPhoto.height : undefined}
-                                className="h-full w-full object-contain"
-                                enablePan={isCurrentImage ? !isMobile || isImageZoomed : true}
-                                enableZoom={true}
-                                shouldRenderHighRes={isCurrentImage && isViewerContentVisible && isOpen}
-                                onZoomChange={isCurrentImage ? handleZoomChange : undefined}
-                                onBlobSrcChange={isCurrentImage ? handleBlobSrcChange : undefined}
-                                // Video source (Live Photo or Motion Photo)
-                                videoSource={
-                                  photo.video?.type === 'motion-photo'
-                                    ? {
-                                        type: 'motion-photo',
-                                        imageUrl: photo.originalUrl,
-                                        offset: photo.video.offset,
-                                        size: photo.video.size,
-                                        presentationTimestamp: photo.video.presentationTimestamp,
-                                      }
-                                    : photo.video?.type === 'live-photo'
-                                      ? {
-                                          type: 'live-photo',
-                                          videoUrl: photo.video.videoUrl,
-                                        }
-                                      : { type: 'none' }
-                                }
-                                shouldAutoPlayVideoOnce={isCurrentImage}
-                                // HDR props
-                                isHDR={photo.isHDR}
-                              />
-                            ) : null}
-                          </m.div>
-                        </SwiperSlide>
-                      )
-                    })}
-                  </Swiper>
-
-                  {/* 自定义导航按钮 */}
-
-                  {!isMobile && (
-                    <Fragment>
-                      {currentIndex > 0 && (
-                        <button
-                          type="button"
-                          className={`bg-material-medium absolute top-1/2 left-4 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 group-hover:opacity-100 hover:bg-black/40`}
-                          aria-label={t('photo.viewer.previous')}
-                          onClick={handlePrevious}
-                        >
-                          <i className={`i-mingcute-left-line text-xl`} />
-                        </button>
-                      )}
-
-                      {currentIndex < photos.length - 1 && (
-                        <button
-                          type="button"
-                          className={`bg-material-medium absolute top-1/2 right-4 z-20 flex size-8 -translate-y-1/2 items-center justify-center rounded-full text-white opacity-0 backdrop-blur-sm duration-200 group-hover:opacity-100 hover:bg-black/40`}
-                          aria-label={t('photo.viewer.next')}
-                          onClick={handleNext}
-                        >
-                          <i className={`i-mingcute-right-line text-xl`} />
-                        </button>
-                      )}
-                    </Fragment>
-                  )}
-                </m.div>
+                {/* ExifPanel - 在桌面端始终显示，在移动端根据状态显示 */}
 
                 <Suspense>
-                  <GalleryThumbnail
-                    currentIndex={currentIndex}
-                    photos={photos}
-                    onIndexChange={onIndexChange}
-                    visible={isViewerContentVisible}
-                  />
+                  <AnimatePresenceOnlyMobile>
+                    {(!isMobile || showExifPanel) && (
+                      <ExifPanel
+                        currentPhoto={detailedCurrentPhoto ?? currentPhoto}
+                        exifData={detailedCurrentPhoto?.exif ?? null}
+                        isLoadingDetails={isCurrentPhotoDetailLoading}
+                        visible={isViewerContentVisible}
+                        onClose={isMobile ? () => setShowExifPanel(false) : undefined}
+                      />
+                    )}
+                  </AnimatePresenceOnlyMobile>
                 </Suspense>
               </div>
-
-              {/* ExifPanel - 在桌面端始终显示，在移动端根据状态显示 */}
-
-              <Suspense>
-                <AnimatePresenceOnlyMobile>
-                  {(!isMobile || showExifPanel) && (
-                    <ExifPanel
-                      currentPhoto={detailedCurrentPhoto ?? currentPhoto}
-                      exifData={detailedCurrentPhoto?.exif ?? null}
-                      isLoadingDetails={isCurrentPhotoDetailLoading}
-                      visible={isViewerContentVisible}
-                      onClose={isMobile ? () => setShowExifPanel(false) : undefined}
-                    />
-                  )}
-                </AnimatePresenceOnlyMobile>
-              </Suspense>
-            </div>
-          </m.div>
+            </m.div>
+          </DialogPrimitive.Content>
         )}
       </AnimatePresence>
       {entryTransition && (
@@ -483,7 +518,7 @@ export const PhotoViewer = ({
           onComplete={handleExitAnimationComplete}
         />
       )}
-    </>
+    </DialogPrimitive.Root>
   )
 }
 

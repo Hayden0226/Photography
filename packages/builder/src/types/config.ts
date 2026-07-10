@@ -19,6 +19,7 @@ export interface WorkerPerformanceConfig {
   useClusterMode: boolean
   workerConcurrency: number
   workerCount: number
+  maxRetries: number
 }
 
 export interface SystemProcessingSettings {

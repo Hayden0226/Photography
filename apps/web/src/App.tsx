@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router'
 
 import { useCanonical } from './hooks/useCanonical'
@@ -25,7 +25,13 @@ function App() {
 
 const CommandPaletteContainer = () => {
   const { isOpen, setIsOpen } = useCommandPaletteShortcut()
-  if (!isOpen) return null
+  const [hasOpened, setHasOpened] = useState(false)
+
+  useEffect(() => {
+    if (isOpen) setHasOpened(true)
+  }, [isOpen])
+
+  if (!isOpen && !hasOpened) return null
 
   return (
     <Suspense fallback={null}>

@@ -18,6 +18,7 @@
     "docs:build": "pnpm --filter @afilmory/docs build",
     "docs:dev": "pnpm --filter @afilmory/docs dev",
     "docs:preview": "pnpm --filter @afilmory/docs preview",
+    "fixtures:photos": "tsx scripts/create-e2e-photo-fixture.ts",
     "format": "prettier --write \"apps/**/*.{ts,tsx,js,jsx,json,css,md}\" \"packages/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "lint": "eslint --fix",
     "lint:check": "eslint .",
@@ -28,6 +29,7 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "type-check": "pnpm -r --if-present type-check",
     "update:lastmodified": "tsx scripts/update-lastmodified.ts",
     "vercel:build": "pnpm run vercel:photos && pnpm run photos:standardize && pnpm run build",
     "vercel:photos": "sh scripts/checkout-vercel-photos.sh"

@@ -7,6 +7,9 @@
     "./manifest": "./src/photos-manifest.json",
     "./types": "./src/types.ts"
   },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "@afilmory/builder": "workspace:*"
   }

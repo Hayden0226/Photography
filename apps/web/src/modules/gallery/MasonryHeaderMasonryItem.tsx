@@ -11,6 +11,7 @@ import { ActionGroup } from './ActionGroup'
 
 export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.CSSProperties; className?: string }) => {
   const { i18n, t } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
   const visiblePhotoCount = usePhotos().length
   const { needRefresh, updateApp } = useAppUpdate()
   return (
@@ -135,7 +136,7 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
             <i className="i-mingcute-calendar-line text-sm" />
             <span>
               {t('gallery.built.at')}
-              {new Date(BUILT_DATE).toLocaleDateString(i18n.language, {
+              {new Date(BUILT_DATE).toLocaleDateString(locale, {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',

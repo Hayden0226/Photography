@@ -76,7 +76,7 @@ export class LocalStorageProvider implements StorageProvider {
       this.logger.info(`读取本地文件：${key}`)
       const startTime = Date.now()
 
-      const filePath = this.resolveSafePath(key)
+      const filePath = await this.resolveSafePath(key)
 
       // 检查文件是否存在
       try {
@@ -153,13 +153,33 @@ export class LocalStorageProvider implements StorageProvider {
     }
   }
 
-  private resolveSafePath(key: string): string {
+  private async resolveSafePath(key: string): Promise<string> {
     const filePath = path.join(this.basePath, key)
     const resolvedPath = path.resolve(filePath)
     const resolvedBasePath = path.resolve(this.basePath)
+    const relativePath = path.relative(resolvedBasePath, resolvedPath)
 
-    if (!resolvedPath.startsWith(resolvedBasePath)) {
+    if (relativePath === '..' || relativePath.startsWith(`..${path.sep}`) || path.isAbsolute(relativePath)) {
       throw new Error(`LocalStorageProvider: 文件路径不安全：${key}`)
+    }
+
+    // A lexical boundary check is not enough when an existing path component
+    // is a symbolic link. Reject links before Node follows them outside the
+    // configured storage root. Stop at the first missing component so uploads
+    // can still create new nested directories normally.
+    let currentPath = resolvedBasePath
+    for (const segment of relativePath.split(path.sep).filter(Boolean)) {
+      currentPath = path.join(currentPath, segment)
+
+      try {
+        const stats = await fs.lstat(currentPath)
+        if (stats.isSymbolicLink()) {
+          throw new Error(`LocalStorageProvider: 文件路径不安全（包含符号链接）：${key}`)
+        }
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') break
+        throw error
+      }
     }
 
     return resolvedPath
@@ -190,7 +210,7 @@ export class LocalStorageProvider implements StorageProvider {
   }
 
   async deleteFile(key: string): Promise<void> {
-    const filePath = this.resolveSafePath(key)
+    const filePath = await this.resolveSafePath(key)
 
     try {
       await fs.rm(filePath, { force: true })
@@ -203,7 +223,7 @@ export class LocalStorageProvider implements StorageProvider {
   }
 
   async uploadFile(key: string, data: Buffer, _options?: StorageUploadOptions): Promise<StorageObject> {
-    const filePath = this.resolveSafePath(key)
+    const filePath = await this.resolveSafePath(key)
 
     try {
       const dir = path.dirname(filePath)

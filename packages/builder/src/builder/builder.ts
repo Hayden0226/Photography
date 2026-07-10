@@ -26,11 +26,14 @@ import { processVideoFile } from '../video/processor.js'
 import { ClusterPool } from '../worker/cluster-pool.js'
 import type { TaskCompletedPayload } from '../worker/pool.js'
 import { WorkerPool } from '../worker/pool.js'
+import { findExistingItemsToRetain, resolveBuildFailurePolicy } from './failure-policy.js'
 
 export interface BuilderOptions {
   isForceMode: boolean
   isForceManifest: boolean
   isForceThumbnails: boolean
+  /** Reject the build when any individual media item fails. */
+  strict?: boolean
   concurrencyLimit?: number // 可选，如果未提供则使用配置文件中的默认值
   progressListener?: BuildProgressListener
 }
@@ -42,6 +45,19 @@ export interface BuilderResult {
   skippedCount: number
   deletedCount: number
   totalPhotos: number
+  failedCount: number
+  failedKeys: string[]
+}
+
+export class BuilderFailureError extends Error {
+  constructor(
+    public readonly result: BuilderResult,
+    public readonly manifestSaved: boolean,
+  ) {
+    const keys = result.failedKeys.join(', ')
+    super(`媒体处理失败 ${result.failedCount} 项${keys ? `：${keys}` : ''}`)
+    this.name = 'BuilderFailureError'
+  }
 }
 
 export interface BuildProgressStartPayload {
@@ -106,6 +122,7 @@ export class AfilmoryBuilder {
     let skippedCount = 0
     let newCount = 0
     let failedCount = 0
+    const failedKeys = new Set<string>()
     let deletedCount = 0
 
     try {
@@ -200,7 +217,7 @@ export class AfilmoryBuilder {
         isForceThumbnails: options.isForceThumbnails,
       }
 
-      const applyResultCounters = (result: ProcessPhotoResult | null | undefined): void => {
+      const applyResultCounters = (result: ProcessPhotoResult | null | undefined, key?: string): void => {
         if (!result) return
 
         switch (result.type) {
@@ -219,6 +236,7 @@ export class AfilmoryBuilder {
           }
           case 'failed': {
             failedCount++
+            if (key) failedKeys.add(key)
             break
           }
         }
@@ -261,7 +279,7 @@ export class AfilmoryBuilder {
           completed,
         }: TaskCompletedPayload<ProcessPhotoResult>): void => {
           if (result) {
-            applyResultCounters(result)
+            applyResultCounters(result, tasksToProcess[taskIndex]?.key)
           }
 
           completedTaskCount = completed
@@ -287,6 +305,8 @@ export class AfilmoryBuilder {
             concurrency,
             totalTasks: tasksToProcess.length,
             workerConcurrency: this.config.system.observability.performance.worker.workerConcurrency,
+            timeout: this.config.system.observability.performance.worker.timeout,
+            maxRetries: this.config.system.observability.performance.worker.maxRetries,
             workerEnv: {
               FORCE_MODE: processorOptions.isForceMode.toString(),
               FORCE_MANIFEST: processorOptions.isForceManifest.toString(),
@@ -391,7 +411,7 @@ export class AfilmoryBuilder {
           },
         )
 
-        applyResultCounters(result)
+        applyResultCounters(result, videoTasksToProcess[index]?.key)
         processingResults.push(result)
 
         if (result.item) {
@@ -406,18 +426,16 @@ export class AfilmoryBuilder {
         }
       }
 
-      for (const [key, item] of existingManifestMap) {
-        if (mediaKeys.has(key) && !manifest.some((m) => m.s3Key === key)) {
-          await this.emitPluginEvent(runState, 'beforeAddManifestItem', {
-            options,
-            item,
-            pluginData: {},
-            resultType: 'skipped',
-          })
+      for (const item of findExistingItemsToRetain(manifest, existingManifestMap, mediaKeys)) {
+        await this.emitPluginEvent(runState, 'beforeAddManifestItem', {
+          options,
+          item,
+          pluginData: {},
+          resultType: 'skipped',
+        })
 
-          manifest.push(item)
-          skippedCount++
-        }
+        manifest.push(item)
+        skippedCount++
       }
 
       if (tasksToProcess.length === 0 && progressListener) {
@@ -440,8 +458,27 @@ export class AfilmoryBuilder {
           newCount,
           processedCount,
           skippedCount,
+          failedCount,
+          failedKeys: [...failedKeys],
         },
       })
+
+      const failurePolicy = resolveBuildFailurePolicy(options, failedCount, existingManifestItems.length > 0)
+      if (!failurePolicy.shouldSaveManifest) {
+        throw new BuilderFailureError(
+          {
+            hasUpdates: false,
+            newCount,
+            processedCount,
+            skippedCount,
+            deletedCount: 0,
+            totalPhotos: manifest.length,
+            failedCount,
+            failedKeys: [...failedKeys],
+          },
+          false,
+        )
+      }
 
       // 检测并处理已删除的图片
       deletedCount = await handleDeletedPhotos(manifest)
@@ -493,6 +530,12 @@ export class AfilmoryBuilder {
         skippedCount,
         deletedCount,
         totalPhotos: manifest.length,
+        failedCount,
+        failedKeys: [...failedKeys],
+      }
+
+      if (failurePolicy.shouldRejectBuild) {
+        throw new BuilderFailureError(result, true)
       }
 
       await this.emitPluginEvent(runState, 'afterBuild', {

@@ -6,40 +6,15 @@ import type { Plugin } from 'vite'
 
 import type { SiteConfig } from '../../../../site.config'
 import { MANIFEST_PATH } from './__internal__/constants'
-
-const { generateRSSFeed } = await tsImport('@afilmory/utils', import.meta.url)
-
-function escapeXml(unsafe: string): string {
-  return unsafe.replaceAll(/[<>&'"]/g, (c) => {
-    switch (c) {
-      case '<': {
-        return '&lt;'
-      }
-      case '>': {
-        return '&gt;'
-      }
-      case '&': {
-        return '&amp;'
-      }
-      case "'": {
-        return '&apos;'
-      }
-      case '"': {
-        return '&quot;'
-      }
-      default: {
-        return c
-      }
-    }
-  })
-}
+import { generateSitemap } from './sitemap'
 
 export function createFeedSitemapPlugin(siteConfig: SiteConfig): Plugin {
   return {
     name: 'feed-sitemap-generator',
     apply: 'build',
-    generateBundle() {
+    async generateBundle() {
       try {
+        const { generateRSSFeed } = await tsImport('@afilmory/utils', import.meta.url)
         const photosData: PhotoManifestItem[] = JSON.parse(readFileSync(MANIFEST_PATH, 'utf-8')).data
 
         // Sort photos by date taken (newest first)
@@ -83,37 +58,4 @@ export function createFeedSitemapPlugin(siteConfig: SiteConfig): Plugin {
       }
     },
   }
-}
-
-function generateSitemap(photos: PhotoManifestItem[], config: SiteConfig): string {
-  const now = new Date().toISOString()
-  const baseUrl = config.url.endsWith('/') ? config.url.slice(0, -1) : config.url
-
-  // Main page
-  const mainPageXml = `  <url>
-    <loc>${escapeXml(baseUrl)}</loc>
-    <lastmod>${now}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>`
-
-  // Photo pages
-  const photoUrls = photos
-    .map((photo) => {
-      const date = photo.lastModified || photo.dateTaken
-      const lastmod = date ? new Date(date).toISOString() : now
-      return `  <url>
-    <loc>${escapeXml(`${baseUrl}/photos/${photo.id}/`)}</loc>
-    <lastmod>${lastmod}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>`
-    })
-    .join('\n')
-
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${mainPageXml}
-${photoUrls}
-</urlset>\n`
 }

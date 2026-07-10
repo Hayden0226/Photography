@@ -20,6 +20,7 @@ export const Component = () => {
   const photoViewer = usePhotoViewer()
   const photos = useContextPhotos()
   const { i18n } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
 
   const [ref, setRef] = useState<HTMLElement | null>(null)
   const rootPortalValue = useMemo(
@@ -30,7 +31,7 @@ export const Component = () => {
   )
   const currentPhoto = photos[photoViewer.currentIndex]
   const pageTitle = currentPhoto?.title || currentPhoto?.id || 'Not Found'
-  const pageDescription = currentPhoto ? getLocalizedPhotoDescription(currentPhoto, i18n.language) : ''
+  const pageDescription = currentPhoto ? getLocalizedPhotoDescription(currentPhoto, locale) : ''
 
   useTitle(pageTitle)
   usePageMeta({
@@ -48,8 +49,6 @@ export const Component = () => {
     if (!current) return
 
     let isCancelled = false
-    let cssElement: HTMLStyleElement | null = null
-    let cssRemovalTimer: ReturnType<typeof setTimeout> | null = null
 
     ;(async () => {
       try {
@@ -58,20 +57,6 @@ export const Component = () => {
           thumbnailUrl: current.thumbnailUrl,
         })
         if (!isCancelled) {
-          cssElement = document.createElement('style')
-          cssElement.textContent = `
-         * {
-             transition: color 0.2s ease-in-out, background-color 0.2s ease-in-out;
-            }
-          `
-          document.head.append(cssElement)
-
-          cssRemovalTimer = setTimeout(() => {
-            cssElement?.remove()
-            cssElement = null
-            cssRemovalTimer = null
-          }, 100)
-
           setAccentColor(color ?? null)
         }
       } catch {
@@ -81,10 +66,6 @@ export const Component = () => {
 
     return () => {
       isCancelled = true
-      if (cssRemovalTimer) {
-        clearTimeout(cssRemovalTimer)
-      }
-      cssElement?.remove()
     }
   }, [photoViewer.currentIndex, photos])
 
@@ -97,7 +78,7 @@ export const Component = () => {
       <article className="sr-only" aria-labelledby="photo-detail-heading">
         <h1 id="photo-detail-heading">{pageTitle}</h1>
         {pageDescription && <p>{pageDescription}</p>}
-        <p>{getPhotoAltText(currentPhoto, i18n.language)}</p>
+        <p>{getPhotoAltText(currentPhoto, locale)}</p>
       </article>
 
       <RootPortal>
@@ -109,7 +90,10 @@ export const Component = () => {
               } as React.CSSProperties
             }
             ref={setRef}
-            className={clsx(photoViewer.isOpen ? 'fixed inset-0 z-9999' : 'pointer-events-none fixed inset-0 z-40')}
+            className={clsx(
+              'photo-viewer-accent-transition',
+              photoViewer.isOpen ? 'fixed inset-0 z-9999' : 'pointer-events-none fixed inset-0 z-40',
+            )}
           >
             <Suspense fallback={null}>
               <PhotoViewer

@@ -85,3 +85,14 @@
     transition: none;
   }
 }
+@property --color-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #007aff;
+}
+
+.photo-viewer-accent-transition {
+  transition-property: --color-accent;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+}

@@ -37,6 +37,7 @@ export const ExifPanel: FC<{
   visible?: boolean
 }> = ({ currentPhoto, exifData, isLoadingDetails = false, onClose, visible = true }) => {
   const { i18n, t } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
   const isMobile = useMobile()
   const formattedExifData = formatExifData(exifData)
 
@@ -51,11 +52,10 @@ export const ExifPanel: FC<{
   const megaPixels = (((currentPhoto.height * currentPhoto.width) / 1000000) | 0).toString()
   const isVideoMedia = currentPhoto.mediaType === 'video'
   const formattedDuration = isVideoMedia && currentPhoto.duration ? formatDuration(currentPhoto.duration) : null
-  const localizedTitle = getLocalizedPhotoTitle(currentPhoto, i18n.language)
-  const localizedDescription = getLocalizedPhotoDescription(currentPhoto, i18n.language)
+  const localizedTitle = getLocalizedPhotoTitle(currentPhoto, locale)
+  const localizedDescription = getLocalizedPhotoDescription(currentPhoto, locale)
   const formattedCaptureTime =
-    formattedExifData?.dateTime ||
-    formatManifestDateTime(currentPhoto.dateTaken || currentPhoto.fileCreatedAt, i18n.language)
+    formattedExifData?.dateTime || formatManifestDateTime(currentPhoto.dateTaken || currentPhoto.fileCreatedAt, locale)
 
   return (
     <m.div

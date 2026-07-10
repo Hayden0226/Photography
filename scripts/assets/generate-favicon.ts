@@ -86,6 +86,37 @@ export async function generateFavicons() {
       console.info(`✅ Generated favicon: ${name} (${size}x${size})`)
     }
 
+    // Maskable icons must keep the artwork inside the central safe zone and
+    // provide an opaque background because launchers may crop them to any shape.
+    const maskableSize = 512
+    const maskableArtworkSize = 320
+    const maskableArtwork = await sharp(logoBuffer)
+      .resize(maskableArtworkSize, maskableArtworkSize, {
+        fit: 'cover',
+        position: 'center',
+      })
+      .png({ quality: 100, compressionLevel: 6 })
+      .toBuffer()
+    const maskableBuffer = await sharp({
+      create: {
+        width: maskableSize,
+        height: maskableSize,
+        channels: 4,
+        background: '#2d3035',
+      },
+    })
+      .composite([
+        {
+          input: maskableArtwork,
+          left: Math.floor((maskableSize - maskableArtworkSize) / 2),
+          top: Math.floor((maskableSize - maskableArtworkSize) / 2),
+        },
+      ])
+      .png({ quality: 100, compressionLevel: 6 })
+      .toBuffer()
+    writeFileSync(join(outputDir, 'android-chrome-maskable-512x512.png'), maskableBuffer)
+    console.info('✅ Generated maskable icon: android-chrome-maskable-512x512.png (512x512)')
+
     // 生成主 favicon.ico（使用 32x32）
     const faviconResizedBuffer = await sharp(logoBuffer)
       .resize(32, 32, {

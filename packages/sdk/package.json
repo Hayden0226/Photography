@@ -6,10 +6,17 @@
     ".": {
       "import": "./src/index.ts",
       "types": "./src/index.ts"
+    },
+    "./client": {
+      "import": "./src/client.ts",
+      "types": "./src/client.ts"
     }
   },
   "main": "./src/index.ts",
   "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "zod": "catalog:"
   }
