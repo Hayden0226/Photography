@@ -269,6 +269,7 @@ export async function runAsWorker() {
     async (message: TaskMessage | BatchTaskMessage | WorkerInitMessage | { type: 'shutdown' } | { type: 'ping' }) => {
       if (message.type === 'shutdown') {
         process.removeAllListeners('message')
+        process.exit(0)
         return
       }
 

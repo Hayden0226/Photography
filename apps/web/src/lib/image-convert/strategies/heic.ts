@@ -4,7 +4,13 @@ import { i18nAtom } from '~/i18n'
 import { isSafari } from '~/lib/device-viewport'
 import type { LoadingCallbacks } from '~/lib/image-loader-manager'
 import { jotaiStore } from '~/lib/jotai'
-import { LRUCache } from '~/lib/lru-cache'
+import {
+  clearMediaBlobCacheNamespace,
+  deleteMediaBlobCacheEntry,
+  getMediaBlobCacheEntry,
+  getMediaBlobCacheNamespaceStats,
+  setMediaBlobCacheEntry,
+} from '~/lib/media-blob-cache'
 
 import type { ConversionResult, ImageConverterStrategy } from '../type'
 
@@ -66,18 +72,7 @@ export interface HeicConversionOptions {
   format?: 'image/jpeg' | 'image/png'
 }
 
-// HEIC conversion cache using generic LRU cache
-const heicCache: LRUCache<string, ConversionResult> = new LRUCache<string, ConversionResult>(
-  10, // Smaller cache size for images as they might be larger
-  (value, key, reason) => {
-    try {
-      URL.revokeObjectURL(value.url)
-      console.info(`HEIC cache: Revoked blob URL - ${reason}`)
-    } catch (error) {
-      console.warn(`Failed to revoke HEIC blob URL (${reason}):`, error)
-    }
-  },
-)
+const HEIC_CACHE_NAMESPACE = 'heic' as const
 
 /**
  * 生成文件的缓存键（基于 src）
@@ -123,7 +118,7 @@ export async function convertHeicImage(
   const cacheKey = generateCacheKey(src, options)
 
   // 检查缓存
-  const cachedResult = heicCache.get(cacheKey)
+  const cachedResult = getMediaBlobCacheEntry<ConversionResult>(HEIC_CACHE_NAMESPACE, cacheKey)
   if (cachedResult) {
     console.info('Using cached HEIC conversion result', cachedResult)
     return cachedResult
@@ -154,7 +149,13 @@ export async function convertHeicImage(
     }
 
     // 缓存结果
-    heicCache.set(cacheKey, result)
+    setMediaBlobCacheEntry({
+      namespace: HEIC_CACHE_NAMESPACE,
+      key: cacheKey,
+      value: result,
+      bytes: result.convertedSize,
+      revoke: (cached) => URL.revokeObjectURL(cached.url),
+    })
     console.info(
       `HEIC conversion completed and cached: ${(file.size / 1024).toFixed(1)}KB → ${(convertedBlob.size / 1024).toFixed(1)}KB`,
     )
@@ -179,15 +180,15 @@ export function revokeConvertedUrl(url: string): void {
 
 // HEIC 缓存管理函数
 export function getHeicCacheSize(): number {
-  return heicCache.size()
+  return getMediaBlobCacheNamespaceStats(HEIC_CACHE_NAMESPACE).size
 }
 
 export function clearHeicCache(): void {
-  heicCache.clear()
+  clearMediaBlobCacheNamespace(HEIC_CACHE_NAMESPACE)
 }
 
 export function removeHeicCache(cacheKey: string): boolean {
-  return heicCache.delete(cacheKey)
+  return deleteMediaBlobCacheEntry(HEIC_CACHE_NAMESPACE, cacheKey)
 }
 
 export function getHeicCacheStats(): {
@@ -195,7 +196,8 @@ export function getHeicCacheStats(): {
   maxSize: number
   keys: string[]
 } {
-  return heicCache.getStats()
+  const { size, maxSize, keys } = getMediaBlobCacheNamespaceStats(HEIC_CACHE_NAMESPACE)
+  return { size, maxSize, keys }
 }
 
 /**
@@ -203,5 +205,5 @@ export function getHeicCacheStats(): {
  */
 export function removeHeicCacheBySrc(src: string, options: HeicConversionOptions = {}): boolean {
   const cacheKey = generateCacheKey(src, options)
-  return heicCache.delete(cacheKey)
+  return deleteMediaBlobCacheEntry(HEIC_CACHE_NAMESPACE, cacheKey)
 }

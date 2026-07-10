@@ -342,6 +342,8 @@
   "photo.copying": "Copying image...",
   "photo.download": "Download Image",
   "photo.error.loading": "Failed to load image",
+  "photo.error.original": "Original image unavailable",
+  "photo.error.thumbnailFallback": "Showing the preview image instead",
   "photo.fallback.title": "Photo",
   "photo.live.badge": "Live",
   "photo.live.converting.detail": "Converting video format using {{method}}...",

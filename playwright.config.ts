@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const useProductionBuild = process.env.PLAYWRIGHT_PRODUCTION === 'true'
+
 export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
@@ -11,7 +13,9 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   webServer: {
-    command: 'AFILMORY_SKIP_MANIFEST_PRECHECK=true pnpm --filter web dev -- --host 127.0.0.1',
+    command: useProductionBuild
+      ? 'pnpm --filter web exec vite preview --host 127.0.0.1 --port 13333 --strictPort'
+      : 'AFILMORY_SKIP_MANIFEST_PRECHECK=true pnpm --filter web dev -- --host 127.0.0.1',
     url: 'http://127.0.0.1:13333',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

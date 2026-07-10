@@ -1,7 +1,7 @@
 import { photoLoader } from '@afilmory/data'
 import type { ExtractAtomValue } from 'jotai'
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { use, useCallback, useMemo } from 'react'
+import { atom, useAtomValue, useSetAtom } from 'jotai'
+import { use, useCallback, useEffect, useMemo } from 'react'
 
 import { gallerySettingAtom } from '~/atoms/app'
 import { lockBodyScroll, unlockBodyScroll } from '~/lib/body-scroll-lock'
@@ -11,33 +11,14 @@ import { trackView } from '~/lib/tracker'
 import { PhotosContext } from '~/providers/photos-context'
 
 const openAtom = atom(false)
-const currentIndexAtom = atom(0)
+const currentPhotoIdAtom = atom<string | null>(null)
 const triggerElementAtom = atom<HTMLElement | null>(null)
 const data = photoLoader.getPhotos()
 type GallerySetting = ExtractAtomValue<typeof gallerySettingAtom>
 
-// 抽取照片筛选和排序逻辑为独立函数
-const filterAndSortPhotos = (
-  selectedTags: string[],
-  selectedCameras: string[],
-  selectedLenses: string[],
-  selectedRatings: number | null,
-  sortOrder: 'asc' | 'desc',
-  tagFilterMode: 'union' | 'intersection' = 'union',
-) => {
-  return filterAndSortPhotoList(
-    data,
-    selectedTags,
-    selectedCameras,
-    selectedLenses,
-    selectedRatings,
-    sortOrder,
-    tagFilterMode,
-  )
-}
-
 const filterAndSortPhotosBySetting = (setting: GallerySetting) =>
-  filterAndSortPhotos(
+  filterAndSortPhotoList(
+    data,
     setting.selectedTags,
     setting.selectedCameras,
     setting.selectedLenses,
@@ -55,23 +36,98 @@ const resetGalleryFilters = (setting: GallerySetting): GallerySetting => ({
   tagFilterMode: 'union',
 })
 
-// 提供一个 getter 函数供非 UI 组件使用
-export const getFilteredPhotos = () => {
-  // 直接从 jotaiStore 中读取当前状态
-  const currentGallerySetting = jotaiStore.get(gallerySettingAtom)
-  return filterAndSortPhotosBySetting(currentGallerySetting)
+/** A single cached derivation shared by the gallery, viewer and URL synchronization. */
+export const filteredPhotosAtom = atom((get) => filterAndSortPhotosBySetting(get(gallerySettingAtom)))
+
+const viewerStateAtom = atom((get) => {
+  const currentPhotoId = get(currentPhotoIdAtom)
+  const currentIndex = currentPhotoId ? get(filteredPhotosAtom).findIndex((photo) => photo.id === currentPhotoId) : 0
+
+  return {
+    isOpen: get(openAtom),
+    currentIndex,
+    currentPhotoId,
+    triggerElement: get(triggerElementAtom),
+  }
+})
+
+interface OpenViewerOptions {
+  element?: HTMLElement
+  gallerySetting?: GallerySetting
+  resetFiltersIfHidden?: boolean
 }
 
-export const usePhotos = () => {
-  const { sortOrder, selectedTags, selectedCameras, selectedLenses, selectedRatings, tagFilterMode } =
-    useAtomValue(gallerySettingAtom)
+const openViewerAtom = atom(null, (get, set, payload: { index: number; element?: HTMLElement }) => {
+  const photos = get(filteredPhotosAtom)
+  const photo = photos[payload.index]
+  if (!photo) return false
 
-  const masonryItems = useMemo(() => {
-    return filterAndSortPhotos(selectedTags, selectedCameras, selectedLenses, selectedRatings, sortOrder, tagFilterMode)
-  }, [sortOrder, selectedTags, selectedCameras, selectedLenses, selectedRatings, tagFilterMode])
+  set(currentPhotoIdAtom, photo.id)
+  set(triggerElementAtom, payload.element ?? null)
+  if (!get(openAtom)) {
+    lockBodyScroll()
+  }
+  set(openAtom, true)
 
-  return masonryItems
-}
+  trackView(photo.id)
+  return true
+})
+
+const openViewerByPhotoIdAtom = atom(null, (get, set, payload: { photoId: string; options?: OpenViewerOptions }) => {
+  const options = payload.options ?? {}
+  const currentGallerySetting = get(gallerySettingAtom)
+  let targetGallerySetting = options.gallerySetting ?? currentGallerySetting
+  let targetPhotos = options.gallerySetting
+    ? filterAndSortPhotosBySetting(targetGallerySetting)
+    : get(filteredPhotosAtom)
+  let nextIndex = targetPhotos.findIndex((photo) => photo.id === payload.photoId)
+  let shouldApplyGallerySetting = Boolean(options.gallerySetting)
+
+  if (nextIndex === -1 && options.resetFiltersIfHidden) {
+    targetGallerySetting = resetGalleryFilters(targetGallerySetting)
+    targetPhotos = filterAndSortPhotosBySetting(targetGallerySetting)
+    nextIndex = targetPhotos.findIndex((photo) => photo.id === payload.photoId)
+    shouldApplyGallerySetting = true
+  }
+
+  if (nextIndex === -1) return false
+
+  if (shouldApplyGallerySetting) {
+    set(gallerySettingAtom, targetGallerySetting)
+  }
+
+  set(currentPhotoIdAtom, payload.photoId)
+  set(triggerElementAtom, options.element ?? null)
+  if (!get(openAtom)) {
+    lockBodyScroll()
+  }
+  set(openAtom, true)
+
+  trackView(payload.photoId)
+  return true
+})
+
+const closeViewerAtom = atom(null, (get, set) => {
+  if (get(openAtom)) {
+    unlockBodyScroll()
+  }
+  set(openAtom, false)
+  set(triggerElementAtom, null)
+})
+
+const goToIndexAtom = atom(null, (get, set, index: number) => {
+  const photos = get(filteredPhotosAtom)
+  const photo = photos[index]
+  if (!photo) return false
+
+  set(currentPhotoIdAtom, photo.id)
+  trackView(photo.id)
+  return true
+})
+
+export const getFilteredPhotos = () => jotaiStore.get(filteredPhotosAtom)
+
+export const usePhotos = () => useAtomValue(filteredPhotosAtom)
 
 export const useContextPhotos = () => {
   const photos = use(PhotosContext)
@@ -81,96 +137,57 @@ export const useContextPhotos = () => {
   return photos
 }
 
-export const usePhotoViewer = () => {
-  const photos = usePhotos()
-  const [isOpen, setIsOpen] = useAtom(openAtom)
-  const [currentIndex, setCurrentIndex] = useAtom(currentIndexAtom)
-  const [triggerElement, setTriggerElement] = useAtom(triggerElementAtom)
-  const setGallerySetting = useSetAtom(gallerySettingAtom)
+/**
+ * Write-only viewer actions. Gallery items can use this hook without subscribing
+ * to viewer state, so opening or navigating the viewer does not re-render every card.
+ */
+export const useOpenPhotoViewer = () => {
+  const openAtIndex = useSetAtom(openViewerAtom)
+  const openByPhotoId = useSetAtom(openViewerByPhotoIdAtom)
 
   const openViewer = useCallback(
-    (index: number, element?: HTMLElement) => {
-      setCurrentIndex(index)
-      setTriggerElement(element || null)
-      setIsOpen(true)
-      if (!isOpen) {
-        lockBodyScroll()
-      }
-
-      trackView(photos[index]?.id)
-    },
-    [isOpen, photos, setCurrentIndex, setIsOpen, setTriggerElement],
+    (index: number, element?: HTMLElement) => openAtIndex({ index, element }),
+    [openAtIndex],
   )
-
-  const closeViewer = useCallback(() => {
-    setIsOpen(false)
-    setTriggerElement(null)
-    if (isOpen) {
-      unlockBodyScroll()
-    }
-  }, [isOpen, setIsOpen, setTriggerElement])
-
   const openViewerByPhotoId = useCallback(
-    (
-      photoId: string,
-      options: {
-        element?: HTMLElement
-        gallerySetting?: GallerySetting
-        resetFiltersIfHidden?: boolean
-      } = {},
-    ) => {
-      const currentGallerySetting = jotaiStore.get(gallerySettingAtom)
-      let targetGallerySetting = options.gallerySetting ?? currentGallerySetting
-      let targetPhotos = filterAndSortPhotosBySetting(targetGallerySetting)
-      let nextIndex = targetPhotos.findIndex((photo) => photo.id === photoId)
-      let shouldApplyGallerySetting = Boolean(options.gallerySetting)
-
-      if (nextIndex === -1 && options.resetFiltersIfHidden) {
-        targetGallerySetting = resetGalleryFilters(targetGallerySetting)
-        targetPhotos = filterAndSortPhotosBySetting(targetGallerySetting)
-        nextIndex = targetPhotos.findIndex((photo) => photo.id === photoId)
-        shouldApplyGallerySetting = true
-      }
-
-      if (nextIndex === -1) {
-        return false
-      }
-
-      if (shouldApplyGallerySetting) {
-        setGallerySetting(targetGallerySetting)
-      }
-
-      setCurrentIndex(nextIndex)
-      setTriggerElement(options.element || null)
-      setIsOpen(true)
-      if (!isOpen) {
-        lockBodyScroll()
-      }
-
-      trackView(photoId)
-      return true
-    },
-    [isOpen, setCurrentIndex, setGallerySetting, setIsOpen, setTriggerElement],
+    (photoId: string, options?: OpenViewerOptions) => openByPhotoId({ photoId, options }),
+    [openByPhotoId],
   )
 
-  const goToIndex = useCallback(
-    (index: number) => {
-      if (index >= 0 && index < photos.length) {
-        setCurrentIndex(index)
-        trackView(photos[index].id)
-      }
-    },
-    [photos, setCurrentIndex],
+  return useMemo(
+    () => ({
+      openViewer,
+      openViewerByPhotoId,
+    }),
+    [openViewer, openViewerByPhotoId],
   )
+}
 
-  return {
-    isOpen,
-    currentIndex,
-    triggerElement,
-    openViewer,
-    openViewerByPhotoId,
-    closeViewer,
+export const usePhotoViewerState = () => {
+  const state = useAtomValue(viewerStateAtom)
+  const closeViewer = useSetAtom(closeViewerAtom)
 
-    goToIndex,
-  }
+  useEffect(() => {
+    if (state.isOpen && state.currentPhotoId && state.currentIndex === -1) {
+      closeViewer()
+    }
+  }, [closeViewer, state.currentIndex, state.currentPhotoId, state.isOpen])
+
+  return state
+}
+
+/** Viewer state plus navigation actions for the mounted fullscreen viewer. */
+export const usePhotoViewer = () => {
+  const state = usePhotoViewerState()
+  const closeViewer = useSetAtom(closeViewerAtom)
+  const goToIndex = useSetAtom(goToIndexAtom)
+
+  return useMemo(
+    () => ({
+      ...state,
+      closeViewer,
+      goToIndex,
+    }),
+    [closeViewer, goToIndex, state],
+  )
 }

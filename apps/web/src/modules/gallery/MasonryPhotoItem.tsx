@@ -1,16 +1,18 @@
-import { Thumbhash, useScrollViewElement } from '@afilmory/ui'
+import { Thumbhash } from '@afilmory/ui'
 import clsx from 'clsx'
 import { m } from 'motion/react'
+import type { PointerEvent as ReactPointerEvent } from 'react'
 import { Fragment, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useContextPhotos, usePhotoViewer } from '~/hooks/usePhotoViewer'
+import { useOpenPhotoViewer } from '~/hooks/usePhotoViewer'
 import {
   CarbonIsoOutline,
   MaterialSymbolsShutterSpeed,
   StreamlineImageAccessoriesLensesPhotosCameraShutterPicturePhotographyPicturesPhotoLens,
   TablerAperture,
 } from '~/icons'
+import { isAbortError } from '~/lib/abort-error'
 import { isMobileDevice } from '~/lib/device-viewport'
 import type { ImageLoaderManager } from '~/lib/image-loader-manager'
 import { getImageFormat } from '~/lib/image-utils'
@@ -19,6 +21,7 @@ import type { PhotoManifest } from '~/types/photo'
 
 const PRIORITY_IMAGE_COUNT = 6
 const THUMBNAIL_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 350px'
+const TOUCH_LONG_PRESS_DELAY = 450
 
 type VideoSource = Parameters<ImageLoaderManager['processVideo']>[0]
 
@@ -35,11 +38,8 @@ const PhotoErrorOverlay = () => {
   )
 }
 
-const MasonryPhotoTitle = ({ photo }: { photo: PhotoManifest }) => {
-  const { i18n } = useTranslation()
-  const title = getLocalizedPhotoTitle(photo, i18n.language)
-
-  return <h3 className="mb-2 truncate text-sm font-medium opacity-0 group-hover:opacity-100">{title || photo.id}</h3>
+const MasonryPhotoTitle = ({ title }: { title: string }) => {
+  return <h3 className="mb-2 truncate text-sm font-medium opacity-0 group-hover:opacity-100">{title}</h3>
 }
 
 const VideoMediaBadge = ({ formattedDuration }: { formattedDuration: string | null }) => {
@@ -119,8 +119,8 @@ const formatDuration = (duration: number) => {
 }
 
 const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; width: number; index: number }) => {
-  const photos = useContextPhotos()
-  const photoViewer = usePhotoViewer()
+  const { i18n } = useTranslation()
+  const { openViewerByPhotoId } = useOpenPhotoViewer()
   const [imageLoaded, setImageLoaded] = useState(false)
   const [imageError, setImageError] = useState(false)
 
@@ -131,14 +131,19 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
   const [videoConvertionError, setVideoConversionError] = useState<unknown>(null)
   const [shouldPreloadVideo, setShouldPreloadVideo] = useState(false)
 
-  const itemRef = useRef<HTMLDivElement>(null)
-  const imageRef = useRef<HTMLImageElement>(null)
+  const itemRef = useRef<HTMLButtonElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null)
   const imageLoaderManagerRef = useRef<ImageLoaderManager | null>(null)
+  const videoAbortControllerRef = useRef<AbortController | null>(null)
   const videoLoadStartedRef = useRef(false)
-  const scrollElement = useScrollViewElement()
-  const photoAlt = getPhotoAltText(data, 'zh-CN')
+  const isPointerInsideRef = useRef(false)
+  const activeTouchPointerRef = useRef<number | null>(null)
+  const touchLongPressTriggeredRef = useRef(false)
+  const locale = i18n.resolvedLanguage ?? i18n.language
+  const photoAlt = getPhotoAltText(data, locale)
+  const photoTitle = getLocalizedPhotoTitle(data, locale) || data.id
   const isPriorityImage = index < PRIORITY_IMAGE_COUNT
 
   const handleImageLoad = () => {
@@ -150,13 +155,7 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
   }
 
   const handleClick = () => {
-    const photoIndex = photos.findIndex((photo) => photo.id === data.id)
-    if (photoIndex !== -1) {
-      const triggerEl =
-        imageRef.current?.parentElement instanceof HTMLElement ? imageRef.current.parentElement : imageRef.current
-
-      photoViewer.openViewer(photoIndex, triggerEl ?? undefined)
-    }
+    openViewerByPhotoId(data.id, { element: itemRef.current ?? undefined })
   }
 
   // 计算基于宽度的高度
@@ -222,37 +221,6 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
     setIsPlayingLivePhoto(false)
   }, [data.id])
 
-  useEffect(() => {
-    if (!hasLivePhotoVideo || shouldPreloadVideo) return
-
-    const item = itemRef.current
-    if (!item || typeof IntersectionObserver === 'undefined') {
-      setShouldPreloadVideo(true)
-      return
-    }
-
-    const root = scrollElement && scrollElement !== document.body ? scrollElement : null
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setShouldPreloadVideo(true)
-          observer.disconnect()
-        }
-      },
-      {
-        root,
-        rootMargin: isMobileDevice ? '400px 0px' : '1000px 0px',
-        threshold: 0,
-      },
-    )
-
-    observer.observe(item)
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [hasLivePhotoVideo, scrollElement, shouldPreloadVideo])
-
   // Live Photo/Motion Photo 视频加载逻辑
   useEffect(() => {
     if (!photoVideo || !imageLoaded || !shouldPreloadVideo || videoLoadStartedRef.current || !videoRef.current) {
@@ -261,6 +229,8 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
 
     let isCancelled = false
     videoLoadStartedRef.current = true
+    const abortController = new AbortController()
+    videoAbortControllerRef.current = abortController
 
     let imageLoaderManager: ImageLoaderManager | null = null
 
@@ -295,19 +265,30 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
         }
 
         if (videoSource.type !== 'none') {
-          await imageLoaderManager.processVideo(videoSource, videoRef.current!)
+          await imageLoaderManager.processVideo(videoSource, videoRef.current!, { signal: abortController.signal })
           if (!isCancelled) {
             setLivePhotoVideoLoaded(true)
+            if (isPointerInsideRef.current && videoRef.current) {
+              setIsPlayingLivePhoto(true)
+              videoRef.current.currentTime = 0
+              void videoRef.current.play()
+            }
           }
         }
       } catch (videoError) {
-        console.error('Failed to process video:', videoError)
-        if (!isCancelled) {
+        const wasAborted = isAbortError(videoError)
+        if (!wasAborted) {
+          console.error('Failed to process video:', videoError)
+        }
+        if (!isCancelled && !wasAborted) {
           setVideoConversionError(videoError)
         }
       } finally {
         if (!isCancelled) {
           setIsConvertingVideo(false)
+        }
+        if (videoAbortControllerRef.current === abortController) {
+          videoAbortControllerRef.current = null
         }
       }
     }
@@ -316,6 +297,8 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
 
     return () => {
       isCancelled = true
+      abortController.abort()
+      videoLoadStartedRef.current = false
       imageLoaderManager?.cleanup()
       if (imageLoaderManagerRef.current === imageLoaderManager) {
         imageLoaderManagerRef.current = null
@@ -323,37 +306,110 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
     }
   }, [photoVideo, originalUrl, imageLoaded, shouldPreloadVideo])
 
+  const releaseLivePhotoPreview = useCallback((updateState = true) => {
+    videoAbortControllerRef.current?.abort()
+    videoAbortControllerRef.current = null
+    imageLoaderManagerRef.current?.cleanup()
+    imageLoaderManagerRef.current = null
+    videoLoadStartedRef.current = false
+
+    const video = videoRef.current
+    if (video) {
+      video.pause()
+      video.removeAttribute('src')
+      video.load()
+    }
+
+    if (updateState) {
+      setShouldPreloadVideo(false)
+      setLivePhotoVideoLoaded(false)
+      setIsConvertingVideo(false)
+      setVideoConversionError(null)
+      setIsPlayingLivePhoto(false)
+    }
+  }, [])
+
   // Live Photo/Motion Photo hover 处理（仅在桌面端）
   const handleMouseEnter = useCallback(() => {
-    if (isMobileDevice || !hasLivePhotoVideo || !livePhotoVideoLoaded || isPlayingLivePhoto || isConvertingVideo) {
+    if (isMobileDevice || !hasLivePhotoVideo || isPlayingLivePhoto) {
       return
     }
 
+    isPointerInsideRef.current = true
     hoverTimerRef.current = setTimeout(() => {
-      setIsPlayingLivePhoto(true)
-      const video = videoRef.current
-      if (video) {
+      if (livePhotoVideoLoaded && videoRef.current) {
+        setIsPlayingLivePhoto(true)
+        const video = videoRef.current
         video.currentTime = 0
-        video.play()
+        void video.play()
+      } else if (!isConvertingVideo) {
+        setShouldPreloadVideo(true)
       }
     }, 200) // 200ms hover 延迟
   }, [hasLivePhotoVideo, livePhotoVideoLoaded, isPlayingLivePhoto, isConvertingVideo])
 
   const handleMouseLeave = useCallback(() => {
+    isPointerInsideRef.current = false
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current)
       hoverTimerRef.current = null
     }
 
-    if (isPlayingLivePhoto) {
-      setIsPlayingLivePhoto(false)
-      const video = videoRef.current
-      if (video) {
-        video.pause()
-        video.currentTime = 0
+    if (!hasLivePhotoVideo) return
+    releaseLivePhotoPreview()
+  }, [hasLivePhotoVideo, releaseLivePhotoPreview])
+
+  const resetTouchLivePhoto = useCallback(
+    (updateState = true) => {
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current)
+        longPressTimerRef.current = null
       }
-    }
-  }, [isPlayingLivePhoto])
+
+      const shouldResetMedia = touchLongPressTriggeredRef.current
+      activeTouchPointerRef.current = null
+      touchLongPressTriggeredRef.current = false
+      isPointerInsideRef.current = false
+
+      if (!shouldResetMedia) return
+
+      releaseLivePhotoPreview(updateState)
+    },
+    [releaseLivePhotoPreview],
+  )
+
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>) => {
+      if (event.pointerType !== 'touch' || !hasLivePhotoVideo) return
+
+      resetTouchLivePhoto()
+      activeTouchPointerRef.current = event.pointerId
+      longPressTimerRef.current = setTimeout(() => {
+        if (activeTouchPointerRef.current !== event.pointerId) return
+
+        longPressTimerRef.current = null
+        touchLongPressTriggeredRef.current = true
+        isPointerInsideRef.current = true
+        if (livePhotoVideoLoaded && videoRef.current) {
+          setIsPlayingLivePhoto(true)
+          videoRef.current.currentTime = 0
+          void videoRef.current.play()
+        } else {
+          setShouldPreloadVideo(true)
+        }
+      }, TOUCH_LONG_PRESS_DELAY)
+    },
+    [hasLivePhotoVideo, livePhotoVideoLoaded, resetTouchLivePhoto],
+  )
+
+  const handlePointerEnd = useCallback(
+    (event: ReactPointerEvent<HTMLButtonElement>) => {
+      if (event.pointerType === 'touch' && activeTouchPointerRef.current === event.pointerId) {
+        resetTouchLivePhoto()
+      }
+    },
+    [resetTouchLivePhoto],
+  )
 
   // 视频播放结束处理
   const handleVideoEnded = useCallback(() => {
@@ -363,17 +419,22 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
   // 清理定时器
   useEffect(() => {
     return () => {
+      isPointerInsideRef.current = false
+      videoAbortControllerRef.current?.abort()
+      resetTouchLivePhoto(false)
       if (hoverTimerRef.current) {
         clearTimeout(hoverTimerRef.current)
         hoverTimerRef.current = null
       }
     }
-  }, [])
+  }, [resetTouchLivePhoto])
 
   return (
-    <m.div
+    <m.button
       ref={itemRef}
-      className="bg-fill-quaternary group relative w-full cursor-pointer overflow-hidden"
+      type="button"
+      aria-label={photoAlt}
+      className="bg-fill-quaternary group focus-visible:outline-accent relative block w-full cursor-pointer overflow-hidden border-0 p-0 text-left focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2"
       style={{
         width,
         height: calculatedHeight,
@@ -382,6 +443,10 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerEnd}
+      onPointerCancel={handlePointerEnd}
+      onPointerLeave={handlePointerEnd}
     >
       {/* Blurhash 占位符 */}
       {data.thumbHash && <Thumbhash thumbHash={data.thumbHash} className="absolute inset-0" />}
@@ -393,7 +458,6 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
           )}
           {data.thumbnailSrcSet && <source srcSet={data.thumbnailSrcSet} sizes={THUMBNAIL_SIZES} />}
           <img
-            ref={imageRef}
             src={data.thumbnailUrl}
             alt={photoAlt}
             className={clsx('h-full w-full object-cover duration-300 group-hover:scale-105')}
@@ -442,7 +506,7 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
           <div className="absolute inset-x-0 bottom-0 p-4 pb-0 text-white">
             {/* 基本信息和标签 section */}
             <div className="mb-3 [&_*]:duration-300">
-              <MasonryPhotoTitle photo={data} />
+              <MasonryPhotoTitle title={photoTitle} />
 
               {/* 基本信息 */}
               <div className="mb-2 flex flex-wrap gap-2 text-xs text-white/80 opacity-0 group-hover:opacity-100">
@@ -511,7 +575,7 @@ const MasonryPhotoItemBase = ({ data, width, index }: { data: PhotoManifest; wid
           </div>
         </div>
       )}
-    </m.div>
+    </m.button>
   )
 }
 

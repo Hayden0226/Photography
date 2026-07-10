@@ -1,4 +1,5 @@
 import { getI18n } from '~/i18n'
+import { isAbortError } from '~/lib/abort-error'
 
 interface ConversionProgress {
   isConverting: boolean
@@ -15,6 +16,7 @@ interface ConversionResult {
 
 interface TransmuxOptions {
   onProgress?: (progress: ConversionProgress) => void
+  signal?: AbortSignal
 }
 
 /**
@@ -25,6 +27,7 @@ export async function transmuxMovToMp4(videoUrl: string, options: TransmuxOption
   try {
     return await transmuxMovToMp4Simple(videoUrl, options)
   } catch (error) {
+    if (isAbortError(error)) throw error
     console.error('Transmux error:', error)
     return {
       success: false,
@@ -41,9 +44,10 @@ export async function transmuxMovToMp4Simple(
   videoUrl: string,
   options: TransmuxOptions = {},
 ): Promise<ConversionResult> {
-  const { onProgress } = options
+  const { onProgress, signal } = options
 
   try {
+    signal?.throwIfAborted()
     console.info(`🎯 Starting simple transmux conversion`)
 
     const { t } = getI18n()
@@ -54,12 +58,13 @@ export async function transmuxMovToMp4Simple(
     })
 
     // Fetch the video file
-    const response = await fetch(videoUrl)
+    const response = await fetch(videoUrl, { signal })
     if (!response.ok) {
       throw new Error(`Failed to fetch video: ${response.statusText}`)
     }
 
     const buffer = await response.arrayBuffer()
+    signal?.throwIfAborted()
 
     onProgress?.({
       isConverting: true,
@@ -89,6 +94,10 @@ export async function transmuxMovToMp4Simple(
     // Create blob with MP4 MIME type
     const blob = new Blob([mp4Buffer], { type: 'video/mp4' })
     const convertedUrl = URL.createObjectURL(blob)
+    if (signal?.aborted) {
+      URL.revokeObjectURL(convertedUrl)
+      signal.throwIfAborted()
+    }
 
     onProgress?.({
       isConverting: false,
@@ -102,6 +111,7 @@ export async function transmuxMovToMp4Simple(
       convertedSize: blob.size,
     }
   } catch (error) {
+    if (isAbortError(error)) throw error
     console.error('Simple transmux error:', error)
     return {
       success: false,

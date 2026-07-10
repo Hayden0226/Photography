@@ -1,7 +1,8 @@
 import { getI18n } from '~/i18n'
+import { isAbortError } from '~/lib/abort-error'
 
 import { isSafari } from './device-viewport'
-import { LRUCache } from './lru-cache'
+import { deleteMediaBlobCacheEntry, getMediaBlobCacheEntry, setMediaBlobCacheEntry } from './media-blob-cache'
 import { transmuxMovToMp4 } from './mp4-utils'
 
 interface ConversionProgress {
@@ -17,34 +18,27 @@ interface ConversionResult {
   convertedSize?: number
 }
 
-// Global video cache instance using the generic LRU cache with custom cleanup
-const videoCache: LRUCache<string, ConversionResult> = new LRUCache<string, ConversionResult>(
-  10,
-  (value, key, reason) => {
-    if (value.videoUrl) {
-      try {
-        URL.revokeObjectURL(value.videoUrl)
-        console.info(`Video cache: Revoked blob URL - ${reason}`)
-      } catch (error) {
-        console.warn(`Failed to revoke video blob URL (${reason}):`, error)
-      }
-    }
-  },
-)
+const VIDEO_CACHE_NAMESPACE = 'video' as const
 
 function convertMOVtoMP4(
   videoUrl: string,
   onProgress?: (progress: ConversionProgress) => void,
+  signal?: AbortSignal,
 ): Promise<ConversionResult> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     // Start transmux conversion
     transmuxMovToMp4(videoUrl, {
       onProgress,
+      signal,
     })
       .then((result) => {
         resolve(result)
       })
       .catch((error) => {
+        if (isAbortError(error)) {
+          reject(error)
+          return
+        }
         console.error('Transmux conversion failed:', error)
         resolve({
           success: false,
@@ -98,11 +92,13 @@ export async function convertMovToMp4(
 
   onProgress?: (progress: ConversionProgress) => void,
   forceReconvert = false, // 添加强制重新转换参数
+  signal?: AbortSignal,
 ): Promise<ConversionResult> {
   const { t } = getI18n()
+  signal?.throwIfAborted()
   // Check cache first, unless forced to reconvert
   if (!forceReconvert) {
-    const cachedResult = videoCache.get(videoUrl)
+    const cachedResult = getMediaBlobCacheEntry<ConversionResult>(VIDEO_CACHE_NAMESPACE, videoUrl)
     if (cachedResult) {
       console.info('Using cached video conversion result')
       onProgress?.({
@@ -115,7 +111,7 @@ export async function convertMovToMp4(
     }
   } else {
     console.info('Force reconversion: clearing cached result for', videoUrl)
-    videoCache.delete(videoUrl)
+    deleteMediaBlobCacheEntry(VIDEO_CACHE_NAMESPACE, videoUrl)
   }
 
   try {
@@ -126,10 +122,19 @@ export async function convertMovToMp4(
       message: t('video.conversion.transmux.high.quality'),
     })
 
-    const result = await convertMOVtoMP4(videoUrl, onProgress)
+    const result = await convertMOVtoMP4(videoUrl, onProgress, signal)
+    signal?.throwIfAborted()
 
     // Cache the result
-    videoCache.set(videoUrl, result)
+    setMediaBlobCacheEntry({
+      namespace: VIDEO_CACHE_NAMESPACE,
+      key: videoUrl,
+      value: result,
+      bytes: result.convertedSize ?? 0,
+      revoke: (cached) => {
+        if (cached.videoUrl) URL.revokeObjectURL(cached.videoUrl)
+      },
+    })
 
     if (result.success) {
       console.info('conversion completed successfully and cached')
@@ -139,6 +144,7 @@ export async function convertMovToMp4(
 
     return result
   } catch (error) {
+    if (isAbortError(error)) throw error
     console.error('conversion failed:', error)
     const fallbackResult = {
       success: false,

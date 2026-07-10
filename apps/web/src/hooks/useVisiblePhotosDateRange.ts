@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import type { PhotoManifest } from '~/types/photo'
@@ -9,20 +9,20 @@ interface DateRange {
   formattedRange: string
 }
 
+type DateRangeBounds = Omit<DateRange, 'formattedRange'>
+
 interface VisibleRange {
   start: number
   end: number
 }
 
-const EMPTY_DATE_RANGE: DateRange = {
+const EMPTY_DATE_RANGE: DateRangeBounds = {
   startDate: null,
   endDate: null,
-  formattedRange: '',
 }
 
-const isSameDateRange = (previous: DateRange, next: DateRange) => {
+const isSameDateRange = (previous: DateRangeBounds, next: DateRangeBounds) => {
   return (
-    previous.formattedRange === next.formattedRange &&
     previous.startDate?.getTime() === next.startDate?.getTime() &&
     previous.endDate?.getTime() === next.endDate?.getTime()
   )
@@ -33,12 +33,12 @@ const isSameDateRange = (previous: DateRange, next: DateRange) => {
  * Works with masonry onRender callback
  */
 export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
-  const [dateRange, setDateRange] = useState<DateRange>(EMPTY_DATE_RANGE)
+  const [dateRangeBounds, setDateRangeBounds] = useState<DateRangeBounds>(EMPTY_DATE_RANGE)
 
   const currentRange = useRef<VisibleRange>({ start: 0, end: 0 })
 
-  const updateDateRange = useCallback((nextRange: DateRange) => {
-    setDateRange((previousRange) => (isSameDateRange(previousRange, nextRange) ? previousRange : nextRange))
+  const updateDateRange = useCallback((nextRange: DateRangeBounds) => {
+    setDateRangeBounds((previousRange) => (isSameDateRange(previousRange, nextRange) ? previousRange : nextRange))
   }, [])
 
   const getPhotoDate = useCallback((photo: PhotoManifest): Date => {
@@ -71,38 +71,33 @@ export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
     return new Date(photo.lastModified)
   }, [])
   const { i18n } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
 
   const formatDateRange = useCallback(
     (startDate: Date, endDate: Date): string => {
-      const startYear = startDate.getFullYear()
-      const endYear = endDate.getFullYear()
-      const startMonth = startDate.getMonth()
-      const endMonth = endDate.getMonth()
+      const formatter = new Intl.DateTimeFormat(locale, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
 
-      // 如果是同一天
       if (startDate.toDateString() === endDate.toDateString()) {
-        return startDate.toLocaleDateString(i18n.language, {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })
+        return formatter.format(startDate)
       }
 
-      // 如果是同一年
-      if (startYear === endYear) {
-        // 如果是同一个月
-        if (startMonth === endMonth) {
-          return `${startYear}年${startDate.getMonth() + 1}月${startDate.getDate()}日 - ${endDate.getDate()}日`
-        } else {
-          return `${startYear}年${startDate.getMonth() + 1}月 - ${endDate.getMonth() + 1}月`
-        }
-      }
-
-      // 不同年份
-      return `${startYear}年${startDate.getMonth() + 1}月 - ${endYear}年${endDate.getMonth() + 1}月`
+      return `${formatter.format(startDate)} – ${formatter.format(endDate)}`
     },
-    [i18n.language],
+    [locale],
   )
+
+  const dateRange = useMemo<DateRange>(() => {
+    const { startDate, endDate } = dateRangeBounds
+    return {
+      startDate,
+      endDate,
+      formattedRange: startDate && endDate ? formatDateRange(startDate, endDate) : '',
+    }
+  }, [dateRangeBounds, formatDateRange])
 
   // 计算当前可视范围内照片的日期范围
   const calculateDateRange = useCallback(
@@ -133,18 +128,15 @@ export const useVisiblePhotosDateRange = (_photos: PhotoManifest[]) => {
         return
       }
 
-      const formattedRange = formatDateRange(startDate, endDate)
-
       updateDateRange({
         startDate,
         endDate,
-        formattedRange,
       })
 
       // 更新当前范围
       currentRange.current = { start: startIndex, end: endIndex }
     },
-    [getPhotoDate, formatDateRange, updateDateRange],
+    [getPhotoDate, updateDateRange],
   )
 
   // 用于传递给 masonry 的 onRender 回调

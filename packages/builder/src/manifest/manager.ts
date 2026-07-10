@@ -4,6 +4,7 @@ import path, { basename } from 'node:path'
 import { workdir } from '@afilmory/builder/path.js'
 import type { _Object } from '@aws-sdk/client-s3'
 
+import { atomicWriteFile } from '../fs/atomic-write.js'
 import { logger } from '../logger/index.js'
 import type { AfilmoryManifest, CameraInfo, LensInfo } from '../types/manifest.js'
 import type { PhotoManifestItem } from '../types/photo.js'
@@ -11,34 +12,64 @@ import { migrateManifestFileIfNeeded } from './migrate.js'
 import { CURRENT_MANIFEST_VERSION } from './version.js'
 
 const manifestPath = path.join(workdir, 'src/data/photos-manifest.json')
+const manifestBackupPath = `${manifestPath}.bak`
+
+function emptyManifest(): AfilmoryManifest {
+  return {
+    version: CURRENT_MANIFEST_VERSION,
+    data: [],
+    cameras: [],
+    lenses: [],
+  }
+}
+
+function parseManifest(content: string, sourcePath: string): AfilmoryManifest {
+  const parsed = JSON.parse(content) as Partial<AfilmoryManifest> | null
+  if (!parsed || typeof parsed !== 'object' || typeof parsed.version !== 'string' || !Array.isArray(parsed.data)) {
+    throw new Error(`Manifest 结构无效：${sourcePath}`)
+  }
+
+  return {
+    ...parsed,
+    cameras: Array.isArray(parsed.cameras) ? parsed.cameras : [],
+    lenses: Array.isArray(parsed.lenses) ? parsed.lenses : [],
+  } as AfilmoryManifest
+}
+
+async function readManifest(sourcePath: string): Promise<AfilmoryManifest> {
+  return parseManifest(await fs.readFile(sourcePath, 'utf-8'), sourcePath)
+}
+
+function isMissingFile(error: unknown): boolean {
+  return error instanceof Error && 'code' in error && error.code === 'ENOENT'
+}
 
 export async function loadExistingManifest(): Promise<AfilmoryManifest> {
   let manifest: AfilmoryManifest
   try {
-    const manifestContent = await fs.readFile(manifestPath, 'utf-8')
-    manifest = JSON.parse(manifestContent) as AfilmoryManifest
-  } catch {
-    logger.fs.error('🔍 未找到 manifest 文件/解析失败，创建新的 manifest 文件...')
-    await saveManifest([])
-    return {
-      version: CURRENT_MANIFEST_VERSION,
-      data: [],
-      cameras: [],
-      lenses: [],
+    manifest = await readManifest(manifestPath)
+  } catch (primaryError) {
+    try {
+      manifest = await readManifest(manifestBackupPath)
+      await atomicWriteFile(manifestPath, JSON.stringify(manifest, null, 2), {
+        validate: async (temporaryPath) => {
+          await readManifest(temporaryPath)
+        },
+      })
+      logger.fs.warn(`⚠️ Manifest 主文件不可用，已从最近备份恢复：${manifestBackupPath}`)
+    } catch (backupError) {
+      if (isMissingFile(primaryError) && isMissingFile(backupError)) {
+        logger.fs.info('🔍 未找到 manifest 文件，将创建新的 manifest')
+        return emptyManifest()
+      }
+
+      throw new AggregateError([primaryError, backupError], 'Manifest 主文件和最近备份均无法读取')
     }
   }
 
   if (manifest.version !== CURRENT_MANIFEST_VERSION) {
     const migrated = await migrateManifestFileIfNeeded(manifest)
     if (migrated) return migrated
-  }
-
-  // 向后兼容：如果现有 manifest 没有 cameras 和 lenses 字段，则添加空数组
-  if (!manifest.cameras) {
-    manifest.cameras = []
-  }
-  if (!manifest.lenses) {
-    manifest.lenses = []
   }
 
   return manifest
@@ -64,20 +95,26 @@ export async function saveManifest(
   // 按日期排序（最新的在前）
   const sortedManifest = [...items].sort((a, b) => new Date(b.dateTaken).getTime() - new Date(a.dateTaken).getTime())
 
-  await fs.mkdir(path.dirname(manifestPath), { recursive: true })
-  await fs.writeFile(
-    manifestPath,
-    JSON.stringify(
-      {
-        version: CURRENT_MANIFEST_VERSION,
-        data: sortedManifest,
-        cameras,
-        lenses,
-      } as AfilmoryManifest,
-      null,
-      2,
-    ),
+  const serializedManifest = JSON.stringify(
+    {
+      version: CURRENT_MANIFEST_VERSION,
+      data: sortedManifest,
+      cameras,
+      lenses,
+    } as AfilmoryManifest,
+    null,
+    2,
   )
+
+  await atomicWriteFile(manifestPath, serializedManifest, {
+    backup: true,
+    validate: async (temporaryPath) => {
+      const validated = await readManifest(temporaryPath)
+      if (validated.version !== CURRENT_MANIFEST_VERSION) {
+        throw new Error(`Manifest 版本无效：${validated.version}`)
+      }
+    },
+  })
 
   logger.fs.info(`📁 Manifest 保存至： ${manifestPath}`)
   logger.fs.info(`📷 包含 ${cameras.length} 个相机，🔍 ${lenses.length} 个镜头`)

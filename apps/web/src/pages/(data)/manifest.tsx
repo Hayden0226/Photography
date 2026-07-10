@@ -115,7 +115,8 @@ const ManifestStats = ({ data }: { data: any[] }) => {
 // 照片卡片组件
 const PhotoCard = ({ photo, index }: { photo: any; index: number }) => {
   const { i18n } = useTranslation()
-  const photoTitle = getLocalizedPhotoTitle(photo, i18n.language)
+  const locale = i18n.resolvedLanguage ?? i18n.language
+  const photoTitle = getLocalizedPhotoTitle(photo, locale)
 
   return (
     <div className="group relative overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/30 backdrop-blur-sm transition-all hover:border-zinc-700 hover:bg-zinc-900/50">
@@ -129,7 +130,7 @@ const PhotoCard = ({ photo, index }: { photo: any; index: number }) => {
               <div className="relative overflow-hidden rounded-lg">
                 <img
                   src={photo.thumbnailUrl}
-                  alt={getPhotoAltText(photo, i18n.language, `Photo ${index + 1}`)}
+                  alt={getPhotoAltText(photo, locale, `Photo ${index + 1}`)}
                   className="h-16 w-16 object-cover transition-transform group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

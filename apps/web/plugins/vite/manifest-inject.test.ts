@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 
 import {
   createLightManifest,
+  createManifestBootstrapScript,
   createPhotoTextPacks,
   createThumbnailPreloadLinks,
+  injectManifestBootstrap,
   serializeForInlineScript,
 } from './manifest-inject'
 
@@ -114,7 +116,51 @@ describe('manifest-inject helpers', () => {
     })
 
     expect(links).toContain('rel="preload"')
+    expect(links).toContain('data-afilmory-preload="gallery"')
     expect(links).toContain('href="/one.webp"')
     expect(links).toContain('imagesrcset="/one.webp 360w, /two.webp 640w"')
+  })
+
+  it('emits a safe bootstrap and places an external production index before the main module', () => {
+    const source = createManifestBootstrapScript(
+      createLightManifest({ data: [{ id: '</script>', title: '<Photo>' }] }),
+      '/assets/photos-manifest.hash.json',
+      { en: '/assets/photo-text.en.hash.json' },
+    )
+    expect(source).toContain('window.__MANIFEST__=')
+    expect(source).not.toContain('</script>')
+
+    const html = injectManifestBootstrap(
+      '<html><head></head><body><script id="manifest"></script><script type="module" src="/main.js"></script></body></html>',
+      {
+        preloadLinks: '<link rel="preload" as="image" href="/thumb.webp">',
+        scriptUrl: '/assets/photos-index.abc123.js',
+      },
+    )
+
+    expect(html).toContain('<head><link rel="preload" as="image" href="/thumb.webp"></head>')
+    expect(html.indexOf('photos-index.abc123.js')).toBeLessThan(html.indexOf('type="module"'))
+    expect(html).not.toContain('<script id="manifest"></script>')
+  })
+
+  it('removes every duplicate manifest marker before injecting the bootstrap', () => {
+    const html = injectManifestBootstrap(
+      '<html><head></head><body><script id="manifest"></script><script id=\'manifest\'></script><script type="module" src="/main.js"></script></body></html>',
+      { scriptUrl: '/assets/photos-index.abc123.js' },
+    )
+
+    expect(html.match(/id=["']manifest["']/g)).toHaveLength(1)
+    expect(html).toContain('<script id="manifest" src="/assets/photos-index.abc123.js"></script>')
+  })
+
+  it('keeps development bootstrap synchronous without requiring a built asset', () => {
+    const html = injectManifestBootstrap(
+      '<html><head></head><body><script id="manifest"></script><script type="module" src="/src/main.tsx"></script></body></html>',
+      { scriptSource: 'window.__MANIFEST__={data:[],cameras:[],lenses:[]};' },
+    )
+
+    expect(html).toContain('<script id="manifest">window.__MANIFEST__=')
+    expect(html.indexOf('window.__MANIFEST__=')).toBeLessThan(html.indexOf('type="module"'))
+    expect(html).not.toContain('photos-index.')
   })
 })

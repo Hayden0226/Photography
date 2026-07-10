@@ -6,7 +6,7 @@ import { Outlet, useLocation, useNavigate, useParams, useSearchParams } from 're
 import { gallerySettingAtom } from '~/atoms/app'
 import { siteConfig } from '~/config'
 import { useMobile } from '~/hooks/useMobile'
-import { getFilteredPhotos, usePhotos, usePhotoViewer } from '~/hooks/usePhotoViewer'
+import { getFilteredPhotos, useOpenPhotoViewer, usePhotos, usePhotoViewerState } from '~/hooks/usePhotoViewer'
 import { getPhotoDetailPath } from '~/lib/photo-route'
 import { MasonryRoot } from '~/modules/gallery/MasonryRoot'
 import { PhotosProvider } from '~/providers/photos-provider'
@@ -60,10 +60,11 @@ export const Component = () => {
 }
 
 let isRestored = false
+let pendingPhotoFocusId: string | null = null
 const useStateRestoreFromUrl = () => {
   const triggerOnceRef = useRef(false)
 
-  const { openViewerByPhotoId } = usePhotoViewer()
+  const { openViewerByPhotoId } = useOpenPhotoViewer()
   const { photoId } = useParams()
   const gallerySetting = useAtomValue(gallerySettingAtom)
   const setGallerySetting = useSetAtom(gallerySettingAtom)
@@ -138,30 +139,55 @@ const useSyncStateToUrl = () => {
   const navigate = useNavigate()
 
   const location = useLocation()
-  const { isOpen, currentIndex } = usePhotoViewer()
+  const { isOpen, currentIndex } = usePhotoViewerState()
 
   useEffect(() => {
     if (!isRestored) return
 
     if (!isOpen) {
-      const isExploryPath = location.pathname === '/explory'
-      if (!isExploryPath) {
+      if (location.pathname.startsWith('/photos/')) {
+        pendingPhotoFocusId = getFilteredPhotos()[currentIndex]?.id ?? null
         const timer = setTimeout(() => {
-          navigate('/')
+          navigate({ pathname: '/', search: location.search })
         }, 500)
         return () => clearTimeout(timer)
       }
     } else {
+      pendingPhotoFocusId = null
       const photos = getFilteredPhotos()
       const targetPhoto = photos[currentIndex]
       if (!targetPhoto) return
 
       const targetPathname = getPhotoDetailPath(targetPhoto.id)
       if (location.pathname !== targetPathname) {
-        navigate(targetPathname)
+        navigate({ pathname: targetPathname, search: location.search })
       }
     }
-  }, [currentIndex, isOpen, location.pathname, navigate])
+  }, [currentIndex, isOpen, location.pathname, location.search, navigate])
+
+  useEffect(() => {
+    const photoId = pendingPhotoFocusId
+    if (isOpen || location.pathname !== '/' || !photoId) return
+
+    let attempts = 0
+    let animationFrame = 0
+    const restoreFocus = () => {
+      const photoCard = Array.from(document.querySelectorAll<HTMLElement>('[data-photo-id]')).find(
+        (element) => element.dataset.photoId === photoId && element.isConnected,
+      )
+      if (!photoCard) {
+        attempts++
+        if (attempts < 10) animationFrame = requestAnimationFrame(restoreFocus)
+        return
+      }
+
+      photoCard.focus({ preventScroll: true })
+      pendingPhotoFocusId = null
+    }
+    animationFrame = requestAnimationFrame(restoreFocus)
+
+    return () => cancelAnimationFrame(animationFrame)
+  }, [isOpen, location.pathname])
 
   useEffect(() => {
     if (!isRestored) return

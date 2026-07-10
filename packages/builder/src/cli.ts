@@ -32,6 +32,7 @@ async function main() {
   const isForceMode = args.has('--force')
   const isForceManifest = args.has('--force-manifest')
   const isForceThumbnails = args.has('--force-thumbnails')
+  const strict = !args.has('--no-strict')
   const disableUi = args.has('--no-ui')
 
   // 显示帮助信息
@@ -45,6 +46,8 @@ async function main() {
   --force              强制重新处理所有照片
   --force-manifest     强制重新生成 manifest
   --force-thumbnails   强制重新生成缩略图
+  --strict             任一媒体失败时以非零状态退出（默认）
+  --no-strict          允许增量构建保留旧条目后成功退出
   --config             显示当前配置信息
   --help, -h          显示帮助信息
   --no-ui             使用传统日志输出（禁用 TUI）
@@ -101,7 +104,9 @@ async function main() {
     logger.main.info(`   Live Photo 检测：${config.system.processing.enableLivePhotoDetection ? '启用' : '禁用'}`)
     logger.main.info(`   照片后缀摘要长度：${config.system.processing.digestSuffixLength}`)
     logger.main.info(`   Worker 数：${config.system.observability.performance.worker.workerCount}`)
-    logger.main.info(`   Worker 超时：${config.system.observability.performance.worker.timeout}ms`)
+    logger.main.info(`   Worker 启动超时：${config.system.observability.performance.worker.timeout}ms`)
+    logger.main.info(`   Worker 任务超时：${config.system.observability.performance.worker.taskTimeout}ms`)
+    logger.main.info(`   Worker 最大重试：${config.system.observability.performance.worker.maxRetries}`)
     logger.main.info(`   集群模式：${config.system.observability.performance.worker.useClusterMode ? '启用' : '禁用'}`)
     logger.main.info('')
     if (!userConfig) {
@@ -166,6 +171,7 @@ async function main() {
       isForceMode,
       isForceManifest,
       isForceThumbnails,
+      strict,
       concurrencyLimit,
       progressListener,
     })

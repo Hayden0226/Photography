@@ -342,6 +342,8 @@
   "photo.copying": "正在复制图像...",
   "photo.download": "下载图像",
   "photo.error.loading": "图片加载失败",
+  "photo.error.original": "原图加载失败",
+  "photo.error.thumbnailFallback": "当前显示的是预览图",
   "photo.fallback.title": "照片",
   "photo.live.badge": "实况",
   "photo.live.converting.detail": "正在使用 {{method}} 转换视频格式...",

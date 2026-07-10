@@ -4,12 +4,14 @@ import path from 'node:path'
 import consola from 'consola'
 import { exiftool } from 'exiftool-vendored'
 
-const PHOTOS_ROOT = path.resolve(process.cwd(), 'photos')
+const PHOTOS_ROOT = path.resolve(process.cwd(), process.env.AFILMORY_PHOTOS_PATH || 'photos')
 const INCOMING_DIR = path.resolve(PHOTOS_ROOT, 'incoming')
 const DEFAULT_TARGET_DIR = path.resolve(PHOTOS_ROOT, '随手')
 const ALLOWED_MEDIA_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.heic', '.mov', '.mp4', '.webm', '.m4v'])
 
 async function standardize() {
+  const failures: Error[] = []
+
   try {
     const categories = await getCanonicalCategories()
     const categorySet = new Set(categories)
@@ -27,26 +29,38 @@ async function standardize() {
         // 2a. 处理分类文件夹：photos/incoming/[Category] -> photos/[Category]
         const category = entry.name
         if (!categorySet.has(category)) {
-          consola.warn(
-            `跳过未知 incoming 分类：${path.join('incoming', category)}。请改名为现有分类之一：${categories.join(', ')}`,
+          const error = new Error(
+            `未知 incoming 分类：${path.join('incoming', category)}。请改名为现有分类之一：${categories.join(', ')}`,
           )
+          consola.error(error.message)
+          failures.push(error)
           continue
         }
 
         const categoryIncomingDir = path.join(INCOMING_DIR, category)
         const targetDir = path.join(PHOTOS_ROOT, category)
 
-        await processDirectory(categoryIncomingDir, targetDir)
+        await processDirectory(categoryIncomingDir, targetDir, failures)
       } else if (entry.isFile()) {
         // 2b. 处理直接放在 incoming 根目录的文件 -> 默认移动到 photos/随手
         if (!isAllowedMediaFile(entry.name)) continue
-        await processSingleFile(path.join(INCOMING_DIR, entry.name), DEFAULT_TARGET_DIR)
+        await processFileAndCollectFailure(path.join(INCOMING_DIR, entry.name), DEFAULT_TARGET_DIR, failures)
       }
+    }
+
+    if (failures.length > 0) {
+      throw new AggregateError(failures, `标准化失败 ${failures.length} 项`)
     }
   } catch (err) {
     consola.error('标准化流程失败:', err)
+    process.exitCode = 1
   } finally {
-    await exiftool.end()
+    try {
+      await exiftool.end()
+    } catch (error) {
+      consola.error('关闭 ExifTool 失败:', error)
+      process.exitCode = 1
+    }
   }
 }
 
@@ -70,7 +84,7 @@ async function ensureIncomingCategoryDirectories(categories: string[]) {
 /**
  * 处理一个目录下的所有图片
  */
-async function processDirectory(sourceDir: string, targetDir: string) {
+async function processDirectory(sourceDir: string, targetDir: string, failures: Error[]) {
   const files = await readdir(sourceDir)
   const imageFiles = files.filter(isAllowedMediaFile)
 
@@ -79,7 +93,17 @@ async function processDirectory(sourceDir: string, targetDir: string) {
   await mkdir(targetDir, { recursive: true })
 
   for (const file of imageFiles) {
-    await processSingleFile(path.join(sourceDir, file), targetDir)
+    await processFileAndCollectFailure(path.join(sourceDir, file), targetDir, failures)
+  }
+}
+
+async function processFileAndCollectFailure(filePath: string, targetDir: string, failures: Error[]): Promise<void> {
+  try {
+    await processSingleFile(filePath, targetDir)
+  } catch (error) {
+    const normalizedError = error instanceof Error ? error : new Error(String(error))
+    consola.error(`处理文件 ${path.basename(filePath)} 出错:`, normalizedError)
+    failures.push(normalizedError)
   }
 }
 
@@ -92,49 +116,49 @@ async function processSingleFile(filePath: string, targetDir: string) {
 
   consola.start(`正在处理: ${fileName}`)
 
-  try {
-    const tags = await exiftool.read(filePath)
-    // 优先使用拍摄时间，其次是创建时间，最后是修改时间
-    const date = tags.DateTimeOriginal || tags.CreateDate || tags.ModifyDate || fileStat.mtime
+  const tags = await exiftool.read(filePath)
+  // 优先使用拍摄时间，其次是创建时间，最后是修改时间
+  const date = tags.DateTimeOriginal || tags.CreateDate || tags.ModifyDate || fileStat.mtime
 
-    let dateObj: Date
-    if (typeof date === 'string') {
-      dateObj = new Date(date)
-    } else if (date instanceof Date) {
-      dateObj = date
-    } else if (date && typeof date === 'object' && 'toDate' in date) {
-      // Handle ExifDateTime from exiftool-vendored
-      dateObj = (date as any).toDate()
-    } else {
-      dateObj = new Date(fileStat.mtime)
-    }
-
-    const year = dateObj.getFullYear()
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0')
-    const day = String(dateObj.getDate()).padStart(2, '0')
-    const hour = String(dateObj.getHours()).padStart(2, '0')
-    const minute = String(dateObj.getMinutes()).padStart(2, '0')
-    const second = String(dateObj.getSeconds()).padStart(2, '0')
-
-    const timestamp = `${year}${month}${day}${hour}${minute}${second}`
-    const ext = path.extname(fileName).toLowerCase()
-    let newFileName = `${timestamp}${ext}`
-    let targetPath = path.join(targetDir, newFileName)
-
-    // 如果文件名冲突，增加序号
-    let counter = 1
-    while (await fileExists(targetPath)) {
-      newFileName = `${timestamp}_${counter}${ext}`
-      targetPath = path.join(targetDir, newFileName)
-      counter++
-    }
-
-    await mkdir(targetDir, { recursive: true })
-    await rename(filePath, targetPath)
-    consola.success(`已移动并重命名: ${fileName} -> ${path.join(path.basename(targetDir), newFileName)}`)
-  } catch (err) {
-    consola.error(`处理文件 ${fileName} 出错:`, err)
+  let dateObj: Date
+  if (typeof date === 'string') {
+    dateObj = new Date(date)
+  } else if (date instanceof Date) {
+    dateObj = date
+  } else if (date && typeof date === 'object' && 'toDate' in date) {
+    // Handle ExifDateTime from exiftool-vendored
+    dateObj = (date as { toDate: () => Date }).toDate()
+  } else {
+    dateObj = new Date(fileStat.mtime)
   }
+
+  if (Number.isNaN(dateObj.getTime())) {
+    throw new TypeError(`无法解析拍摄时间：${fileName}`)
+  }
+
+  const year = dateObj.getFullYear()
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0')
+  const day = String(dateObj.getDate()).padStart(2, '0')
+  const hour = String(dateObj.getHours()).padStart(2, '0')
+  const minute = String(dateObj.getMinutes()).padStart(2, '0')
+  const second = String(dateObj.getSeconds()).padStart(2, '0')
+
+  const timestamp = `${year}${month}${day}${hour}${minute}${second}`
+  const ext = path.extname(fileName).toLowerCase()
+  let newFileName = `${timestamp}${ext}`
+  let targetPath = path.join(targetDir, newFileName)
+
+  // 如果文件名冲突，增加序号
+  let counter = 1
+  while (await fileExists(targetPath)) {
+    newFileName = `${timestamp}_${counter}${ext}`
+    targetPath = path.join(targetDir, newFileName)
+    counter++
+  }
+
+  await mkdir(targetDir, { recursive: true })
+  await rename(filePath, targetPath)
+  consola.success(`已移动并重命名: ${fileName} -> ${path.join(path.basename(targetDir), newFileName)}`)
 }
 
 async function fileExists(filePath: string): Promise<boolean> {
@@ -150,4 +174,4 @@ function isAllowedMediaFile(fileName: string): boolean {
   return ALLOWED_MEDIA_EXTENSIONS.has(path.extname(fileName).toLowerCase())
 }
 
-standardize()
+void standardize()

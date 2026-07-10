@@ -9,13 +9,25 @@ import { useEffect, useRef } from 'react'
 
 export class LRUCache<K, V> {
   private maxSize: number
+  private maxWeight?: number
+  private totalWeight = 0
   private cache: Map<K, V>
   private cleanupFn?: (value: V, key: K, reason: string) => void
+  private getWeight: (value: V, key: K) => number
 
-  constructor(maxSize = 10, cleanupFn?: (value: V, key: K, reason: string) => void) {
+  constructor(
+    maxSize = 10,
+    cleanupFn?: (value: V, key: K, reason: string) => void,
+    options: {
+      maxWeight?: number
+      getWeight?: (value: V, key: K) => number
+    } = {},
+  ) {
     this.maxSize = maxSize
+    this.maxWeight = options.maxWeight
     this.cache = new Map()
     this.cleanupFn = cleanupFn
+    this.getWeight = options.getWeight ?? (() => 1)
   }
 
   get(key: K): V | undefined {
@@ -33,22 +45,29 @@ export class LRUCache<K, V> {
     // If key already exists, clean up old value and delete it first
     if (this.cache.has(key)) {
       const oldValue = this.cache.get(key)!
+      this.totalWeight -= this._getWeight(oldValue, key)
       this._cleanup(oldValue, key, `Replacing existing cache entry for ${String(key)}`)
       this.cache.delete(key)
-    } else if (this.cache.size >= this.maxSize) {
-      // Remove least recently used (first item)
+    }
+
+    this.cache.set(key, value)
+    this.totalWeight += this._getWeight(value, key)
+
+    // Always retain one entry, even when it alone exceeds the byte budget. Revoking
+    // that entry here would invalidate the object URL returned to the caller.
+    while (this.cache.size > 1 && (this.cache.size > this.maxSize || this._isOverWeightBudget())) {
       const firstKey = this.cache.keys().next().value
       if (firstKey !== undefined) {
         const firstValue = this.cache.get(firstKey)!
+        this.totalWeight -= this._getWeight(firstValue, firstKey)
         this._cleanup(firstValue, firstKey, `LRU eviction: ${String(firstKey)}`)
         this.cache.delete(firstKey)
       }
     }
 
-    // Add new item (most recently used)
-    this.cache.set(key, value)
-
-    console.info(`LRU Cache: Added ${String(key)}, cache size: ${this.cache.size}/${this.maxSize}`)
+    console.info(
+      `LRU Cache: Added ${String(key)}, cache size: ${this.cache.size}/${this.maxSize}, weight: ${this.totalWeight}${this.maxWeight === undefined ? '' : `/${this.maxWeight}`}`,
+    )
   }
 
   /**
@@ -57,6 +76,7 @@ export class LRUCache<K, V> {
   delete(key: K): boolean {
     const value = this.cache.get(key)
     if (value !== undefined) {
+      this.totalWeight -= this._getWeight(value, key)
       this._cleanup(value, key, `Manual deletion: ${String(key)}`)
       return this.cache.delete(key)
     }
@@ -75,6 +95,7 @@ export class LRUCache<K, V> {
       cleanedCount++
     }
     this.cache.clear()
+    this.totalWeight = 0
     console.info(`LRU Cache: Cleared ${cleanedCount} cached items`)
   }
 
@@ -85,10 +106,12 @@ export class LRUCache<K, V> {
   /**
    * Get cache statistics for debugging
    */
-  getStats(): { size: number; maxSize: number; keys: K[] } {
+  getStats(): { size: number; maxSize: number; totalWeight: number; maxWeight?: number; keys: K[] } {
     return {
       size: this.cache.size,
       maxSize: this.maxSize,
+      totalWeight: this.totalWeight,
+      maxWeight: this.maxWeight,
       keys: Array.from(this.cache.keys()),
     }
   }
@@ -118,6 +141,15 @@ export class LRUCache<K, V> {
         console.warn(`LRU Cache cleanup failed (${reason}):`, error)
       }
     }
+  }
+
+  private _getWeight(value: V, key: K): number {
+    const weight = this.getWeight(value, key)
+    return Number.isFinite(weight) && weight > 0 ? weight : 0
+  }
+
+  private _isOverWeightBudget(): boolean {
+    return this.maxWeight !== undefined && this.totalWeight > this.maxWeight
   }
 }
 

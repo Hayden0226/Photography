@@ -37,7 +37,7 @@ interface SocialShareOption {
 export const SharePanel = ({ photo, trigger, blobSrc }: SharePanelProps) => {
   const { i18n, t } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
-  const localizedTitle = getLocalizedPhotoTitle(photo, i18n.language)
+  const localizedTitle = getLocalizedPhotoTitle(photo, i18n.resolvedLanguage ?? i18n.language)
 
   // 社交媒体分享选项
   const socialOptions: SocialShareOption[] = [

@@ -7,6 +7,9 @@
     ".": "./src/index.ts",
     "./*": "./src/*"
   },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.3.1"

@@ -18,6 +18,7 @@ export const ClusterPhotoGrid = ({ photos, onPhotoClick }: ClusterPhotoGridProps
   const displayPhotos = photos.slice(0, 6)
   const remainingCount = Math.max(0, photos.length - 6)
   const { t, i18n } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
   const firstPhoto = photos[0]
   const coordinatesText = firstPhoto
     ? `${Math.abs(firstPhoto.latitude).toFixed(4)}°${firstPhoto.latitudeRef || 'N'}, ${Math.abs(
@@ -57,7 +58,7 @@ export const ClusterPhotoGrid = ({ photos, onPhotoClick }: ClusterPhotoGridProps
             >
               <LazyImage
                 src={photoMarker.photo.thumbnailUrl || photoMarker.photo.originalUrl}
-                alt={getPhotoAltText(photoMarker.photo, i18n.language)}
+                alt={getPhotoAltText(photoMarker.photo, locale)}
                 thumbHash={photoMarker.photo.thumbHash}
                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                 rootMargin="200px"
@@ -130,16 +131,16 @@ export const ClusterPhotoGrid = ({ photos, onPhotoClick }: ClusterPhotoGridProps
                 <i className="i-mingcute-calendar-line text-sm" />
                 <span>
                   {isSameDay
-                    ? earliest.toLocaleDateString(i18n.language, {
+                    ? earliest.toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
                       })
-                    : `${earliest.toLocaleDateString(i18n.language, {
+                    : `${earliest.toLocaleDateString(locale, {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric',
-                      })} - ${latest?.toLocaleDateString(i18n.language, {
+                      })} - ${latest?.toLocaleDateString(locale, {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric',

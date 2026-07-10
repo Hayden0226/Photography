@@ -4,6 +4,7 @@ import path from 'node:path'
 import { workdir } from '@afilmory/builder/path.js'
 import sharp from 'sharp'
 
+import { atomicWriteFile } from '../fs/atomic-write.js'
 import { getGlobalLoggers } from '../photo/logger-adapter.js'
 import type { ThumbnailResult } from '../types/photo.js'
 import { generateBlurhash } from './blurhash.js'
@@ -130,9 +131,22 @@ async function generateNewThumbnail(imageBuffer: Buffer, photoId: string): Promi
       ),
     )
 
+    const validateThumbnail = (expectedFormat: 'jpeg' | 'webp') => async (temporaryPath: string) => {
+      const metadata = await sharp(temporaryPath).metadata()
+      if (metadata.format !== expectedFormat || !metadata.width || !metadata.height) {
+        throw new Error(`缩略图校验失败：${temporaryPath}`)
+      }
+    }
+
     await Promise.all([
-      fs.writeFile(fallbackPath, thumbnailBuffer),
-      ...webpBuffers.map((buffer, index) => fs.writeFile(webpPaths[index], buffer)),
+      atomicWriteFile(fallbackPath, thumbnailBuffer, {
+        validate: validateThumbnail('jpeg'),
+      }),
+      ...webpBuffers.map((buffer, index) =>
+        atomicWriteFile(webpPaths[index], buffer, {
+          validate: validateThumbnail('webp'),
+        }),
+      ),
     ])
 
     // 记录生成信息

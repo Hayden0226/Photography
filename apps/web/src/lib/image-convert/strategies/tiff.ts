@@ -1,7 +1,10 @@
 import { isSafari } from '~/lib/device-viewport'
 import type { LoadingCallbacks } from '~/lib/image-loader-manager'
+import { getMediaBlobCacheEntry, setMediaBlobCacheEntry } from '~/lib/media-blob-cache'
 
 import type { ConversionResult, ImageConverterStrategy } from '../type'
+
+const TIFF_CACHE_NAMESPACE = 'tiff' as const
 
 // TIFF 转换策略
 export class TiffConverterStrategy implements ImageConverterStrategy {
@@ -17,8 +20,11 @@ export class TiffConverterStrategy implements ImageConverterStrategy {
     return !this.isBrowserSupportTiff()
   }
 
-  async convert(blob: Blob, _originalUrl: string, callbacks?: LoadingCallbacks): Promise<ConversionResult> {
+  async convert(blob: Blob, originalUrl: string, callbacks?: LoadingCallbacks): Promise<ConversionResult> {
     const { onLoadingStateUpdate } = callbacks || {}
+
+    const cachedResult = getMediaBlobCacheEntry<ConversionResult>(TIFF_CACHE_NAMESPACE, originalUrl)
+    if (cachedResult) return cachedResult
 
     try {
       // 更新转换状态
@@ -31,12 +37,20 @@ export class TiffConverterStrategy implements ImageConverterStrategy {
       // 执行转换逻辑
       const result = await this.convertTiffToJpeg(blob)
 
-      return {
+      const conversionResult = {
         url: result.url,
         convertedSize: result.size,
         format: 'image/jpeg',
         originalSize: blob.size,
       }
+      setMediaBlobCacheEntry({
+        namespace: TIFF_CACHE_NAMESPACE,
+        key: originalUrl,
+        value: conversionResult,
+        bytes: conversionResult.convertedSize,
+        revoke: (cached) => URL.revokeObjectURL(cached.url),
+      })
+      return conversionResult
     } catch (error) {
       console.error('TIFF conversion failed:', error)
       throw new Error(`TIFF conversion failed: ${error}`)

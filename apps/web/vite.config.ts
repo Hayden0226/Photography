@@ -81,7 +81,7 @@ const staticWebBuildPlugins: PluginOption[] = [
       'apple-touch-icon.png',
       'android-chrome-192x192.png',
       'android-chrome-512x512.png',
-      'masked-icon.svg',
+      'android-chrome-maskable-512x512.png',
       'feed.xml',
       'sitemap.xml',
     ],
@@ -104,6 +104,13 @@ const staticWebBuildPlugins: PluginOption[] = [
           src: 'android-chrome-512x512.png',
           sizes: '512x512',
           type: 'image/png',
+          purpose: 'any',
+        },
+        {
+          src: 'android-chrome-maskable-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
         },
         {
           src: 'apple-touch-icon.png',
@@ -118,13 +125,32 @@ const staticWebBuildPlugins: PluginOption[] = [
       globIgnores: ['photos/**/*.html', 'thumbnails/**/*', '**/*.{jpg,jpeg,png,webp,avif,gif,mp4,mov,webm}'],
       runtimeCaching: [
         {
-          urlPattern: /\.(?:png|jpg|jpeg|svg|webp)$/,
+          urlPattern: /^https?:\/\/[^/]+\/thumbnails\/.*\.(?:jpe?g|webp)(?:\?.*)?$/i,
           handler: 'CacheFirst',
           options: {
-            cacheName: 'images-cache',
+            cacheName: 'photo-thumbnails-v1',
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
             expiration: {
-              maxEntries: 100,
+              maxEntries: 240,
               maxAgeSeconds: 60 * 60 * 24 * 30, // <== 30 days
+              purgeOnQuotaError: true,
+            },
+          },
+        },
+        {
+          urlPattern: /^https?:\/\/[^/]+\/photos\/.*\.(?:avif|gif|heic|heif|jpe?g|png|tif|tiff|webp)(?:\?.*)?$/i,
+          handler: 'CacheFirst',
+          options: {
+            cacheName: 'photo-originals-v1',
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+            expiration: {
+              maxEntries: 12,
+              maxAgeSeconds: 60 * 60 * 24 * 7,
+              purgeOnQuotaError: true,
             },
           },
         },
@@ -203,6 +229,9 @@ export default defineConfig(({ command }) => {
     ],
     server: {
       port: 13333,
+    },
+    build: {
+      manifest: '.vite/manifest.json',
     },
     define: {
       APP_DEV_CWD: JSON.stringify(process.cwd()),

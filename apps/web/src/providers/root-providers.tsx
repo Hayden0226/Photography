@@ -14,7 +14,7 @@ import { StableRouterProvider } from './stable-router-provider'
 
 export const RootProviders: FC<PropsWithChildren> = ({ children }) => (
   <LazyMotion features={domAnimation} strict key="framer">
-    <MotionConfig transition={Spring.presets.smooth}>
+    <MotionConfig reducedMotion="user" transition={Spring.presets.smooth}>
       <Provider store={jotaiStore}>
         <EventProvider />
         <StableRouterProvider />

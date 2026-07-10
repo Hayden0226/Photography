@@ -19,14 +19,17 @@ export const ClusterMarker = ({
   onClusterClick,
 }: ClusterMarkerProps) => {
   const size = Math.min(64, Math.max(40, 32 + Math.log(pointCount) * 8))
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
+  const locale = i18n.resolvedLanguage ?? i18n.language
 
   return (
     <Marker longitude={longitude} latitude={latitude}>
       <HoverCard openDelay={300} closeDelay={150}>
         <HoverCardTrigger asChild>
-          <m.div
-            className="group relative cursor-pointer"
+          <m.button
+            type="button"
+            aria-label={t('explory.cluster.photos', { count: pointCount })}
+            className="group focus-visible:outline-accent relative block cursor-pointer rounded-full border-0 p-0 focus-visible:outline-2 focus-visible:outline-offset-2"
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{
@@ -74,7 +77,7 @@ export const ClusterMarker = ({
                       <div key={photoMarker.photo.id} className="absolute opacity-30" style={position}>
                         <LazyImage
                           src={photoMarker.photo.thumbnailUrl || photoMarker.photo.originalUrl}
-                          alt={getPhotoAltText(photoMarker.photo, i18n.language)}
+                          alt={getPhotoAltText(photoMarker.photo, locale)}
                           thumbHash={photoMarker.photo.thumbHash}
                           className="h-full w-full object-cover"
                           rootMargin="100px"
@@ -100,7 +103,7 @@ export const ClusterMarker = ({
               {/* Subtle inner shadow for depth */}
               <div className="absolute inset-0 rounded-full shadow-inner shadow-black/5" />
             </div>
-          </m.div>
+          </m.button>
         </HoverCardTrigger>
 
         <HoverCardContent

@@ -1,8 +1,9 @@
-import fs from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import { workdir } from '@afilmory/builder/path.js'
 
+import { atomicWriteFile } from '../fs/atomic-write.js'
 import { logger } from '../logger/index.js'
 import type { AfilmoryManifest } from '../types/manifest.js'
 import type { ManifestVersion } from './version.js'
@@ -166,8 +167,15 @@ export async function migrateManifestFileIfNeeded(parsed: AfilmoryManifest): Pro
   try {
     if (parsed?.version === CURRENT_MANIFEST_VERSION) return null
     const migrated = migrateManifest(parsed, CURRENT_MANIFEST_VERSION)
-    await fs.mkdir(path.dirname(manifestPath), { recursive: true })
-    await fs.writeFile(manifestPath, JSON.stringify(migrated, null, 2))
+    await atomicWriteFile(manifestPath, JSON.stringify(migrated, null, 2), {
+      backup: true,
+      validate: async (temporaryPath) => {
+        const reparsed = JSON.parse(await readFile(temporaryPath, 'utf-8')) as AfilmoryManifest
+        if (reparsed.version !== CURRENT_MANIFEST_VERSION || !Array.isArray(reparsed.data)) {
+          throw new Error('迁移后的 Manifest 校验失败')
+        }
+      },
+    })
     logger.main.success(`✅ Manifest 版本已更新为 ${CURRENT_MANIFEST_VERSION}`)
     return migrated
   } catch (e) {

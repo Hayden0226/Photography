@@ -238,7 +238,7 @@ export class BuilderTUI {
     const { result, durationMs } = summary
     const durationSeconds = Math.round(durationMs / 1000)
     return color(
-      `✅ 构建成功 · 照片 ${result.totalPhotos} · 新增 ${result.newCount} · 更新 ${result.processedCount} · 删除 ${result.deletedCount} · 耗时 ${formatDuration(durationSeconds)}`,
+      `✅ 构建成功 · 照片 ${result.totalPhotos} · 新增 ${result.newCount} · 更新 ${result.processedCount} · 失败 ${result.failedCount} · 删除 ${result.deletedCount} · 耗时 ${formatDuration(durationSeconds)}`,
       'green',
     )
   }

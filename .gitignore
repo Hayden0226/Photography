@@ -39,6 +39,7 @@ npm-debug.log*
 yarn-debug.log*
 
 # Test outputs
+coverage/
 test-results/
 playwright-report/
 
@@ -55,7 +56,9 @@ apps/web/assets-git
 
 # Generated Data
 apps/web/src/data/photos-manifest.json
+apps/web/src/data/photos-manifest.json.bak
 apps/web/public/thumbnails/
+apps/web/public/__fixtures/
 
 # Others
 *.local
