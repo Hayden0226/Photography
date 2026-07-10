@@ -143,6 +143,16 @@ describe('manifest-inject helpers', () => {
     expect(html).not.toContain('<script id="manifest"></script>')
   })
 
+  it('removes every duplicate manifest marker before injecting the bootstrap', () => {
+    const html = injectManifestBootstrap(
+      '<html><head></head><body><script id="manifest"></script><script id=\'manifest\'></script><script type="module" src="/main.js"></script></body></html>',
+      { scriptUrl: '/assets/photos-index.abc123.js' },
+    )
+
+    expect(html.match(/id=["']manifest["']/g)).toHaveLength(1)
+    expect(html).toContain('<script id="manifest" src="/assets/photos-index.abc123.js"></script>')
+  })
+
   it('keeps development bootstrap synchronous without requiring a built asset', () => {
     const html = injectManifestBootstrap(
       '<html><head></head><body><script id="manifest"></script><script type="module" src="/src/main.tsx"></script></body></html>',

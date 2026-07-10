@@ -58,7 +58,7 @@ const FULL_MANIFEST_ROUTE = '/__afilmory_full_manifest.json'
 const PHOTO_TEXT_ROUTE_PREFIX = '/__afilmory_photo_text/'
 const DEFAULT_INLINE_PHOTO_TEXT_LANGUAGE = 'zh-CN'
 const GALLERY_EXIF_KEYS = ['ISO', 'FNumber', 'ExposureTime', 'FocalLength', 'FocalLengthIn35mmFormat'] as const
-const MANIFEST_SCRIPT_MARKER = /<script\s+id=["']manifest["']\s*><\/script>/i
+const MANIFEST_SCRIPT_MARKER = /<script\s+id=["']manifest["']\s*><\/script>/gi
 
 function resolveEmbedPreference(_command: 'serve' | 'build'): boolean {
   const flag = process.env.AFILMORY_EMBED_MANIFEST?.trim().toLowerCase()
@@ -280,7 +280,7 @@ export function injectManifestBootstrap(
     throw new Error('Exactly one manifest bootstrap source must be provided')
   }
 
-  let next = html.replace(MANIFEST_SCRIPT_MARKER, '')
+  let next = html.replaceAll(MANIFEST_SCRIPT_MARKER, '')
   if (preloadLinks) {
     next = next.replace('</head>', `${preloadLinks}</head>`)
   }
