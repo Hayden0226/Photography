@@ -280,7 +280,12 @@ export function injectManifestBootstrap(
     throw new Error('Exactly one manifest bootstrap source must be provided')
   }
 
-  let next = html.replaceAll(MANIFEST_SCRIPT_MARKER, '')
+  let next = html
+  while (true) {
+    const sanitized = next.replaceAll(MANIFEST_SCRIPT_MARKER, '')
+    if (sanitized === next) break
+    next = sanitized
+  }
   if (preloadLinks) {
     next = next.replace('</head>', `${preloadLinks}</head>`)
   }
