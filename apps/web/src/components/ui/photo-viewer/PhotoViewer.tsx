@@ -262,13 +262,31 @@ export const PhotoViewer = ({
               const requestedTrigger = triggerElementRef.current
               triggerElementRef.current = null
               const photoId = currentPhoto.id
-              requestAnimationFrame(() => {
+              let attempts = 0
+              const maxAttempts = 60
+              let animationFrame = 0
+
+              const restoreFocus = () => {
                 const fallbackTrigger = Array.from(document.querySelectorAll<HTMLElement>('[data-photo-id]')).find(
                   (element) => element.dataset.photoId === photoId && element.isConnected,
                 )
                 const focusTarget = requestedTrigger?.isConnected ? requestedTrigger : fallbackTrigger
-                focusTarget?.focus({ preventScroll: true })
-              })
+                if (focusTarget) {
+                  focusTarget.focus({ preventScroll: true })
+                  if (document.activeElement === focusTarget) return
+                }
+
+                attempts += 1
+                if (attempts < maxAttempts) {
+                  animationFrame = requestAnimationFrame(restoreFocus)
+                }
+              }
+
+              animationFrame = requestAnimationFrame(restoreFocus)
+
+              return () => {
+                cancelAnimationFrame(animationFrame)
+              }
             }}
           >
             <m.div

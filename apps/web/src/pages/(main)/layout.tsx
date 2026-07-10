@@ -73,7 +73,6 @@ const useStateRestoreFromUrl = () => {
   useEffect(() => {
     if (triggerOnceRef.current) return
     triggerOnceRef.current = true
-    isRestored = true
 
     const getListFromSearchParams = (key: string) => {
       const value = searchParams.get(key)
@@ -123,12 +122,16 @@ const useStateRestoreFromUrl = () => {
           resetFiltersIfHidden: true,
         })
       }
+
+      isRestored = true
       return
     }
 
     if (photoId) {
       openViewerByPhotoId(photoId, { resetFiltersIfHidden: true })
     }
+
+    isRestored = true
   }, [gallerySetting, openViewerByPhotoId, photoId, searchParams, setGallerySetting])
 }
 
@@ -170,6 +173,7 @@ const useSyncStateToUrl = () => {
     if (isOpen || location.pathname !== '/' || !photoId) return
 
     let attempts = 0
+    const maxAttempts = 120
     let animationFrame = 0
     const restoreFocus = () => {
       const photoCard = Array.from(document.querySelectorAll<HTMLElement>('[data-photo-id]')).find(
@@ -177,7 +181,7 @@ const useSyncStateToUrl = () => {
       )
       if (!photoCard) {
         attempts++
-        if (attempts < 10) animationFrame = requestAnimationFrame(restoreFocus)
+        if (attempts < maxAttempts) animationFrame = requestAnimationFrame(restoreFocus)
         return
       }
 

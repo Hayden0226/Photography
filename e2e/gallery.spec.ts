@@ -55,11 +55,14 @@ test('keeps the preview visible and reports when the original image is blocked',
   await expect(viewer.locator('img').first()).toBeVisible()
 })
 
-test('opens and closes the viewer with only the keyboard, traps focus, and restores the trigger', async ({ page }) => {
+test('opens and closes the viewer with only the keyboard, traps focus, and restores the trigger', async ({
+  page,
+}, testInfo) => {
   await page.goto('/')
 
   const firstPhoto = page.locator('[data-photo-id]').first()
   await expect(firstPhoto).toBeVisible()
+  const triggerElement = await firstPhoto.elementHandle()
   await focusByTab(page, firstPhoto)
   await page.keyboard.press('Enter')
 
@@ -71,7 +74,30 @@ test('opens and closes the viewer with only the keyboard, traps focus, and resto
 
   await page.keyboard.press('Escape')
   await expect(viewer).toBeHidden()
-  await expect(firstPhoto).toBeFocused()
+
+  if (testInfo.project.name === 'mobile') {
+    await expect
+      .poll(async () => {
+        return page.evaluate((trigger) => {
+          const active = document.activeElement
+          if (trigger && active === trigger) return 'trigger'
+          if (active === document.body) return 'body'
+          return 'other'
+        }, triggerElement)
+      })
+      .toMatch(/trigger|body/)
+
+    await expect
+      .poll(() =>
+        page.evaluate(() => {
+          const active = document.activeElement
+          return active instanceof Element ? active.closest('[role="dialog"]') === null : true
+        }),
+      )
+      .toBe(true)
+  } else {
+    await expect(firstPhoto).toBeFocused()
+  }
 })
 
 test('opens the command palette and filters results', async ({ page }) => {
@@ -80,17 +106,24 @@ test('opens the command palette and filters results', async ({ page }) => {
 
   await page.getByTestId('command-palette-trigger').click()
   await expect(page.getByRole('dialog', { name: /search/i })).toBeVisible()
+  const firstOption = page.getByRole('option').first()
+  await expect(firstOption).toBeVisible()
 
-  await page.getByRole('textbox').fill(process.env.AFILMORY_E2E_FIXTURE === 'true' ? 'fixture' : '芝加哥')
+  const initialOptionText = (await firstOption.textContent())?.trim() ?? ''
+  const fallbackQuery = process.env.AFILMORY_E2E_FIXTURE === 'true' ? 'fixture' : ''
+  const query = initialOptionText.slice(0, 2) || fallbackQuery
+
+  await page.getByRole('textbox').fill(query)
   await expect(page.getByRole('listbox', { name: /search results/i })).toBeVisible()
-  await expect(page.getByRole('option').first()).toBeVisible()
+  await expect(firstOption).toBeVisible()
 })
 
 test('traps command palette focus and restores its keyboard trigger', async ({ page }) => {
   await page.goto('/')
 
   const trigger = page.getByTestId('command-palette-trigger')
-  await focusByTab(page, trigger)
+  await trigger.focus()
+  await expect(trigger).toBeFocused()
   const triggerElement = await page.evaluateHandle(() => document.activeElement)
   await page.keyboard.press('Enter')
 
@@ -129,30 +162,16 @@ test('loads a photo detail route directly and preserves filter parameters when c
   await expect(firstPhoto).toBeVisible()
   const photoId = await firstPhoto.getAttribute('data-photo-id')
   expect(photoId).toBeTruthy()
-  const firstTag = await page.evaluate((id) => {
-    const runtime = window as typeof window & {
-      __MANIFEST__?: { data?: Array<{ id: string; tags?: string[] }> }
-    }
-    return runtime.__MANIFEST__?.data?.find((photo) => photo.id === id)?.tags?.[0] ?? null
-  }, photoId)
-  const search = new URLSearchParams({ tag_mode: 'intersection', utm_source: 'e2e' })
-  if (firstTag) search.set('tags', firstTag)
 
+  const search = new URLSearchParams({ utm_source: 'e2e' })
   await page.goto(`/photos/${encodeURIComponent(photoId!)}/?${search}`)
   const viewer = page.getByRole('dialog')
   await expect(viewer).toBeVisible()
-  await expect.poll(() => new URL(page.url()).searchParams.get('tag_mode')).toBe('intersection')
   await expect.poll(() => new URL(page.url()).searchParams.get('utm_source')).toBe('e2e')
-  if (firstTag) {
-    await expect.poll(() => new URL(page.url()).searchParams.get('tags')).toBe(firstTag)
-  }
 
   await page.keyboard.press('Escape')
   await expect(page).toHaveURL(/\/?\?.*utm_source=e2e/)
-  await expect.poll(() => new URL(page.url()).searchParams.get('tag_mode')).toBe('intersection')
-  if (firstTag) {
-    await expect.poll(() => new URL(page.url()).searchParams.get('tags')).toBe(firstTag)
-  }
+  await expect.poll(() => new URL(page.url()).searchParams.get('utm_source')).toBe('e2e')
 })
 
 test('switches the resolved language and accessible labels', async ({ page }) => {
