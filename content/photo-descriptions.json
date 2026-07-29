@@ -2,6 +2,267 @@
   "version": 1,
   "photos": [
     {
+      "key": "随手/20260728113313.jpeg",
+      "title": "吉隆坡机场的亚航客机",
+      "titles": {
+        "zh-CN": "吉隆坡机场的亚航客机",
+        "en": "AirAsia Aircraft at Kuala Lumpur Airport"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于吉隆坡国际机场，亚航客机停在暮色中的停机坪，红色机身与远处塔台格外醒目。",
+        "en": "Photographed at Kuala Lumpur International Airport, where an AirAsia aircraft stands on the apron at dusk with the control tower in the distance."
+      },
+      "tags": [
+        "马来西亚",
+        "机场",
+        "旅途"
+      ],
+      "aiContext": {
+        "currentTitle": "吉隆坡机场的亚航客机",
+        "dateTaken": "2026-07-28T11:33:13.311Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "随手",
+          "马来西亚",
+          "机场",
+          "旅途"
+        ]
+      }
+    },
+    {
+      "key": "随手/20260726105255.jpeg",
+      "title": "布城暮色长路",
+      "titles": {
+        "zh-CN": "布城暮色长路",
+        "en": "Putrajaya Road at Dusk"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于布城，暮色中的道路沿着成排亮起的路灯与热带树木向前延伸。",
+        "en": "Photographed in Putrajaya, where a road stretches through the dusk between rows of glowing streetlights and tropical trees."
+      },
+      "tags": [
+        "马来西亚",
+        "布城",
+        "街景"
+      ],
+      "aiContext": {
+        "currentTitle": "布城暮色长路",
+        "dateTaken": "2026-07-26T10:52:55.832Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 15.66mm f/2.8",
+        "categoryTags": [
+          "随手",
+          "马来西亚",
+          "布城",
+          "街景"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260718044129.jpeg",
+      "title": "马六甲海峡清真寺",
+      "titles": {
+        "zh-CN": "马六甲海峡清真寺",
+        "en": "Melaka Straits Mosque"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于马六甲，海峡清真寺的金色穹顶立在水面与晴空之间，白色拱门沿海岸展开。",
+        "en": "Photographed in Melaka, where the golden dome of the Straits Mosque rises between the water and clear sky above a row of white arches."
+      },
+      "tags": [
+        "马来西亚",
+        "马六甲",
+        "地标"
+      ],
+      "aiContext": {
+        "currentTitle": "马六甲海峡清真寺",
+        "dateTaken": "2026-07-18T04:41:29.298Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "马来西亚",
+          "马六甲",
+          "地标"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260718012507.jpeg",
+      "title": "布特拉清真寺粉色穹顶",
+      "titles": {
+        "zh-CN": "布特拉清真寺粉色穹顶",
+        "en": "Pink Dome of Putra Mosque"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于布城，布特拉清真寺的粉色主穹顶与层叠小塔在晨光下显出细密纹样。",
+        "en": "Photographed in Putrajaya, where the pink main dome and smaller turrets of Putra Mosque reveal their intricate patterns in the morning light."
+      },
+      "tags": [
+        "马来西亚",
+        "布城",
+        "地标"
+      ],
+      "aiContext": {
+        "currentTitle": "布特拉清真寺粉色穹顶",
+        "dateTaken": "2026-07-18T01:25:07.452Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "马来西亚",
+          "布城",
+          "地标"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260715091407.jpeg",
+      "title": "吉隆坡单轨列车穿城",
+      "titles": {
+        "zh-CN": "吉隆坡单轨列车穿城",
+        "en": "Kuala Lumpur Monorail Through the City"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于吉隆坡，单轨列车从高楼之间驶过，棕榈树、车流与远处塔尖叠成繁忙街景。",
+        "en": "Photographed in Kuala Lumpur, where a monorail passes between high-rises as palm trees, traffic, and a distant tower fill the busy street scene."
+      },
+      "tags": [
+        "马来西亚",
+        "吉隆坡",
+        "街景"
+      ],
+      "aiContext": {
+        "currentTitle": "吉隆坡单轨列车穿城",
+        "dateTaken": "2026-07-15T09:14:07.748Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "马来西亚",
+          "吉隆坡",
+          "街景"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260715082016.jpeg",
+      "title": "云下的双子塔",
+      "titles": {
+        "zh-CN": "云下的双子塔",
+        "en": "Petronas Twin Towers Under the Clouds"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于吉隆坡，双子塔从树影与商场上方升起，银色立面映着午后的流云。",
+        "en": "Photographed in Kuala Lumpur, where the Petronas Twin Towers rise above trees and the shopping center with afternoon clouds reflected across their silver facades."
+      },
+      "tags": [
+        "马来西亚",
+        "吉隆坡",
+        "地标"
+      ],
+      "aiContext": {
+        "currentTitle": "云下的双子塔",
+        "dateTaken": "2026-07-15T08:20:16.632Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "马来西亚",
+          "吉隆坡",
+          "地标"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260715050400.jpeg",
+      "title": "苏丹阿都沙末大厦钟楼",
+      "titles": {
+        "zh-CN": "苏丹阿都沙末大厦钟楼",
+        "en": "Sultan Abdul Samad Building Clock Tower"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于吉隆坡，苏丹阿都沙末大厦的钟楼与铜色穹顶立在厚云下，砖墙拱廊层次清晰。",
+        "en": "Photographed in Kuala Lumpur, where the clock tower and copper domes of the Sultan Abdul Samad Building stand beneath heavy clouds above its brick arcades."
+      },
+      "tags": [
+        "马来西亚",
+        "吉隆坡",
+        "历史建筑"
+      ],
+      "aiContext": {
+        "currentTitle": "苏丹阿都沙末大厦钟楼",
+        "dateTaken": "2026-07-15T05:04:00.830Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "马来西亚",
+          "吉隆坡",
+          "历史建筑"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260712044754.jpeg",
+      "title": "云层之上的蓝色天际",
+      "titles": {
+        "zh-CN": "云层之上的蓝色天际",
+        "en": "Blue Sky Above the Clouds"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于航程中，深浅不同的蓝色天空与层叠白云在高空铺成安静的横向层次。",
+        "en": "Photographed in flight, where bands of blue sky and layered white clouds form a quiet horizon high above the ground."
+      },
+      "tags": [
+        "旅途",
+        "天空",
+        "云"
+      ],
+      "aiContext": {
+        "currentTitle": "云层之上的蓝色天际",
+        "dateTaken": "2026-07-12T04:47:54.766Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 15.66mm f/2.8",
+        "categoryTags": [
+          "城市",
+          "旅途",
+          "天空",
+          "云"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260712043819.jpeg",
+      "title": "机翼下的云海",
+      "titles": {
+        "zh-CN": "机翼下的云海",
+        "en": "Cloudscape Beneath the Wing"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于航程中，机翼与发动机伸向明亮云海，云隙下的河流与田野依稀可见。",
+        "en": "Photographed in flight, where the wing and engine extend over a bright cloudscape with rivers and fields faintly visible through the gaps."
+      },
+      "tags": [
+        "旅途",
+        "天空",
+        "云"
+      ],
+      "aiContext": {
+        "currentTitle": "机翼下的云海",
+        "dateTaken": "2026-07-12T04:38:19.237Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 2.22mm f/2.2",
+        "categoryTags": [
+          "城市",
+          "旅途",
+          "天空",
+          "云"
+        ]
+      }
+    },
+    {
       "key": "风光/20260701060701.jpg",
       "title": "苔痕里的石龛",
       "titles": {
