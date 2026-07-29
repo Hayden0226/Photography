@@ -25,7 +25,7 @@
     "exiftool-vendored": "35.19.0",
     "heic-convert": "2.1.0",
     "heic-to": "1.4.2",
-    "sharp": "0.34.4",
+    "sharp": "0.35.0",
     "thumbhash": "0.1.1"
   },
   "devDependencies": {
