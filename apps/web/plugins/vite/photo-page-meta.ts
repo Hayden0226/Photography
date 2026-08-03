@@ -12,7 +12,7 @@ interface ManifestFile {
   data?: PhotoManifestItem[]
 }
 
-export const STATIC_APP_ROUTES = ['explory', 'manifest'] as const
+export const STATIC_APP_ROUTES = ['explory'] as const
 
 interface PhotoPageMeta {
   title: string

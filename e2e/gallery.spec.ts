@@ -19,6 +19,15 @@ async function expectFocusToRemainInside(page: Page, dialog: Locator, presses = 
   }
 }
 
+test('keeps the manifest viewer unavailable in production builds', async ({ page }) => {
+  test.skip(process.env.PLAYWRIGHT_PRODUCTION !== 'true', 'The manifest viewer remains available during development')
+
+  await page.goto('/manifest')
+
+  await expect(page.getByText('You have come to a desert of knowledge where there is nothing.')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Afilmory Manifest' })).toHaveCount(0)
+})
+
 test('renders the masonry gallery and opens the photo viewer', async ({ page }, testInfo) => {
   await page.goto('/')
 

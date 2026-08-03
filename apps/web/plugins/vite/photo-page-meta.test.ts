@@ -1,4 +1,4 @@
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 
@@ -101,6 +101,8 @@ describe('photo-page-meta', () => {
         expect(html).toContain(`property="twitter:url" content="${expectedUrl}"`)
         expect(html).not.toContain('data-afilmory-preload="gallery"')
       }
+
+      expect(existsSync(path.join(outputDirectory, 'manifest', 'index.html'))).toBe(false)
     } finally {
       rmSync(outputDirectory, { force: true, recursive: true })
     }
