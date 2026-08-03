@@ -22,6 +22,8 @@ Jacky's Photography 是一个静态发布的个人摄影画廊。构建器会在
 - 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，移动端可回退到 DOM 查看器。
 - 照片详情：展示 EXIF、直方图、相机、镜头、标签、GPS、Live Photo、HDR 和 Fujifilm 信息。
 - 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览。
+- 键盘与无障碍：方向键可从页面空白焦点进入导航，在社交链接、工具按钮和瀑布流照片之间移动；对话框限制焦点并在关闭后恢复触发位置。
+- 照片分享：Instagram 位于社交分享首位；支持 Web Share API 时打开系统分享面板，否则先复制照片链接再打开 Instagram。
 - 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
 - 自动部署：GitHub Actions checkout 私有照片仓库、标准化照片、同步 Cloudflare R2、构建静态站点并同步到部署仓库。
@@ -110,6 +112,15 @@ pnpm run test:e2e
 pnpm run bundle:budget
 ```
 
+## 键盘操作与数据可见性
+
+- 页面没有具体控件获得焦点时，按任意方向键会从第一个社交链接开始键盘导航。
+- 社交链接和工具按钮中，`←`/`→` 在同组内循环；`↑`/`↓` 在两组控件和第一张照片之间移动。
+- 照片网格使用实际瀑布流布局计算 `←`/`→`/`↑`/`↓` 的目标，而不是按 DOM 索引猜测行列。
+- `Enter` 可打开已聚焦的照片，`Escape` 可关闭查看器；照片查看器和搜索对话框会限制 `Tab` 焦点，关闭后恢复到原触发控件。
+- 生产构建不会注册 `/manifest` 检查页面，直接访问会进入 404；开发模式仍保留该页面用于调试。
+- 关闭 `/manifest` 只隐藏调试界面，不会隐藏公开数据。完整 manifest 仍作为带内容哈希的 JSON 资源发布，当前站点也会按既定策略发布精确 GPS。
+
 ## 配置
 
 站点品牌、作者、社交链接、地图配置和 canonical URL 来自 `config.json` 与 `site.config.ts`。
@@ -155,20 +166,21 @@ pnpm build
 
 PR 会执行：
 
-- checkout 私有照片仓库到 `./photos`
-- 拒绝照片仓库中的 symlink
+- 生成不含私有内容的公开合成照片 fixture
+- 用 fixture 验证照片标准化和严格模式 manifest 构建，不读取私有照片仓库或部署 secrets
 - `pnpm install --frozen-lockfile`
 - `pnpm run lint:check`
-- `pnpm --filter web type-check`
-- `pnpm test`
-- `pnpm run photos:standardize`
-- `pnpm run build:manifest`
-- `pnpm run build`
+- `pnpm run type-check`
+- `pnpm run test:coverage`
+- `pnpm run docs:build`
+- `pnpm run build`（跳过已经完成的 manifest 预检）
 - `pnpm run bundle:budget`
-- Playwright Chromium E2E
+- 构建产物检查和 Playwright Chromium 生产 E2E
 
 非 PR 部署还会：
 
+- checkout 私有照片仓库、拒绝 symlink，并在严格模式下用真实照片构建 manifest
+- 在所有 lint、类型、覆盖率、文档、构建、预算和生产 E2E 检查通过后才开始外部写入
 - 将标准化后的照片变更 push 回 `Jackyhq/Photography-Photos`
 - 使用 `aws s3 sync --size-only --delete` 同步 `./photos` 到 Cloudflare R2 的 `photos/` prefix
 - 生成 `googlesitemap.xml` 和 README 预览图

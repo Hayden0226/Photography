@@ -1,0 +1,81 @@
+---
+title: Interaction and Accessibility
+description: Keyboard navigation, focus behavior, sharing fallbacks, and production data-visibility boundaries in Jacky's Photography.
+createdAt: 2026-08-04T01:03:59+08:00
+lastModified: 2026-08-04T01:09:34+08:00
+---
+
+# Interaction and Accessibility
+
+The gallery supports keyboard-first browsing across the profile header, masonry photos, search, and the photo viewer. These behaviors are part of the normal interface; there is no separate accessibility mode to enable.
+
+## Entering Keyboard Navigation
+
+When focus is on the document rather than a specific control, pressing any arrow key moves focus to the first available profile social link. This lets a keyboard user enter the interface directly without pressing `Tab` through the browser chrome first.
+
+Arrow-key handling does not intercept input while the user is editing a text field, using a select control, or interacting with a dialog, menu, or listbox. Modifier combinations such as `Alt` + arrow, `Ctrl` + arrow, and `Command` + arrow are also left to the browser or operating system.
+
+## Header Controls
+
+The profile card exposes two keyboard groups: social links and gallery actions.
+
+- `ArrowLeft` and `ArrowRight` cycle within the current group.
+- `ArrowDown` moves from a social link to the action at the same approximate column.
+- `ArrowUp` moves from an action back to the aligned social link.
+- `ArrowDown` from the action row focuses the first photo.
+- `ArrowUp` from a photo returns to the first available action.
+
+Instagram is the first social link, followed by GitHub and the configured homepage link. Gallery actions include search, map exploration, layout switching when available, and language switching.
+
+## Masonry Photo Navigation
+
+Only one photo card is in the `Tab` sequence at a time. After a photo receives focus, all four arrow keys move to the nearest photo in the requested visual direction.
+
+The target is calculated from the measured masonry layout rather than array order. This matters because columns have independent item heights and do not form reliable DOM rows. Navigation can also focus virtualized photos that are not rendered yet; the gallery scrolls the target into view and focuses it after rendering.
+
+Press `Enter` to open the focused photo.
+
+## Dialog Focus
+
+The photo viewer and command palette use dialog semantics and keep `Tab` and `Shift+Tab` focus inside the active dialog. Background gallery content is marked inert while the viewer is open.
+
+- The photo viewer initially focuses its close button.
+- `Escape` closes the active viewer or command palette.
+- Closing restores focus to the triggering control when it is still available.
+- Viewer `ArrowLeft` and `ArrowRight` continue to switch between photos.
+
+## Instagram Sharing
+
+Instagram is the first option in the photo share panel.
+
+- When the Web Share API is available, the Instagram action opens the native system share sheet immediately so the click's transient user activation is preserved. Browsers cannot preselect Instagram; the user chooses the target application in the system sheet.
+- Without native sharing, the gallery starts copying the current photo link while the page still has focus, then opens Instagram.
+- If clipboard access is denied, Instagram still opens and the interface reports that only the fallback navigation succeeded.
+
+The separate system-share action may prepare the original image or video as a file. When media preparation fails or exceeds the configured safety limit, it falls back to sharing the link.
+
+## Map Summary
+
+The map header intentionally shows only the map title and the number of discovered shooting locations. The previous expandable coordinate-range section was removed because it duplicated information without helping the primary map-browsing task.
+
+Map markers and clusters are keyboard-focusable controls with visible focus indicators. Opening a marker exposes the same localized photo information used elsewhere in the gallery.
+
+## Manifest Visibility
+
+The `/manifest` inspection page is registered only in development. A production build returns the normal not-found experience for that route.
+
+This is an interface boundary, not a privacy boundary. Production still emits the complete manifest as a content-hashed JSON asset because photo details and the map load it on demand. The current publication policy includes precise GPS coordinates. Hiding the map or the inspection page does not remove those coordinates; deployments that require location privacy must sanitize GPS fields before the manifest is written.
+
+## Automated Coverage
+
+Production-mode Playwright coverage verifies:
+
+- `/manifest` remains unavailable in production
+- Instagram is the first social share option
+- header controls precede photos in keyboard order
+- arrow keys enter and traverse the header control groups
+- horizontal and vertical photo navigation follows the visual masonry layout
+- the viewer opens and closes using only the keyboard
+- viewer and command-palette focus remain trapped and return to their triggers
+
+The navigation algorithms also have focused unit tests for group traversal, editable-control exclusions, wraparound behavior, and visual-direction scoring.

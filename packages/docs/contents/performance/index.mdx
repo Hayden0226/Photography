@@ -2,7 +2,7 @@
 title: Performance
 description: Mobile-first loading and image performance notes for Jacky's Photography.
 createdAt: 2026-04-27T00:00:00+01:00
-lastModified: 2026-06-02T07:24:08+08:00
+lastModified: 2026-08-04T01:09:34+08:00
 ---
 
 # Performance
@@ -40,7 +40,7 @@ The masonry gallery treats the first six items as first-screen candidates:
 
 ## Manifest Loading
 
-The build embeds a lightweight manifest into `index.html` for the gallery grid and emits the full manifest as a hashed JSON asset. The lightweight manifest keeps fields needed for sorting, filtering, thumbnails, localized descriptions, camera/lens display names, and first-screen rendering. Detail-heavy views, such as the manifest inspection page and photo detail data, fetch the full manifest through `__FULL_MANIFEST_URL__` only when needed.
+The build embeds a lightweight manifest into `index.html` for the gallery grid and emits the full manifest as a hashed JSON asset. The lightweight manifest keeps fields needed for sorting, filtering, thumbnails, localized descriptions, camera/lens display names, and first-screen rendering. Detail-heavy views fetch the full manifest through `__FULL_MANIFEST_URL__` only when needed. The manifest inspection page can also fetch it during development, but that route is excluded from production builds.
 
 This keeps the initial viewport image budget low while preserving compatibility for browsers that cannot use WebP.
 
@@ -82,7 +82,8 @@ Before publishing a performance change, check:
 - Mobile masonry thumbnails render through WebP with JPEG fallback.
 - Opening the photo viewer still works for ordinary images.
 - Live Photo and Motion Photo items still load their media.
-- Map markers and the manifest page still have usable thumbnails through `thumbnailUrl`.
+- Map markers and the development-only manifest page still have usable thumbnails through `thumbnailUrl`.
+- A production build serves the not-found experience at `/manifest` while the hashed full-manifest asset remains available to runtime features.
 - `index.html` contains image preloads for the first two homepage thumbnails.
 - `/photos/<photo-id>/index.html` files contain photo-specific title, description, canonical URL, and social image tags.
 - `registerSW.js` is loaded with `defer`.

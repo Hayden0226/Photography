@@ -85,6 +85,68 @@ export const tocData: FileToc[] = [
     ],
   },
   {
+    file: 'accessibility/index.mdx',
+    path: '/accessibility',
+    title: 'Interaction and Accessibility',
+    toc: [
+      {
+        id: 'heading-interaction-and-accessibility',
+        level: 1,
+        text: 'Interaction and Accessibility',
+        children: [
+          {
+            id: 'heading-entering-keyboard-navigation',
+            level: 2,
+            text: 'Entering Keyboard Navigation',
+            children: [],
+          },
+          {
+            id: 'heading-header-controls',
+            level: 2,
+            text: 'Header Controls',
+            children: [],
+          },
+          {
+            id: 'heading-masonry-photo-navigation',
+            level: 2,
+            text: 'Masonry Photo Navigation',
+            children: [],
+          },
+          {
+            id: 'heading-dialog-focus',
+            level: 2,
+            text: 'Dialog Focus',
+            children: [],
+          },
+          {
+            id: 'heading-instagram-sharing',
+            level: 2,
+            text: 'Instagram Sharing',
+            children: [],
+          },
+          {
+            id: 'heading-map-summary',
+            level: 2,
+            text: 'Map Summary',
+            children: [],
+          },
+          {
+            id: 'heading-manifest-visibility',
+            level: 2,
+            text: 'Manifest Visibility',
+            children: [],
+          },
+          {
+            id: 'heading-automated-coverage',
+            level: 2,
+            text: 'Automated Coverage',
+            children: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
     file: 'deployment/index.mdx',
     path: '/deployment',
     title: 'Deployment',
@@ -114,9 +176,15 @@ export const tocData: FileToc[] = [
             children: [],
           },
           {
-            id: 'heading-shared-validation-steps',
+            id: 'heading-pull-request-validation',
             level: 2,
-            text: 'Shared Validation Steps',
+            text: 'Pull-Request Validation',
+            children: [],
+          },
+          {
+            id: 'heading-production-validation',
+            level: 2,
+            text: 'Production Validation',
             children: [],
           },
           {

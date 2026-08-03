@@ -2,7 +2,7 @@
 title: GitHub Action
 description: Current GitHub Actions validation and deployment workflow for Jacky's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-06-26T01:21:40+08:00
+lastModified: 2026-08-04T01:09:34+08:00
 ---
 
 # GitHub Action Deployment
@@ -20,42 +20,46 @@ The workflow runs on:
 
 Pull requests use a `pr-<number>` concurrency group and cancel stale runs. Non-PR deployments use the `deploy` concurrency group.
 
-## Shared Validation Steps
+## Pull-Request Validation
 
-Both PR validation and production deployment perform the core build checks:
+The `validate` job is intentionally independent of private media and deployment credentials. It sets fixture-specific storage variables, then:
 
-1. Check out this source repository.
-2. Check out `Jackyhq/Photography-Photos` into `./photos` with `PHOTO_REPO_TOKEN`.
-3. Reject symlinks inside the photo repository.
-4. Install pnpm `10.19.0`.
-5. Set up Node.js `24` with pnpm cache.
-6. Install dependencies with `pnpm install --frozen-lockfile`.
-7. Run `pnpm run lint:check`.
-8. Run `pnpm --filter web type-check`.
-9. Run `pnpm test`.
-10. Run `pnpm run photos:standardize`.
-11. Run `pnpm run build:manifest`.
-12. Run `pnpm run build` with `AFILMORY_SKIP_MANIFEST_PRECHECK=true`.
-13. Run `pnpm run bundle:budget`.
-14. Verify `apps/web/dist/`.
+1. Checks out this source repository.
+2. Installs pnpm `10.19.0`, Node.js `24`, and frozen workspace dependencies.
+3. Runs `pnpm run fixtures:photos` to create public synthetic photos under `apps/web/public/__fixtures/photos`.
+4. Runs `pnpm run photos:standardize` against that fixture.
+5. Runs `pnpm run build:manifest -- --force --strict`.
+6. Runs `pnpm run lint:check` and `pnpm run type-check`.
+7. Runs `pnpm run test:coverage` so unit tests and coverage gates share one command.
+8. Builds the documentation site and production web app.
+9. Checks the bundle budget and verifies `apps/web/dist/`.
+10. Installs Playwright Chromium and runs `pnpm run test:e2e` with `PLAYWRIGHT_PRODUCTION=true`.
 
-Pull requests additionally install the Chromium browser and run:
+PR validation never checks out `Jackyhq/Photography-Photos`, reads deployment secrets, pushes photo changes, syncs R2, or mirrors deployment output.
 
-```bash
-pnpm run test:e2e
-```
+## Production Validation
 
-PRs do not push photo changes, sync R2, or mirror deployment output.
+The `build-and-deploy` job first verifies that every required deployment secret is present. It then checks out `Jackyhq/Photography-Photos` into `./photos`, rejects every symlink outside the nested `.git` directory, and runs the real-photo pipeline:
+
+1. Install frozen dependencies and run `pnpm run lint:check`.
+2. Run `pnpm run photos:standardize`.
+3. Run `pnpm run build:manifest -- --strict`.
+4. Run `pnpm run type-check` and `pnpm run test:coverage`.
+5. Build the documentation site and production web app.
+6. Check the bundle budget and web output.
+7. Prepare the Google sitemap alias and README preview image.
+8. Run the production-mode Playwright suite.
+
+The web build uses `AFILMORY_SKIP_MANIFEST_PRECHECK=true` because the strict manifest build has already completed explicitly.
 
 ## Deployment-Only Steps
 
-Pushes to `main`, manual runs, and photo-repository dispatches run the `build-and-deploy` job. After the shared checks, the job:
+Pushes to `main`, manual runs, and photo-repository dispatches run the `build-and-deploy` job. External writes start only after every validation step above succeeds. The job then:
 
 1. Commits standardized photo changes back to `Jackyhq/Photography-Photos` with `[skip dispatch]`.
 2. Syncs `./photos` to Cloudflare R2 under the `photos/` prefix.
-3. Builds the manifest and web app.
-4. Prepares `googlesitemap.xml` and the README preview image.
-5. Syncs `apps/web/dist/` into `Jackyhq/Photography-Web`.
+3. Checks out `Jackyhq/Photography-Web` and mirrors `apps/web/dist/` into it.
+4. Commits and pushes deployment output only when the mirrored repository changed.
 
 ## Required Secrets
 

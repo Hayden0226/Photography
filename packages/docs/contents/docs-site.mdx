@@ -2,7 +2,7 @@
 title: Docs site
 description: How to maintain and publish the Jacky's Photography documentation site at docs.photo.jackyw.cn.
 createdAt: 2025-09-11T17:05:55+08:00
-lastModified: 2026-06-02T07:24:08+08:00
+lastModified: 2026-08-04T01:09:34+08:00
 ---
 
 # Docs Site
@@ -20,6 +20,7 @@ The documentation site is a Vite, React, and MDX static app in `packages/docs`. 
 Documentation pages live in `packages/docs/contents/`:
 
 - `index.mdx` introduces the project, workspace, manifest flow, and deployment flow.
+- `accessibility/index.mdx` documents keyboard navigation, dialog focus, sharing fallbacks, and manifest-visibility boundaries.
 - `photo-metadata/index.mdx` documents manual descriptions, tag curation, manifest merge behavior, and photo SEO output.
 - `storage/index.mdx` documents supported builder storage providers and the current local/R2 setup.
 - `performance/index.mdx` records image loading, manifest, and chunk-splitting decisions.
@@ -30,6 +31,7 @@ Route generation follows the file system:
 
 - `contents/index.mdx` becomes `/`.
 - `contents/storage/index.mdx` becomes `/storage`.
+- `contents/accessibility/index.mdx` becomes `/accessibility`.
 - `contents/photo-metadata/index.mdx` becomes `/photo-metadata`.
 - `contents/deployment/github-pages.mdx` becomes `/deployment/github-pages`.
 

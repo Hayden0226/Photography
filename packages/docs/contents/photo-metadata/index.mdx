@@ -2,7 +2,7 @@
 title: Photo Metadata
 description: Manual photo descriptions, tags, manifest merge behavior, and SEO metadata workflow.
 createdAt: 2026-05-09T00:00:00+01:00
-lastModified: 2026-07-11T00:22:26+08:00
+lastModified: 2026-08-04T01:09:34+08:00
 ---
 
 # Photo Metadata
@@ -99,6 +99,8 @@ interface PhotoInfo {
 ## Location Privacy
 
 This site intentionally publishes the exact GPS coordinates stored in photo EXIF. Production builds emit those coordinates in the public, content-hashed full manifest, and the map downloads that manifest to place photos at their precise locations. Coordinates are not blurred or rounded; this is a deliberate publication policy for Jacky's Photography.
+
+The human-readable `/manifest` inspection page is disabled in production and remains available only during development. That route restriction reduces accidental discovery of a debugging interface but does not protect manifest data: runtime features can still request the hashed full-manifest asset directly.
 
 Deployers who do not accept that policy must add a builder-stage sanitizer that removes the complete GPS field set before the manifest is saved and before the web build runs. Disabling or hiding the map is not sufficient because the full manifest remains a directly downloadable public asset. After sanitizing, verify both the generated source manifest and the emitted `assets/photos-manifest.<hash>.json` before deployment.
 

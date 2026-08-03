@@ -2,7 +2,7 @@
 title: Overview
 description: Documentation for Jacky's Photography at docs.photo.jackyw.cn, covering the gallery, photo pipeline, storage, performance, and deployment.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-06-25T01:07:09+08:00
+lastModified: 2026-08-04T01:09:34+08:00
 ---
 
 # Jacky's Photography
@@ -28,6 +28,9 @@ The user-facing gallery includes:
 - EXIF, histogram, camera, lens, GPS, HDR, Live Photo, and Fujifilm metadata
 - command palette search across titles, localized descriptions, tags, camera, and lens data
 - MapLibre location exploration for geotagged photos
+- arrow-key navigation across header controls and the visual masonry layout
+- focus-trapped search and viewer dialogs with focus restoration
+- Instagram-first social sharing with native-share and clipboard fallbacks
 - localized alt text and photo descriptions
 - static per-photo HTML for `/photos/:id`
 - RSS, sitemap, PWA assets, and share metadata
@@ -102,8 +105,8 @@ pnpm run photos:standardize
 pnpm run build:manifest
 pnpm run photos:descriptions:sync
 pnpm run lint:check
-pnpm --filter web type-check
-pnpm test
+pnpm run type-check
+pnpm run test:coverage
 pnpm run test:e2e
 ```
 
@@ -111,11 +114,11 @@ pnpm run test:e2e
 
 ## Deployment Summary
 
-The GitHub Actions workflow checks out the private photo repository, rejects symlinks in that checkout, installs dependencies, runs linting, type checking, unit tests, photo standardization, manifest generation, web build, bundle budget checks, and Playwright E2E tests.
+Pull-request validation uses a public synthetic photo fixture. It standardizes the fixture, builds a strict manifest, and runs linting, workspace type checking, coverage gates, documentation and web builds, bundle budgets, and production-mode Playwright E2E without checking out the private photo repository or reading deployment secrets.
 
-Non-PR deployments also commit standardized photo changes back to the private photo repository, sync published photos to Cloudflare R2 under the `photos/` prefix, and mirror `apps/web/dist/` into `Jackyhq/Photography-Web`.
+Non-PR deployments perform the same quality gates against the private photo checkout, reject photo-repository symlinks, and delay every external write until validation succeeds. They then commit standardized photo changes, sync published photos to Cloudflare R2 under the `photos/` prefix, and mirror `apps/web/dist/` into `Jackyhq/Photography-Web`.
 
-For manual metadata curation, see [Photo Metadata](/photo-metadata). For loading and build performance details, see [Performance](/performance). For storage-provider options, see [Storage Providers](/storage).
+For gallery keyboard behavior and sharing fallbacks, see [Interaction and Accessibility](/accessibility). For manual metadata curation, see [Photo Metadata](/photo-metadata). For loading and build performance details, see [Performance](/performance). For storage-provider options, see [Storage Providers](/storage).
 
 ## Maintenance Notes
 
