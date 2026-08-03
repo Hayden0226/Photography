@@ -2,6 +2,93 @@
   "version": 1,
   "photos": [
     {
+      "key": "城市/20260801095731.jpg",
+      "title": "岭南天地树荫下的人潮",
+      "titles": {
+        "zh-CN": "岭南天地树荫下的人潮",
+        "en": "Crowds Under the Trees at Lingnan Tiandi"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于佛山岭南天地，树荫下的人群从亮起灯饰的摊位与青砖街巷间穿行，慢门留下流动身影。",
+        "en": "Photographed at Lingnan Tiandi in Foshan, where crowds move beneath the trees between illuminated stalls and brick-lined lanes, leaving soft traces in the long exposure."
+      },
+      "tags": [
+        "广东",
+        "佛山",
+        "街景"
+      ],
+      "aiContext": {
+        "currentTitle": "岭南天地树荫下的人潮",
+        "dateTaken": "2026-08-01T09:57:31.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "广东",
+          "佛山",
+          "街景"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260801095031.jpg",
+      "title": "青砖墙前的灯花",
+      "titles": {
+        "zh-CN": "青砖墙前的灯花",
+        "en": "Illuminated Flowers Against Brick"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于佛山岭南天地，发光花饰在树影与青砖墙前展开，为傍晚街巷添上一层明亮光线。",
+        "en": "Photographed at Lingnan Tiandi in Foshan, where illuminated floral decorations glow against leafy shadows and a gray-brick wall in the evening lane."
+      },
+      "tags": [
+        "广东",
+        "佛山",
+        "细节"
+      ],
+      "aiContext": {
+        "currentTitle": "青砖墙前的灯花",
+        "dateTaken": "2026-08-01T09:50:31.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "广东",
+          "佛山",
+          "细节"
+        ]
+      }
+    },
+    {
+      "key": "随手/20260801085638.jpg",
+      "title": "红幕前的传统彩塑",
+      "titles": {
+        "zh-CN": "红幕前的传统彩塑",
+        "en": "Traditional Sculpture Before a Red Curtain"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于佛山岭南天地，一尊色彩鲜明的传统人物彩塑立在红幕前，夸张姿态与细密纹饰格外醒目。",
+        "en": "Photographed at Lingnan Tiandi in Foshan, where a vivid traditional figure stands before a red curtain with an expressive pose and intricate painted details."
+      },
+      "tags": [
+        "广东",
+        "佛山",
+        "细节"
+      ],
+      "aiContext": {
+        "currentTitle": "红幕前的传统彩塑",
+        "dateTaken": "2026-08-01T08:56:38.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "随手",
+          "广东",
+          "佛山",
+          "细节"
+        ]
+      }
+    },
+    {
       "key": "随手/20260728113313.jpeg",
       "title": "吉隆坡机场的亚航客机",
       "titles": {
@@ -1480,6 +1567,35 @@
       }
     },
     {
+      "key": "视频/20260414.mov",
+      "title": "芝加哥与纽约剪辑",
+      "titles": {
+        "zh-CN": "芝加哥与纽约剪辑",
+        "en": "Chicago and New York Montage"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于美国，这段剪辑串联芝加哥与纽约的城市天际线、水岸和旅途片段。",
+        "en": "Filmed in the United States, this clip brings together travel fragments from Chicago and New York, including skylines, waterfronts, and city moments."
+      },
+      "tags": [
+        "美国",
+        "芝加哥",
+        "纽约"
+      ],
+      "aiContext": {
+        "currentTitle": "芝加哥与纽约剪辑",
+        "dateTaken": "2026-04-14T00:00:00.000Z",
+        "camera": "",
+        "lens": "",
+        "categoryTags": [
+          "视频",
+          "美国",
+          "芝加哥",
+          "纽约"
+        ]
+      }
+    },
+    {
       "key": "风光/20260413193902.jpeg",
       "title": "密歇根湖上的小船",
       "titles": {
@@ -1505,35 +1621,6 @@
           "美国",
           "芝加哥",
           "湖景"
-        ]
-      }
-    },
-    {
-      "key": "视频/20260414.mov",
-      "title": "芝加哥与纽约剪辑",
-      "titles": {
-        "zh-CN": "芝加哥与纽约剪辑",
-        "en": "Chicago and New York Montage"
-      },
-      "descriptions": {
-        "zh-CN": "拍摄于美国，这段剪辑串联芝加哥与纽约的城市天际线、水岸和旅途片段。",
-        "en": "Filmed in the United States, this clip brings together travel fragments from Chicago and New York, including skylines, waterfronts, and city moments."
-      },
-      "tags": [
-        "美国",
-        "芝加哥",
-        "纽约"
-      ],
-      "aiContext": {
-        "currentTitle": "芝加哥与纽约剪辑",
-        "dateTaken": "2026-04-13T16:00:00.000Z",
-        "camera": "",
-        "lens": "",
-        "categoryTags": [
-          "视频",
-          "美国",
-          "芝加哥",
-          "纽约"
         ]
       }
     },
