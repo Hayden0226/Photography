@@ -2,6 +2,412 @@
   "version": 1,
   "photos": [
     {
+      "key": "城市/20260807093839.jpeg",
+      "title": "澳门旧城的斜巷",
+      "titles": {
+        "zh-CN": "澳门旧城的斜巷",
+        "en": "A Sloping Lane in Old Macau"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于澳门旧城区，斜坡在新旧楼宇之间向上延伸，午后阳光照亮斑驳阳台与穿行的摩托车。",
+        "en": "Photographed in Macau's old quarter, where a sloping lane climbs between buildings from different eras as afternoon light catches weathered balconies and passing scooters."
+      },
+      "tags": [
+        "澳门",
+        "旧城区",
+        "街巷"
+      ],
+      "aiContext": {
+        "currentTitle": "澳门旧城的斜巷",
+        "dateTaken": "2026-08-07T09:38:39.114Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 15.66mm f/2.8",
+        "categoryTags": [
+          "城市",
+          "澳门",
+          "旧城区",
+          "街巷"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260807073516.jpg",
+      "title": "大三巴台阶上的葡京",
+      "titles": {
+        "zh-CN": "大三巴台阶上的葡京",
+        "en": "Grand Lisboa Above the Ruins Steps"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于澳门大三巴牌坊前，游客与遮阳伞铺满台阶下方，葡京酒店从旧城屋顶之后升起。",
+        "en": "Photographed by the Ruins of St. Paul's in Macau, where visitors and sun umbrellas fill the lower steps while Grand Lisboa rises beyond the old neighborhood rooftops."
+      },
+      "tags": [
+        "澳门",
+        "葡京",
+        "天际线"
+      ],
+      "aiContext": {
+        "currentTitle": "大三巴台阶上的葡京",
+        "dateTaken": "2026-08-07T07:35:16.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "澳门",
+          "葡京",
+          "天际线"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260807064909.jpg",
+      "title": "人潮尽头的大三巴",
+      "titles": {
+        "zh-CN": "人潮尽头的大三巴",
+        "en": "The Ruins Beyond the Crowd"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于澳门大三巴街，密集人潮穿过两侧店铺，阳光下的大三巴牌坊正好落在街道尽头。",
+        "en": "Photographed on Rua de São Paulo in Macau, where a dense crowd moves between shopfronts and the sunlit Ruins of St. Paul's close the view at the end of the street."
+      },
+      "tags": [
+        "澳门",
+        "大三巴",
+        "街景"
+      ],
+      "aiContext": {
+        "currentTitle": "人潮尽头的大三巴",
+        "dateTaken": "2026-08-07T06:49:09.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "澳门",
+          "大三巴",
+          "街景"
+        ]
+      }
+    },
+    {
+      "key": "人文/20260807062930.jpg",
+      "title": "手信店里的肉干摊位",
+      "titles": {
+        "zh-CN": "手信店里的肉干摊位",
+        "en": "At the Bakkwa Counter"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于澳门大三巴附近的手信店，店员在肉干柜台前招呼客人，试吃与选购的人群围成热闹一圈。",
+        "en": "Photographed inside a souvenir shop near the Ruins of St. Paul's in Macau, where staff serve bakkwa as a lively crowd gathers to sample and choose from the counter."
+      },
+      "tags": [
+        "澳门",
+        "手信",
+        "人群"
+      ],
+      "aiContext": {
+        "currentTitle": "手信店里的肉干摊位",
+        "dateTaken": "2026-08-07T06:29:30.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "人文",
+          "澳门",
+          "手信",
+          "人群"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805113122.jpg",
+      "title": "维港对岸的湾仔夜色",
+      "titles": {
+        "zh-CN": "维港对岸的湾仔夜色",
+        "en": "Wan Chai Lights Across Victoria Harbour"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于维多利亚港，香港会议展览中心与湾仔楼群沿岸亮起灯光，倒影在夜色中的海面铺开。",
+        "en": "Photographed on Victoria Harbour, where the Hong Kong Convention and Exhibition Centre and Wan Chai skyline glow along the waterfront, their reflections spreading across the dark water."
+      },
+      "tags": [
+        "香港",
+        "湾仔",
+        "维港夜景"
+      ],
+      "aiContext": {
+        "currentTitle": "维港对岸的湾仔夜色",
+        "dateTaken": "2026-08-05T11:31:22.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "湾仔",
+          "维港夜景"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805111933.jpg",
+      "title": "中环码头的港九二号",
+      "titles": {
+        "zh-CN": "中环码头的港九二号",
+        "en": "HKK 2 at Central Pier"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环码头，港九二号靠在灯光明亮的泊位，维港对岸的环球贸易广场从蓝调夜色中升起。",
+        "en": "Photographed at Central Pier in Hong Kong, where HKK 2 rests beside the illuminated berth and the International Commerce Centre rises across Victoria Harbour in the blue hour."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "渡轮"
+      ],
+      "aiContext": {
+        "currentTitle": "中环码头的港九二号",
+        "dateTaken": "2026-08-05T11:19:33.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "渡轮"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805111618.jpeg",
+      "title": "中环快速路上的晚霞",
+      "titles": {
+        "zh-CN": "中环快速路上的晚霞",
+        "en": "Sunset Above Central's Flyovers"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，通往机场快线、中区与西九龙的道路在暮色中分开，橙色晚霞铺在天际线上。",
+        "en": "Photographed in Central, Hong Kong, where roads toward the Airport Express, Central, and West Kowloon divide beneath an orange sunset fading over the skyline."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "晚霞"
+      ],
+      "aiContext": {
+        "currentTitle": "中环快速路上的晚霞",
+        "dateTaken": "2026-08-05T11:16:18.295Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "晚霞"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805110140.jpg",
+      "title": "天桥下的中环电车",
+      "titles": {
+        "zh-CN": "天桥下的中环电车",
+        "en": "A Central Tram Beneath the Footbridge"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，蓝色双层电车从行人天桥下驶过路口，傍晚街灯与银行大堂一同亮起。",
+        "en": "Photographed in Central, Hong Kong, where a blue double-decker tram crosses beneath the footbridge as evening lights come on around the junction and bank lobby."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "电车"
+      ],
+      "aiContext": {
+        "currentTitle": "天桥下的中环电车",
+        "dateTaken": "2026-08-05T11:01:40.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "电车"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805085056.jpg",
+      "title": "中环巷里的旧式霓虹",
+      "titles": {
+        "zh-CN": "中环巷里的旧式霓虹",
+        "en": "Old Neon in a Central Alley"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，饭店的绿红霓虹悬在狭窄街巷上方，摊档灯光、玻璃倒影与人潮叠在一起。",
+        "en": "Photographed in Central, Hong Kong, where a restaurant's green-and-red neon hangs over a narrow alley layered with stall lights, window reflections, and passing crowds."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "霓虹"
+      ],
+      "aiContext": {
+        "currentTitle": "中环巷里的旧式霓虹",
+        "dateTaken": "2026-08-05T08:50:56.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "霓虹"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805082920.jpg",
+      "title": "中环斑马线上的人潮",
+      "titles": {
+        "zh-CN": "中环斑马线上的人潮",
+        "en": "Crowds on a Central Crossing"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，行人沿黄色斑马线穿过路口，交通灯、指示牌与高低错落的街面组成紧凑城市节奏。",
+        "en": "Photographed in Central, Hong Kong, where pedestrians cross along yellow stripes amid traffic lights, direction signs, and the district's layered streetscape."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "行人"
+      ],
+      "aiContext": {
+        "currentTitle": "中环斑马线上的人潮",
+        "dateTaken": "2026-08-05T08:29:20.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "行人"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805082733.jpg",
+      "title": "中环路口的红色车流",
+      "titles": {
+        "zh-CN": "中环路口的红色车流",
+        "en": "Red Traffic at a Central Junction"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，巴士与的士在高楼之间汇入路口，鲜明红色穿过午后光影与候车人群。",
+        "en": "Photographed in Central, Hong Kong, where buses and taxis converge between high-rises, their vivid red moving through afternoon light and waiting crowds."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "街景"
+      ],
+      "aiContext": {
+        "currentTitle": "中环路口的红色车流",
+        "dateTaken": "2026-08-05T08:27:33.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "街景"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805082722.jpg",
+      "title": "高楼峡谷里的车阵",
+      "titles": {
+        "zh-CN": "高楼峡谷里的车阵",
+        "en": "Traffic Through Central's Urban Canyon"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，巴士、的士与小巴挤在楼群之间的道路上，阴影与日光把密集车流切成鲜明层次。",
+        "en": "Photographed in Central, Hong Kong, where buses, taxis, and minibuses pack the road between towers as hard shadow and sunlight divide the traffic into vivid layers."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "车流"
+      ],
+      "aiContext": {
+        "currentTitle": "高楼峡谷里的车阵",
+        "dateTaken": "2026-08-05T08:27:22.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "车流"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805081526.jpg",
+      "title": "中环楼群间的回旋车道",
+      "titles": {
+        "zh-CN": "中环楼群间的回旋车道",
+        "en": "A Curving Drive Between Central Towers"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，从高处俯瞰楼群之间的弧形车道，来往车辆在绿化与玻璃幕墙之间留下流动轨迹。",
+        "en": "Photographed from above in Central, Hong Kong, where traffic traces a curving drive between landscaped greenery and glass office towers."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "俯瞰"
+      ],
+      "aiContext": {
+        "currentTitle": "中环楼群间的回旋车道",
+        "dateTaken": "2026-08-05T08:15:26.000Z",
+        "camera": "OM Digital Solutions OM-5",
+        "lens": "OM 17mm F1.8 II",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "俯瞰"
+        ]
+      }
+    },
+    {
+      "key": "城市/20260805065246.jpeg",
+      "title": "中环窗前的维港晴景",
+      "titles": {
+        "zh-CN": "中环窗前的维港晴景",
+        "en": "A Clear Victoria Harbour View from Central"
+      },
+      "descriptions": {
+        "zh-CN": "拍摄于香港中环，从楼上越过维港望向九龙，密集楼群、远山与盛夏云层在清澈日光下展开。",
+        "en": "Photographed from a high floor in Central, Hong Kong, looking across Victoria Harbour toward Kowloon as dense towers, distant hills, and summer clouds open beneath clear daylight."
+      },
+      "tags": [
+        "香港",
+        "中环",
+        "维港"
+      ],
+      "aiContext": {
+        "currentTitle": "中环窗前的维港晴景",
+        "dateTaken": "2026-08-05T06:52:46.215Z",
+        "camera": "Apple iPhone 16 Pro",
+        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
+        "categoryTags": [
+          "城市",
+          "香港",
+          "中环",
+          "维港"
+        ]
+      }
+    },
+    {
       "key": "城市/20260801095731.jpg",
       "title": "岭南天地树荫下的人潮",
       "titles": {
@@ -4496,35 +4902,6 @@
       }
     },
     {
-      "key": "动图/20251210.heic",
-      "title": "阿克斯布里奇运河阳光",
-      "titles": {
-        "zh-CN": "阿克斯布里奇运河阳光",
-        "en": "Sunlight on the Uxbridge Canal"
-      },
-      "descriptions": {
-        "zh-CN": "拍摄于伦敦阿克斯布里奇，运河边的窄船、树影和水面保留了安静的日常感。",
-        "en": "Photographed in Uxbridge, London, where narrowboats, trees, and water keep a quiet everyday mood by the canal."
-      },
-      "tags": [
-        "英国",
-        "伦敦",
-        "运河"
-      ],
-      "aiContext": {
-        "currentTitle": "阿克斯布里奇运河阳光",
-        "dateTaken": "2025-12-10T12:36:43.522Z",
-        "camera": "Apple iPhone 16 Pro",
-        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
-        "categoryTags": [
-          "动图",
-          "英国",
-          "伦敦",
-          "运河"
-        ]
-      }
-    },
-    {
       "key": "风光/20251210123407.jpg",
       "title": "运河边的窄船",
       "titles": {
@@ -4637,35 +5014,6 @@
           "英国",
           "伦敦",
           "日落"
-        ]
-      }
-    },
-    {
-      "key": "动图/20251123.heic",
-      "title": "阿克斯布里奇站台",
-      "titles": {
-        "zh-CN": "阿克斯布里奇站台",
-        "en": "Uxbridge Platform"
-      },
-      "descriptions": {
-        "zh-CN": "拍摄于伦敦阿克斯布里奇，站台、轨道和天光组成出行中的安静间隔。",
-        "en": "Photographed in Uxbridge, London, where platform, tracks, and sky make a quiet interval in transit."
-      },
-      "tags": [
-        "英国",
-        "伦敦",
-        "旅途"
-      ],
-      "aiContext": {
-        "currentTitle": "阿克斯布里奇站台",
-        "dateTaken": "2025-11-23T15:54:52.964Z",
-        "camera": "Apple iPhone 16 Pro",
-        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
-        "categoryTags": [
-          "动图",
-          "英国",
-          "伦敦",
-          "旅途"
         ]
       }
     },
@@ -5221,7 +5569,7 @@
       }
     },
     {
-      "key": "动图/20251105.heic",
+      "key": "风光/20251105155614.jpeg",
       "title": "温德米尔湖面船影",
       "titles": {
         "zh-CN": "温德米尔湖面船影",
@@ -5242,7 +5590,7 @@
         "camera": "Apple iPhone 16 Pro",
         "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
         "categoryTags": [
-          "动图",
+          "风光",
           "英国",
           "湖区",
           "湖景"
@@ -5395,35 +5743,6 @@
       }
     },
     {
-      "key": "动图/20251105(1).heic",
-      "title": "温德米尔船尾水纹",
-      "titles": {
-        "zh-CN": "温德米尔船尾水纹",
-        "en": "Wake Behind a Windermere Boat"
-      },
-      "descriptions": {
-        "zh-CN": "拍摄于英格兰湖区温德米尔，渡轮、码头和水面记录了城市之间的移动感。",
-        "en": "Photographed in Windermere in the Lake District, where ferry, pier, and water record motion between places."
-      },
-      "tags": [
-        "英国",
-        "湖区",
-        "旅途"
-      ],
-      "aiContext": {
-        "currentTitle": "温德米尔船尾水纹",
-        "dateTaken": "2025-11-05T11:19:29.423Z",
-        "camera": "Apple iPhone 16 Pro",
-        "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
-        "categoryTags": [
-          "动图",
-          "英国",
-          "湖区",
-          "旅途"
-        ]
-      }
-    },
-    {
       "key": "风光/20251105121025.jpg",
       "title": "温德米尔停泊帆船",
       "titles": {
@@ -5511,7 +5830,7 @@
       }
     },
     {
-      "key": "动图/20251026.heic",
+      "key": "随手/20251026111358.jpeg",
       "title": "泰晤士河通勤船窗",
       "titles": {
         "zh-CN": "泰晤士河通勤船窗",
@@ -5532,7 +5851,7 @@
         "camera": "Apple iPhone 16 Pro",
         "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
         "categoryTags": [
-          "动图",
+          "随手",
           "英国",
           "伦敦",
           "泰晤士河"
@@ -5888,7 +6207,7 @@
       }
     },
     {
-      "key": "动图/20250928.heic",
+      "key": "随手/20250928171804.jpeg",
       "title": "奥林匹克公园夕光",
       "titles": {
         "zh-CN": "奥林匹克公园夕光",
@@ -5909,7 +6228,7 @@
         "camera": "Apple iPhone 16 Pro",
         "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
         "categoryTags": [
-          "动图",
+          "随手",
           "英国",
           "伦敦",
           "地标"
@@ -5975,7 +6294,7 @@
       }
     },
     {
-      "key": "动图/20250925(2).heic",
+      "key": "随手/20250925051513.jpeg",
       "title": "云层上的机翼",
       "titles": {
         "zh-CN": "云层上的机翼",
@@ -5996,7 +6315,7 @@
         "camera": "Apple iPhone 16 Pro",
         "lens": "Apple iPhone 16 Pro back triple camera 6.765mm f/1.78",
         "categoryTags": [
-          "动图",
+          "随手",
           "旅途",
           "航班",
           "天空"
