@@ -1,5 +1,5 @@
 import { createContext } from 'react'
 
-export const ScrollElementContext = createContext<HTMLElement | null>(
-  typeof document === 'undefined' ? null : document.documentElement,
-)
+export type ScrollElement = HTMLElement | Window
+
+export const ScrollElementContext = createContext<ScrollElement | null>(typeof window === 'undefined' ? null : window)

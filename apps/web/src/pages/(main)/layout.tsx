@@ -48,7 +48,7 @@ export const Component = () => {
             inert={isPhotoViewerOpen}
           >
             {isMobile ? (
-              <ScrollElementContext value={document.body}>
+              <ScrollElementContext value={window}>
                 <MasonryRoot />
               </ScrollElementContext>
             ) : (
