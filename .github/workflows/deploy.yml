@@ -152,6 +152,17 @@ jobs:
           PLAYWRIGHT_PRODUCTION: 'true'
         run: pnpm run test:e2e
 
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-validate
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+
   build-and-deploy:
     if: github.event_name != 'pull_request'
     permissions:
@@ -314,6 +325,17 @@ jobs:
         env:
           PLAYWRIGHT_PRODUCTION: 'true'
         run: pnpm run test:e2e
+
+      - name: Upload Playwright diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-build-and-deploy
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 7
 
       # External writes start only after manifest, production build, budgets,
       # documentation, unit tests, and E2E have all passed.

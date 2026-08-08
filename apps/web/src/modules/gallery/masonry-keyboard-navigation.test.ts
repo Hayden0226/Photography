@@ -45,4 +45,33 @@ describe('findNextMasonryItemIndex', () => {
     expect(navigate(1, 'up')).toBeNull()
     expect(navigate(2, 'right')).toBeNull()
   })
+
+  it('does not treat top-aligned photos with different heights as vertical neighbors', () => {
+    const topAlignedItems = [
+      { left: 0, top: 0, height: 320, column: 0 },
+      { left: 104, top: 0, height: 120, column: 1 },
+    ]
+    const topAlignedPositioner: MasonryKeyboardPositioner = {
+      columnWidth: 100,
+      get: (index) => topAlignedItems[index],
+      all: () => topAlignedItems,
+    }
+
+    expect(
+      findNextMasonryItemIndex({
+        currentIndex: 0,
+        direction: 'up',
+        positioner: topAlignedPositioner,
+        isNavigable: () => true,
+      }),
+    ).toBeNull()
+    expect(
+      findNextMasonryItemIndex({
+        currentIndex: 1,
+        direction: 'down',
+        positioner: topAlignedPositioner,
+        isNavigable: () => true,
+      }),
+    ).toBeNull()
+  })
 })

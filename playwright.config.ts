@@ -5,12 +5,14 @@ const useProductionBuild = process.env.PLAYWRIGHT_PRODUCTION === 'true'
 export default defineConfig({
   testDir: './e2e',
   timeout: 30_000,
+  reporter: process.env.CI ? [['dot'], ['html', { open: 'never' }]] : 'list',
   expect: {
     timeout: 10_000,
   },
   use: {
     baseURL: 'http://127.0.0.1:13333',
-    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    trace: 'retain-on-failure',
   },
   webServer: {
     command: useProductionBuild

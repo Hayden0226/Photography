@@ -76,12 +76,12 @@ export const findNextMasonryItemIndex = ({
         break
       }
       case 'up': {
-        if (candidateCenterY >= currentCenterY) return
+        if (candidate.top >= current.top) return
         score = [columnDistance, verticalCenterDistance, Math.abs(candidate.left - current.left), candidateIndex]
         break
       }
       case 'down': {
-        if (candidateCenterY <= currentCenterY) return
+        if (candidate.top <= current.top) return
         score = [columnDistance, verticalCenterDistance, Math.abs(candidate.left - current.left), candidateIndex]
         break
       }
