@@ -1,6 +1,12 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import {
+  composePhotoTags,
+  getPhotoCategory,
+  normalizeCustomPhotoTags,
+} from '../plugins/builder/photo-description-tags.js'
+
 interface ManifestFile {
   data?: ManifestPhoto[]
 }
@@ -122,24 +128,28 @@ function mergeEntry(
   key: string,
 ): PhotoDescriptionEntry {
   const titles = existing?.titles ?? normalizeOptionalTranslations(photo.titles)
+  const category = getPhotoCategory(key)
+  const automaticTags = category ? [category] : []
 
   return {
     key,
     title: existing?.title ?? '',
     ...(titles ? { titles } : {}),
     descriptions: existing?.descriptions ?? createEmptyTranslations(),
-    tags: existing?.tags ?? [],
+    tags: normalizeCustomPhotoTags(existing?.tags ?? [], automaticTags),
     aiContext: createAIContext(photo),
   }
 }
 
 function createAIContext(photo: ManifestPhoto): PhotoDescriptionAIContext {
+  const manifestTags = Array.isArray(photo.tags) ? photo.tags : []
+
   return {
     currentTitle: photo.title ?? '',
     dateTaken: photo.dateTaken ?? '',
     camera: formatCamera(photo),
     lens: formatLens(photo),
-    categoryTags: Array.isArray(photo.tags) ? photo.tags : [],
+    categoryTags: composePhotoTags(manifestTags.slice(0, 1), manifestTags.slice(1)),
   }
 }
 
@@ -150,13 +160,14 @@ function normalizeEntry(entry: unknown): PhotoDescriptionEntry | null {
   const key = typeof candidate.key === 'string' ? normalizeStorageKey(candidate.key) : ''
   if (!key) return null
   const titles = normalizeOptionalTranslations(candidate.titles)
+  const category = getPhotoCategory(key)
 
   return {
     key,
     title: typeof candidate.title === 'string' ? candidate.title : '',
     ...(titles ? { titles } : {}),
     descriptions: normalizeTranslations(candidate.descriptions),
-    tags: Array.isArray(candidate.tags) ? candidate.tags.filter((tag): tag is string => typeof tag === 'string') : [],
+    tags: normalizeCustomPhotoTags(candidate.tags, category ? [category] : []),
     aiContext: {
       currentTitle: '',
       dateTaken: '',

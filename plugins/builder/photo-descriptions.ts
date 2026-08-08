@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url'
 
 import type { BuilderPlugin, PhotoManifestItem } from '@afilmory/builder'
 
+import { composePhotoTags, getPhotoCategory } from './photo-description-tags.js'
+
 export interface PhotoDescriptionsPluginOptions {
   file?: string
 }
@@ -93,7 +95,6 @@ function applyDescriptionEntry(item: PhotoManifestItem, entry: PhotoDescriptionE
   const title = readNonEmptyString(entry.title)
   const titles = readLocalizedStrings(entry.titles)
   const descriptions = readDescriptions(entry.descriptions)
-  const tags = readTags(entry.tags)
 
   if (titles && !areDescriptionMapsEqual(item.titles, titles)) {
     item.titles = titles
@@ -120,8 +121,10 @@ function applyDescriptionEntry(item: PhotoManifestItem, entry: PhotoDescriptionE
     changed = true
   }
 
-  if (tags.length > 0) {
-    const mergedTags = mergeTags(item.tags, tags)
+  if (Array.isArray(entry.tags)) {
+    const category = getPhotoCategory(item.s3Key)
+    const automaticTags = category ? [category] : item.tags.slice(0, 1)
+    const mergedTags = composePhotoTags(automaticTags, entry.tags)
     if (!areStringArraysEqual(item.tags, mergedTags)) {
       item.tags = mergedTags
       changed = true
@@ -146,12 +149,6 @@ function readNonEmptyString(value: unknown): string | null {
   return trimmed.length > 0 ? trimmed : null
 }
 
-function readTags(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-
-  return value.map((tag) => (typeof tag === 'string' ? tag.trim() : '')).filter((tag): tag is string => tag.length > 0)
-}
-
 function readDescriptions(value: unknown): Record<string, string> | null {
   return readLocalizedStrings(value)
 }
@@ -166,19 +163,6 @@ function readLocalizedStrings(value: unknown): Record<string, string> | null {
   )
 
   return Object.keys(localizedStrings).length > 0 ? localizedStrings : null
-}
-
-function mergeTags(existing: string[], additions: string[]): string[] {
-  const seen = new Set<string>()
-  const merged: string[] = []
-
-  for (const tag of [...existing, ...additions]) {
-    if (seen.has(tag)) continue
-    seen.add(tag)
-    merged.push(tag)
-  }
-
-  return merged
 }
 
 function areStringArraysEqual(left: string[], right: string[]): boolean {
