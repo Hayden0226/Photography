@@ -4,6 +4,8 @@ import path from 'node:path'
 import consola from 'consola'
 import { exiftool } from 'exiftool-vendored'
 
+import { hasVisibleIncomingEntries } from './standardize-photos-policy'
+
 const PHOTOS_ROOT = path.resolve(process.cwd(), process.env.AFILMORY_PHOTOS_PATH || 'photos')
 const INCOMING_DIR = path.resolve(PHOTOS_ROOT, 'incoming')
 const DEFAULT_TARGET_DIR = path.resolve(PHOTOS_ROOT, '随手')
@@ -28,7 +30,14 @@ async function standardize() {
       if (entry.isDirectory()) {
         // 2a. 处理分类文件夹：photos/incoming/[Category] -> photos/[Category]
         const category = entry.name
+        const categoryIncomingDir = path.join(INCOMING_DIR, category)
         if (!categorySet.has(category)) {
+          const categoryEntries = await readdir(categoryIncomingDir, { withFileTypes: true })
+          if (!hasVisibleIncomingEntries(categoryEntries)) {
+            consola.info(`忽略没有可见内容的已移除 incoming 分类：${path.join('incoming', category)}`)
+            continue
+          }
+
           const error = new Error(
             `未知 incoming 分类：${path.join('incoming', category)}。请改名为现有分类之一：${categories.join(', ')}`,
           )
@@ -37,7 +46,6 @@ async function standardize() {
           continue
         }
 
-        const categoryIncomingDir = path.join(INCOMING_DIR, category)
         const targetDir = path.join(PHOTOS_ROOT, category)
 
         await processDirectory(categoryIncomingDir, targetDir, failures)
