@@ -1,6 +1,5 @@
 import { use } from 'react'
 
-import type { ScrollElement } from './ctx'
 import { ScrollElementContext } from './ctx'
 
 /**
@@ -8,6 +7,3 @@ import { ScrollElementContext } from './ctx'
  * @returns
  */
 export const useScrollViewElement = () => use(ScrollElementContext)
-
-export const getScrollTop = (scrollElement: ScrollElement) =>
-  'scrollY' in scrollElement ? scrollElement.scrollY : scrollElement.scrollTop

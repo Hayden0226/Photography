@@ -15,7 +15,7 @@ function App() {
 
   return (
     <RootProviders>
-      <div className="lg:h-svh lg:overflow-hidden">
+      <div className="overflow-hidden lg:h-svh">
         <Outlet />
         <CommandPaletteContainer />
       </div>

@@ -1,5 +1,5 @@
 // @copy internal masonic hooks
-import { getScrollTop, useScrollViewElement } from '@afilmory/ui/scroll-areas'
+import { useScrollViewElement } from '@afilmory/ui/scroll-areas'
 import { clearRequestTimeout, requestTimeout } from '@essentials/request-timeout'
 import { useWindowSize } from '@react-hook/window-size'
 import { throttle } from 'es-toolkit/function'
@@ -36,7 +36,7 @@ export const Masonry = <Item,>(props: MasonryProps<Item> & { ref?: React.Ref<Mas
 
     const handleScroll = throttle(() => {
       setIsScrolling(true)
-      setScrollTop(getScrollTop(scrollElement))
+      setScrollTop(scrollElement.scrollTop)
     }, 1000 / fps)
 
     scrollElement.addEventListener('scroll', handleScroll, { passive: true })

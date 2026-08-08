@@ -1,22 +1,14 @@
 @import './tailwind.css';
 
 html {
-  min-height: 100%;
+  @apply fixed inset-0 overflow-hidden flex flex-col;
 }
 
 body {
-  @apply relative min-h-full;
+  @apply grow h-0 shrink-0 overflow-auto relative;
 }
 
 @media screen and (min-width: 1024px) {
-  html {
-    @apply fixed inset-0 flex min-h-0 flex-col overflow-hidden;
-  }
-
-  body {
-    @apply h-0 grow shrink-0 overflow-auto;
-  }
-
   ::-webkit-scrollbar-thumb {
     background-color: transparent;
     border: 3px solid theme(colors.gray.300);

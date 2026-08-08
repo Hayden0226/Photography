@@ -52,29 +52,6 @@ test('renders the masonry gallery and opens the photo viewer', async ({ page }, 
   }
 })
 
-test('uses native document scrolling for the mobile gallery', async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== 'mobile', 'Mobile Safari only collapses its toolbar for document scrolling')
-
-  await page.goto('/')
-  await expect(page.locator('[data-photo-id]').first()).toBeVisible()
-
-  const scrollContainer = await page.evaluate(() => ({
-    htmlPosition: getComputedStyle(document.documentElement).position,
-    scrollingElement: document.scrollingElement?.tagName,
-  }))
-
-  expect(scrollContainer).toEqual({
-    htmlPosition: 'static',
-    scrollingElement: 'HTML',
-  })
-
-  await page.evaluate(() => window.scrollTo(0, 900))
-  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
-  await expect.poll(() => page.evaluate(() => document.documentElement.scrollTop)).toBeGreaterThan(0)
-  await expect.poll(() => page.evaluate(() => document.body.scrollTop)).toBe(0)
-  await expect(page.locator('.vite-error-overlay, #webpack-dev-server-client-overlay')).toHaveCount(0)
-})
-
 test('shows Instagram as the first social sharing option', async ({ page }) => {
   await page.goto('/')
 

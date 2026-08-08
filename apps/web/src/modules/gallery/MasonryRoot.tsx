@@ -1,4 +1,4 @@
-import { getScrollTop, useScrollViewElement } from '@afilmory/ui/scroll-areas'
+import { useScrollViewElement } from '@afilmory/ui/scroll-areas'
 import { clsxm, Spring } from '@afilmory/utils'
 import { useAtomValue } from 'jotai'
 import { AnimatePresence, m } from 'motion/react'
@@ -226,7 +226,8 @@ export const MasonryRoot = () => {
     if (!scrollElement) return
 
     const handleScroll = () => {
-      setShowFloatingActions(getScrollTop(scrollElement) > 500)
+      const { scrollTop } = scrollElement
+      setShowFloatingActions(scrollTop > 500)
     }
 
     scrollElement.addEventListener('scroll', handleScroll, { passive: true })
