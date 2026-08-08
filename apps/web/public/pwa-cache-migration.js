@@ -1,6 +1,6 @@
 /* global caches, self */
 
-const ACTIVE_PHOTO_RUNTIME_CACHES = new Set(['photo-thumbnails-v2', 'photo-originals-v2'])
+const ACTIVE_PHOTO_RUNTIME_CACHES = new Set(['photo-thumbnails-v3', 'photo-originals-v3'])
 const PHOTO_RUNTIME_CACHE_PREFIXES = ['photo-thumbnails-', 'photo-originals-']
 
 self.addEventListener('activate', (event) => {

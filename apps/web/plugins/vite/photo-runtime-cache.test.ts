@@ -8,9 +8,13 @@ describe('photo runtime caching', () => {
 
     expect(thumbnails?.handler).toBe('StaleWhileRevalidate')
     expect(thumbnails?.options?.cacheName).toBe(ACTIVE_PHOTO_RUNTIME_CACHES.thumbnails)
+    expect(thumbnails?.options?.expiration?.maxEntries).toBe(240)
+    expect(thumbnails?.options?.expiration?.maxAgeSeconds).toBe(60 * 60 * 24 * 3)
     expect(originals?.handler).toBe('NetworkFirst')
     expect(originals?.options?.cacheName).toBe(ACTIVE_PHOTO_RUNTIME_CACHES.originals)
     expect(originals?.options?.networkTimeoutSeconds).toBe(4)
+    expect(originals?.options?.expiration?.maxEntries).toBe(12)
+    expect(originals?.options?.expiration?.maxAgeSeconds).toBe(60 * 60 * 3)
   })
 
   it('matches only the intended thumbnail and original photo URLs', () => {

@@ -1,8 +1,8 @@
 import type { RuntimeCaching } from 'workbox-build'
 
 export const ACTIVE_PHOTO_RUNTIME_CACHES = {
-  originals: 'photo-originals-v2',
-  thumbnails: 'photo-thumbnails-v2',
+  originals: 'photo-originals-v3',
+  thumbnails: 'photo-thumbnails-v3',
 } as const
 
 export function createPhotoRuntimeCaching(): RuntimeCaching[] {
@@ -17,7 +17,7 @@ export function createPhotoRuntimeCaching(): RuntimeCaching[] {
         },
         expiration: {
           maxEntries: 240,
-          maxAgeSeconds: 60 * 60 * 24 * 30,
+          maxAgeSeconds: 60 * 60 * 24 * 3,
           purgeOnQuotaError: true,
         },
       },
@@ -33,7 +33,7 @@ export function createPhotoRuntimeCaching(): RuntimeCaching[] {
         },
         expiration: {
           maxEntries: 12,
-          maxAgeSeconds: 60 * 60 * 24 * 7,
+          maxAgeSeconds: 60 * 60 * 3,
           purgeOnQuotaError: true,
         },
       },
