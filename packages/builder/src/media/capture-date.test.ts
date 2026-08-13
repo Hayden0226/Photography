@@ -32,6 +32,14 @@ describe('capture date resolution', () => {
     expect(UNKNOWN_CAPTURE_DATE).toBe('1970-01-01T00:00:00.000Z')
   })
 
+  it('extracts epoch milliseconds from photoby-style filenames', () => {
+    expect(extractDateFromKey('photos/photoby_1770992827978.jpg')).toBe('2026-02-13T14:27:07.978Z')
+    expect(resolveCaptureDate('photos/photoby_1770992827978.jpg', null)).toEqual({
+      dateTaken: '2026-02-13T14:27:07.978Z',
+      source: 'filename',
+    })
+  })
+
   it('rejects invalid calendar dates in filenames', () => {
     expect(extractDateFromKey('随手/20250230120000.jpg')).toBeNull()
   })

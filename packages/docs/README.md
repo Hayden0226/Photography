@@ -1,6 +1,6 @@
 # @afilmory/docs
 
-Documentation site for Jacky's Photography, published at [docs.photo.jackyw.cn](https://docs.photo.jackyw.cn/). It is a static Vite + React + MDX app that documents this repository's photo pipeline, storage setup, performance decisions, deployment workflow, and maintenance conventions.
+Documentation site for Hayden's Photography. It is a static Vite + React + MDX app that documents this repository's photo pipeline, storage setup, performance decisions, deployment workflow, and maintenance conventions.
 
 ## Commands
 
@@ -76,7 +76,7 @@ Use `pnpm create:doc` for new pages. It scaffolds frontmatter and places the fil
 - Match this repository, not upstream Afilmory in general.
 - Keep examples aligned with Node.js 24, pnpm 10.19.0, React 19, Vite, and the current `builder.config.ts`.
 - Describe the current manifest flow: builder writes `apps/web/src/data/photos-manifest.json`; `packages/data/src/photos-manifest.json` is a symlink to that file.
-- Document `apps/web/dist/` as the web output and `Jackyhq/Photography-Web` as the mirrored deployment repository.
+- Document `apps/web/dist/` as the web output.
 - Do not describe `photos/` as sample media. It is a private photo checkout and contains personal copyrighted works.
 - Prefer short operational docs over generic framework explanations.
 

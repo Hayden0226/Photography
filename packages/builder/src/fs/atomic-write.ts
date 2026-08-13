@@ -23,11 +23,25 @@ async function pathExists(filePath: string): Promise<boolean> {
 }
 
 async function syncFile(filePath: string): Promise<void> {
-  const handle = await fs.open(filePath, 'r')
+  const handle = await fs.open(filePath, 'r+')
   try {
     await handle.sync()
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EPERM') throw error
   } finally {
     await handle.close()
+  }
+}
+
+async function renameWithRetry(sourcePath: string, targetPath: string, maxAttempts = 5): Promise<void> {
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await fs.rename(sourcePath, targetPath)
+      return
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'EBUSY' || attempt >= maxAttempts - 1) throw error
+      await new Promise((resolve) => setTimeout(resolve, 150))
+    }
   }
 }
 
@@ -56,11 +70,14 @@ export async function atomicWriteFile(
     if (options.backup && (await pathExists(targetPath))) {
       await fs.copyFile(targetPath, temporaryBackupPath)
       await syncFile(temporaryBackupPath)
-      await fs.rename(temporaryBackupPath, backupPath)
+      await renameWithRetry(temporaryBackupPath, backupPath)
     }
 
-    await fs.rename(temporaryPath, targetPath)
+    await renameWithRetry(temporaryPath, targetPath)
   } finally {
-    await Promise.all([fs.rm(temporaryPath, { force: true }), fs.rm(temporaryBackupPath, { force: true })])
+    await Promise.all([
+      fs.rm(temporaryPath, { force: true }).catch(() => {}),
+      fs.rm(temporaryBackupPath, { force: true }).catch(() => {}),
+    ])
   }
 }

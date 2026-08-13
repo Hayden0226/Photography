@@ -1,18 +1,18 @@
 {
-  "name": "Jackywhq's Photography",
-  "title": "Jackywhq's Photography",
-  "description": "Jackywhq的摄影画廊。于方寸间整理记忆，在流转中定格永恒。无论是否被看见，记录永不止步。",
-  "url": "https://photo.jackyw.cn",
+  "name": "Hayden's Photography",
+  "title": "Hayden's Photography",
+  "description": "Hayden 的摄影画廊。用镜头记录光影与故事，在方寸之间留住值得纪念的瞬间。",
+  "url": "https://visuals.haydenweb.com",
   "accentColor": "#007bff",
   "author": {
-    "name": "Jackywhq",
-    "url": "https://jackyw.cn/",
+    "name": "Hayden",
+    "url": "",
     "avatar": "/images/avatar.jpg"
   },
   "social": {
-    "github": "Jackyhq",
-    "instagram": "https://www.instagram.com/jackywhq/",
-    "twitter": "",
+    "github": "",
+    "instagram": "",
+    "twitter": "@Hayden0325",
     "rss": false
   },
   "feed": {

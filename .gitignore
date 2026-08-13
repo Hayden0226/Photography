@@ -62,3 +62,10 @@ apps/web/public/__fixtures/
 
 # Others
 *.local
+
+# Local temp files
+_make_previews.cjs
+_previews/
+_sheets/
+apps/web/public/images/avaar.jpg
+content/photo-descriptions.json.jacky-backup.json

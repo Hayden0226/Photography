@@ -1,13 +1,13 @@
 ---
 title: Deployment
-description: Guide to deploying Jacky's Photography in production environments.
+description: Guide to deploying Hayden's Photography in production environments.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-08-04T01:09:34+08:00
+lastModified: 2026-08-13T16:58:55+08:00
 ---
 
 # Deployment
 
-Jacky's Photography is deployed as a static SPA. The current workflow builds `apps/web/dist/` and mirrors the output into the external deployment repository `Jackyhq/Photography-Web`.
+Hayden's Photography is deployed as a static SPA. The current workflow builds `apps/web/dist/` and mirrors the output into the external deployment repository the deployment repository.
 
 Pull requests validate a public synthetic photo fixture and do not check out the private photo repository or consume deployment secrets. Production runs check out the private photos, reject symlinks, standardize incoming files, and build the manifest in strict mode.
 

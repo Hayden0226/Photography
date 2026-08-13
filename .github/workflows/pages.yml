@@ -1,0 +1,82 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+  PNPM_VERSION: "10.19.0"
+  PHOTO_REPOSITORY: Hayden0226/Photography-Photos
+  PHOTO_REPOSITORY_BRANCH: main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Checkout private photo repository
+        run: |
+          git clone --depth=1 --branch "${{ env.PHOTO_REPOSITORY_BRANCH }}" \
+            "https://x-access-token:${{ secrets.PHOTO_REPO_TOKEN }}@github.com/${{ env.PHOTO_REPOSITORY }}.git" photos
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Standardize photos
+        run: pnpm run photos:standardize
+
+      - name: Build site (generates manifest, thumbnails and static pages)
+        run: pnpm run build
+
+      - name: Bundle original photos into the deployment
+        run: |
+          mkdir -p apps/web/dist/photos
+          cp -r photos/* apps/web/dist/photos/
+
+      - name: Add Pages hints (custom domain + no Jekyll)
+        run: |
+          echo "visuals.haydenweb.com" > apps/web/dist/CNAME
+          touch apps/web/dist/.nojekyll
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

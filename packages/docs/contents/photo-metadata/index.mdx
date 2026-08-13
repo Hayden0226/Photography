@@ -2,12 +2,12 @@
 title: Photo Metadata
 description: Manual photo descriptions, tags, manifest merge behavior, and SEO metadata workflow.
 createdAt: 2026-05-09T00:00:00+01:00
-lastModified: 2026-08-04T01:09:34+08:00
+lastModified: 2026-08-13T16:58:55+08:00
 ---
 
 # Photo Metadata
 
-Jacky's Photography keeps generated camera metadata in the builder manifest and keeps human-written copy in `content/photo-descriptions.json`. The sidecar file is merged into the manifest during `pnpm run build:manifest`, so editorial descriptions can improve search, alt text, detail pages, and social sharing without hand-editing generated manifest output.
+Hayden's Photography keeps generated camera metadata in the builder manifest and keeps human-written copy in `content/photo-descriptions.json`. The sidecar file is merged into the manifest during `pnpm run build:manifest`, so editorial descriptions can improve search, alt text, detail pages, and social sharing without hand-editing generated manifest output.
 
 ## Sidecar Shape
 
@@ -98,7 +98,7 @@ interface PhotoInfo {
 
 ## Location Privacy
 
-This site intentionally publishes the exact GPS coordinates stored in photo EXIF. Production builds emit those coordinates in the public, content-hashed full manifest, and the map downloads that manifest to place photos at their precise locations. Coordinates are not blurred or rounded; this is a deliberate publication policy for Jacky's Photography.
+This site intentionally publishes the exact GPS coordinates stored in photo EXIF. Production builds emit those coordinates in the public, content-hashed full manifest, and the map downloads that manifest to place photos at their precise locations. Coordinates are not blurred or rounded; this is a deliberate publication policy for Hayden's Photography.
 
 The human-readable `/manifest` inspection page is disabled in production and remains available only during development. That route restriction reduces accidental discovery of a debugging interface but does not protect manifest data: runtime features can still request the hashed full-manifest asset directly.
 

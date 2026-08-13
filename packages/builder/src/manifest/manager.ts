@@ -152,9 +152,16 @@ export async function handleDeletedPhotos(items: PhotoManifestItem[]): Promise<n
   )
 
   for (const thumbnail of allThumbnails) {
+    if (basename(thumbnail).startsWith('.')) continue
     if (!expectedThumbnailFileSet.has(basename(thumbnail))) {
-      await fs.unlink(path.join(thumbnailsDir, thumbnail))
-      deletedCount++
+      const thumbnailPath = path.join(thumbnailsDir, thumbnail)
+      try {
+        await fs.unlink(thumbnailPath)
+        deletedCount++
+      } catch (error) {
+        const {code} = (error as NodeJS.ErrnoException)
+        if (code !== 'EBUSY' && code !== 'EPERM') throw error
+      }
     }
   }
 

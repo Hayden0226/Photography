@@ -133,7 +133,7 @@ async function generateNewThumbnail(imageBuffer: Buffer, photoId: string): Promi
     )
 
     const validateThumbnail = (expectedFormat: 'jpeg' | 'webp') => async (temporaryPath: string) => {
-      const metadata = await sharp(temporaryPath).metadata()
+      const metadata = await sharp(await fs.readFile(temporaryPath)).metadata()
       if (metadata.format !== expectedFormat || !metadata.width || !metadata.height) {
         throw new Error(`缩略图校验失败：${temporaryPath}`)
       }

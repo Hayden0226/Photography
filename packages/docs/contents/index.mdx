@@ -1,21 +1,21 @@
 ---
 title: Overview
-description: Documentation for Jacky's Photography at docs.photo.jackyw.cn, covering the gallery, photo pipeline, storage, performance, and deployment.
+description: Documentation for Hayden's Photography at docs.visuals.haydenweb.com, covering the gallery, photo pipeline, storage, performance, and deployment.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-08-04T01:09:34+08:00
+lastModified: 2026-08-13T16:58:55+08:00
 ---
 
-# Jacky's Photography
+# Hayden's Photography
 
-Jacky's Photography is a customized static photo gallery based on [Afilmory](https://github.com/Afilmory/afilmory). This repository contains the public source code for the React/Vite gallery, the photo-manifest builder, shared workspace packages, and this MDX documentation site published at [docs.photo.jackyw.cn](https://docs.photo.jackyw.cn/). The source photos live in the private `Jackyhq/Photography-Photos` repository and are checked out locally as `photos/` only during builds.
+Hayden's Photography is a customized static photo gallery based on [Afilmory](https://github.com/Afilmory/afilmory). This repository contains the public source code for the React/Vite gallery, the photo-manifest builder, shared workspace packages, and this MDX documentation site published at the docs site. The source photos live in the private the private photo repository repository and are checked out locally as `photos/` only during builds.
 
-Do not treat `photos/` as reusable sample media. The originals, generated thumbnails, generated OG images, README preview image, and other media derived from Jackyhq's photos remain copyrighted personal works and are outside the open-source license.
+Do not treat `photos/` as reusable sample media. The originals, generated thumbnails, generated OG images, README preview image, and other media derived from the private photos remain copyrighted personal works and are outside the open-source license.
 
 ## Public Links
 
-- Documentation: [docs.photo.jackyw.cn](https://docs.photo.jackyw.cn/)
-- Photography gallery: [photo.jackyw.cn](https://photo.jackyw.cn)
-- Jacky's homepage: [jackyw.cn](https://jackyw.cn/)
+- Documentation: the docs site
+- Photography gallery: [visuals.haydenweb.com](https://visuals.haydenweb.com)
+- Homepage: [haydenweb.com](https://haydenweb.com/)
 
 ## What It Builds
 
@@ -68,7 +68,7 @@ That file is ignored by Git. `packages/data/src/photos-manifest.json` is a track
 
 The normal flow is:
 
-1. Check out `Jackyhq/Photography-Photos` into `./photos`.
+1. Check out the private photo repository into `./photos`.
 2. Run `pnpm run photos:standardize` to rename and move incoming files.
 3. Run `pnpm run build:manifest` to scan photos, extract metadata, generate thumbnails, and write the manifest.
 4. Build the web app with `pnpm build`.
@@ -85,7 +85,7 @@ export default defineBuilderConfig(() => ({
   storage: {
     provider: 'local',
     basePath: './photos',
-    baseUrl: 'https://photos3.jackyw.cn/photos/',
+    baseUrl: 'https://<你的图片域名>/photos/',
     excludeRegex: '^incoming($|/.*)',
   },
   plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],
@@ -116,7 +116,7 @@ pnpm run test:e2e
 
 Pull-request validation uses a public synthetic photo fixture. It standardizes the fixture, builds a strict manifest, and runs linting, workspace type checking, coverage gates, documentation and web builds, bundle budgets, and production-mode Playwright E2E without checking out the private photo repository or reading deployment secrets.
 
-Non-PR deployments perform the same quality gates against the private photo checkout, reject photo-repository symlinks, and delay every external write until validation succeeds. They then commit standardized photo changes, sync published photos to Cloudflare R2 under the `photos/` prefix, and mirror `apps/web/dist/` into `Jackyhq/Photography-Web`.
+Non-PR deployments perform the same quality gates against the private photo checkout, reject photo-repository symlinks, and delay every external write until validation succeeds. They then commit standardized photo changes, sync published photos to Cloudflare R2 under the `photos/` prefix, and mirror `apps/web/dist/` into the deployment repository.
 
 For gallery keyboard behavior and sharing fallbacks, see [Interaction and Accessibility](/accessibility). For manual metadata curation, see [Photo Metadata](/photo-metadata). For loading and build performance details, see [Performance](/performance). For storage-provider options, see [Storage Providers](/storage).
 
@@ -129,4 +129,4 @@ For gallery keyboard behavior and sharing fallbacks, see [Interaction and Access
 
 ## License
 
-Code is licensed under the repository license. Photo media and generated media derivatives remain copyrighted works owned by Jackyhq.
+Code is licensed under the repository license. Photo media and generated media derivatives remain copyrighted works owned by the site author.

@@ -44,6 +44,15 @@ export function extractDateFromKey(key: string): string | null {
     return createUtcDate(year, month, day, '00', '00', '00')?.toISOString() ?? null
   }
 
+  const epochMsMatch = fileName.match(/(?:^|\D)(\d{13})(?=\D|$)/)
+  if (epochMsMatch) {
+    const epochMs = Number.parseInt(epochMsMatch[1], 10)
+    const epochDate = new Date(epochMs)
+    if (!Number.isNaN(epochDate.getTime())) {
+      return epochDate.toISOString()
+    }
+  }
+
   return null
 }
 

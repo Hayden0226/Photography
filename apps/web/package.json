@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.19.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Jackyhq/Photography"
+    "url": "https://github.com/Hayden0226/Photography"
   },
   "scripts": {
     "analyze": "analyzer=1 vite build",

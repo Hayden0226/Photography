@@ -1,8 +1,8 @@
 ---
 title: GitHub Action
-description: Current GitHub Actions validation and deployment workflow for Jacky's Photography.
+description: Current GitHub Actions validation and deployment workflow for Hayden's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-08-04T01:09:34+08:00
+lastModified: 2026-08-13T16:58:55+08:00
 ---
 
 # GitHub Action Deployment
@@ -16,7 +16,7 @@ The workflow runs on:
 - pull requests targeting `main`
 - pushes to `main` that touch app, package, script, workflow, or project configuration paths
 - `workflow_dispatch`
-- `repository_dispatch` with type `photos-updated`, sent by `Jackyhq/Photography-Photos`
+- `repository_dispatch` with type `photos-updated`, sent by the private photo repository
 
 Pull requests use a `pr-<number>` concurrency group and cancel stale runs. Non-PR deployments use the `deploy` concurrency group.
 
@@ -35,11 +35,11 @@ The `validate` job is intentionally independent of private media and deployment 
 9. Checks the bundle budget and verifies `apps/web/dist/`.
 10. Installs Playwright Chromium and runs `pnpm run test:e2e` with `PLAYWRIGHT_PRODUCTION=true`.
 
-PR validation never checks out `Jackyhq/Photography-Photos`, reads deployment secrets, pushes photo changes, syncs R2, or mirrors deployment output.
+PR validation never checks out the private photo repository, reads deployment secrets, pushes photo changes, syncs R2, or mirrors deployment output.
 
 ## Production Validation
 
-The `build-and-deploy` job first verifies that every required deployment secret is present. It then checks out `Jackyhq/Photography-Photos` into `./photos`, rejects every symlink outside the nested `.git` directory, and runs the real-photo pipeline:
+The `build-and-deploy` job first verifies that every required deployment secret is present. It then checks out the private photo repository into `./photos`, rejects every symlink outside the nested `.git` directory, and runs the real-photo pipeline:
 
 1. Install frozen dependencies and run `pnpm run lint:check`.
 2. Run `pnpm run photos:standardize`.
@@ -56,23 +56,23 @@ The web build uses `AFILMORY_SKIP_MANIFEST_PRECHECK=true` because the strict man
 
 Pushes to `main`, manual runs, and photo-repository dispatches run the `build-and-deploy` job. External writes start only after every validation step above succeeds. The job then:
 
-1. Commits standardized photo changes back to `Jackyhq/Photography-Photos` with `[skip dispatch]`.
+1. Commits standardized photo changes back to the private photo repository with `[skip dispatch]`.
 2. Syncs `./photos` to Cloudflare R2 under the `photos/` prefix.
-3. Checks out `Jackyhq/Photography-Web` and mirrors `apps/web/dist/` into it.
+3. Checks out the deployment repository and mirrors `apps/web/dist/` into it.
 4. Commits and pushes deployment output only when the mirrored repository changed.
 
 ## Required Secrets
 
 The source repository requires:
 
-- `PHOTO_REPO_TOKEN`: fine-grained PAT with Contents access to `Jackyhq/Photography-Photos`.
-- `DEPLOY_REPO_TOKEN`: token used to push static output to `Jackyhq/Photography-Web`.
+- `PHOTO_REPO_TOKEN`: fine-grained PAT with Contents access to the private photo repository.
+- `DEPLOY_REPO_TOKEN`: token used to push static output to the deployment repository.
 - `CLOUDFLARE_R2_ACCESS_KEY_ID`: Cloudflare R2 S3 API access key.
 - `CLOUDFLARE_R2_SECRET_ACCESS_KEY`: Cloudflare R2 S3 API secret key.
 - `CLOUDFLARE_R2_ENDPOINT`: R2 S3 API endpoint, such as `https://<account_id>.r2.cloudflarestorage.com`.
 - `CLOUDFLARE_R2_BUCKET`: bucket name only, such as `jackywhq`.
 
-The private photo repository requires `MAIN_REPO_DISPATCH_TOKEN`, a token that can send `repository_dispatch` events to `Jackyhq/Photography`.
+The private photo repository requires `MAIN_REPO_DISPATCH_TOKEN`, a token that can send `repository_dispatch` events to the source repository.
 
 ## Cloudflare R2 Sync
 
@@ -81,7 +81,7 @@ The workflow separates bucket name, object prefix, and public URL:
 - `CLOUDFLARE_R2_BUCKET` is the bucket name only.
 - `R2_PHOTOS_PREFIX=photos` makes the upload target `s3://<bucket>/photos/`.
 - `CLOUDFLARE_R2_ENDPOINT` is the S3 API endpoint.
-- `https://photos3.jackyw.cn/photos/` is the public URL used in the manifest.
+- `https://<你的图片域名>/photos/` is the public URL used in the manifest.
 
 The sync command uses `aws s3 sync ./photos "s3://${R2_BUCKET}/${R2_PHOTOS_PREFIX}/" --size-only --delete --no-follow-symlinks`.
 
@@ -112,10 +112,10 @@ apps/web/dist/
 The deploy job mirrors that output to:
 
 ```plain
-Jackyhq/Photography-Web
+the deployment repository
 ```
 
-Photo source files are not tracked in this public repository. The public site loads original photos from `https://photos3.jackyw.cn/photos/`, backed by Cloudflare R2.
+Photo source files are not tracked in this public repository. The public site loads original photos from `https://<你的图片域名>/photos/`, backed by Cloudflare R2.
 
 ## Notes
 

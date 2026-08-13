@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-PHOTO_REPOSITORY="${PHOTO_REPOSITORY:-Jackyhq/Photography-Photos}"
+PHOTO_REPOSITORY="${PHOTO_REPOSITORY:-Hayden0226/Photography-Photos}"
 PHOTO_REPOSITORY_BRANCH="${PHOTO_REPOSITORY_BRANCH:-main}"
 PHOTO_DIR="${PHOTO_DIR:-photos}"
 

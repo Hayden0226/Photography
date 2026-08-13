@@ -468,6 +468,11 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
       this.setupInitialScaling()
     }
 
+    // The texture worker runs from a blob: URL, so it cannot resolve relative
+    // URLs (e.g. "/photos/20260812123736.jpg") against the document origin.
+    // Resolve them here so the worker always receives an absolute URL.
+    const absoluteUrl = new URL(url, typeof document !== 'undefined' ? document.baseURI : url).href
+
     return new Promise<void>((resolve, reject) => {
       this.loadImageResolve = resolve
       this.loadImageReject = reject
@@ -475,7 +480,7 @@ export class WebGLImageViewerEngine extends ImageViewerEngineBase {
       console.info('[Engine] Posting "load-image" to worker', this.worker)
       this.worker?.postMessage({
         type: 'load-image',
-        payload: { url },
+        payload: { url: absoluteUrl },
       })
     })
   }

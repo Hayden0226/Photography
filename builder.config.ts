@@ -8,9 +8,7 @@ export default defineBuilderConfig(() => ({
   storage: {
     provider: 'local',
     basePath: process.env.AFILMORY_PHOTOS_PATH || './photos',
-    baseUrl:
-      process.env.AFILMORY_PHOTOS_BASE_URL ||
-      (fixtureMode ? '/__fixtures/photos/' : 'https://photos3.jackyw.cn/photos/'),
+    baseUrl: process.env.AFILMORY_PHOTOS_BASE_URL || '/photos/',
     excludeRegex: '^incoming($|/.*)',
   },
   plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],

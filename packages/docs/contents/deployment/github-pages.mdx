@@ -1,13 +1,13 @@
 ---
 title: GitHub Pages Removal
-description: Historical notes for the removed GitHub Pages deployment in Jacky's Photography.
+description: Historical notes for the removed GitHub Pages deployment in Hayden's Photography.
 createdAt: 2025-07-20T22:35:03+08:00
-lastModified: 2026-06-25T01:07:09+08:00
+lastModified: 2026-08-13T16:58:55+08:00
 ---
 
 # GitHub Pages Deployment Removed
 
-The production workflow no longer publishes the static gallery build to GitHub Pages. `.github/workflows/deploy.yml` now stops after building `apps/web/dist/`, syncing photos to Cloudflare R2, and mirroring the static output into `Jackyhq/Photography-Web`.
+The production workflow no longer publishes the static gallery build to GitHub Pages. `.github/workflows/deploy.yml` now stops after building `apps/web/dist/`, syncing photos to Cloudflare R2, and mirroring the static output into the deployment repository.
 
 ## Removed Automation
 
@@ -28,7 +28,7 @@ To reproduce the static gallery build locally:
 
 ```bash
 pnpm install
-git clone git@github.com:Jackyhq/Photography-Photos.git photos
+git clone git@github.com:<你的账号>/<照片仓库>.git photos
 pnpm run photos:standardize
 pnpm run build:manifest
 pnpm build
@@ -48,9 +48,9 @@ During CI, the workflow builds:
 apps/web/dist/
 ```
 
-The same directory is mirrored into the external deployment repository `Jackyhq/Photography-Web`. The root `web/` directory is ignored in this source repository and should not be treated as the canonical build output.
+The same directory is mirrored into the external deployment repository the deployment repository. The root `web/` directory is ignored in this source repository and should not be treated as the canonical build output.
 
-Photo source files stay in the private `Jackyhq/Photography-Photos` repository. The generated manifest lives at `apps/web/src/data/photos-manifest.json` during local builds and CI; `packages/data/src/photos-manifest.json` is a tracked symlink to that generated file.
+Photo source files stay in the private the private photo repository repository. The generated manifest lives at `apps/web/src/data/photos-manifest.json` during local builds and CI; `packages/data/src/photos-manifest.json` is a tracked symlink to that generated file.
 
 ## If Re-Enabling Pages
 

@@ -65,7 +65,7 @@ export default defineBuilderConfig(() => ({
   storage: {
     provider: 'local',
     basePath: './photos',
-    baseUrl: 'https://photos3.jackyw.cn/photos/',
+    baseUrl: 'https://<你的图片域名>/photos/',
     excludeRegex: '^incoming($|/.*)',
   },
   plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],

@@ -1,13 +1,13 @@
 ---
 title: Storage providers
-description: Current storage-provider setup and supported alternatives for Jacky's Photography.
+description: Current storage-provider setup and supported alternatives for Hayden's Photography.
 createdAt: 2025-08-12T15:09:08+08:00
-lastModified: 2026-08-04T01:09:34+08:00
+lastModified: 2026-08-13T16:58:55+08:00
 ---
 
 # Storage Providers
 
-`@afilmory/builder` reads photos through a storage-provider abstraction. Jacky's Photography currently uses the local provider against a private photo-repository checkout during builds, then syncs the published photo tree to Cloudflare R2 for public delivery.
+`@afilmory/builder` reads photos through a storage-provider abstraction. Hayden's Photography currently uses the local provider against a private photo-repository checkout during builds, then syncs the published photo tree to Cloudflare R2 for public delivery.
 
 ## Current Setup
 
@@ -20,14 +20,14 @@ export default defineBuilderConfig(() => ({
   storage: {
     provider: 'local',
     basePath: './photos',
-    baseUrl: 'https://photos3.jackyw.cn/photos/',
+    baseUrl: 'https://<你的图片域名>/photos/',
     excludeRegex: '^incoming($|/.*)',
   },
   plugins: [new URL('plugins/builder/photo-descriptions.ts', import.meta.url).href],
 }))
 ```
 
-In local development, `./photos` is a checkout of `Jackyhq/Photography-Photos`. Production GitHub Actions runs check out the same private repository into `./photos`, reject symlinks, standardize incoming files, build the manifest in strict mode, and sync published files to Cloudflare R2.
+In local development, `./photos` is a checkout of the private photo repository. Production GitHub Actions runs check out the same private repository into `./photos`, reject symlinks, standardize incoming files, build the manifest in strict mode, and sync published files to Cloudflare R2.
 
 Pull-request validation does not access the private repository. It generates a public synthetic photo fixture, points the local provider at that fixture through `AFILMORY_PHOTOS_PATH` and `AFILMORY_PHOTOS_BASE_URL`, and exercises the same strict manifest and production E2E paths without photo or deployment secrets.
 
@@ -67,7 +67,7 @@ s3://<CLOUDFLARE_R2_BUCKET>/photos/
 The public URLs in the manifest use:
 
 ```plain
-https://photos3.jackyw.cn/photos/
+https://<你的图片域名>/photos/
 ```
 
 Keep these values separate:
