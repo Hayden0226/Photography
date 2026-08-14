@@ -1,6 +1,6 @@
 # AGENTS
 
-This repository is Jacky's Photography, a customized Afilmory-based photo gallery. It is a pnpm workspace with a static React/Vite gallery, a photo-manifest builder, shared packages, and an MDX documentation site.
+This repository is Hayden's Photography, a fork/clone of Jacky's Photography (itself a customized Afilmory-based photo gallery). It is a pnpm workspace with a static React/Vite gallery, a photo-manifest builder, shared packages, and an MDX documentation site.
 
 ## Commands
 

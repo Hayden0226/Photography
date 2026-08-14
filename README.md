@@ -3,9 +3,16 @@
 ![Hayden's Photography preview](https://visuals.haydenweb.com/readme-og-image.png)
 
 > [!IMPORTANT]
-> 本项目由 [Hayden](https://github.com/Hayden0226) 基于 [Afilmory](https://github.com/Afilmory/afilmory)（fork 自 [Jackyhq](https://github.com/Jackyhq) 的定制版）深度定制。源码仓库只开源应用、构建器、文档和工程配置；私有照片源文件位于私有照片仓库。
+> 本项目是 [Jackyhq/Photography](https://github.com/Jackyhq/Photography)（原作者 [Jackyhq](https://github.com/Jackyhq)）的 **fork / 克隆版本**；而 Jackyhq 的项目又是基于 [Afilmory](https://github.com/Afilmory/afilmory)（作者 [Innei](https://github.com/Innei)）深度定制的。本仓库完整继承了上游的代码、构建器、文档和工程配置，并在此基础上替换为 Hayden 的个人摄影内容。感谢上游作者的开源贡献。
 >
-> 本地 `photos/` 目录只是构建时 checkout，已被 Git 忽略。照片原图、缩略图、OG 图、README 预览图和其他由个人照片生成的媒体资产均为 Hayden 个人作品或衍生媒体，不属于开源授权范围，未经明确书面许可不得转载、引用、分发或展示。
+> 私有照片源文件位于 Hayden 的私有照片仓库，**与上游无关**。本地 `photos/` 目录只是构建时 checkout，已被 Git 忽略。照片原图、缩略图、OG 图、README 预览图和其他由个人照片生成的媒体资产均为 Hayden 个人作品或衍生媒体，不属于开源授权范围，未经明确书面许可不得转载、引用、分发或展示。
+
+## 项目来源与致谢
+
+- **上游项目**：[Jackyhq/Photography](https://github.com/Jackyhq/Photography)（Jackyhq 的个人摄影画廊，基于 Afilmory 深度定制）。
+- **上游的上游**：[Afilmory/afilmory](https://github.com/Afilmory/afilmory)（Innei 与 Afilmory 团队的开源摄影画廊框架）。
+- **本仓库**：`Hayden0226/Photography`，是上述上游的克隆/衍生仓库。git 提交历史继承自上游，代码署名与版权见 [LICENSE](LICENSE)。
+- 本仓库遵循上游的 [Attribution Network License (ANL) v1.0](LICENSE)：源码部分要求保留上游署名，运行页面需展示授权提示；照片等媒体资产不属于开源授权范围。
 
 ## 项目概览
 
@@ -25,7 +32,7 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 - 照片分享：Instagram 位于社交分享首位；支持 Web Share API 时打开系统分享面板，否则先复制照片链接再打开 Instagram。
 - 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
-- 自动部署：GitHub Actions checkout 私有照片仓库、标准化照片、同步 Cloudflare R2、构建静态站点并同步到部署仓库。
+- 自动部署：GitHub Actions 检出私有照片仓库、标准化照片、构建静态站点并部署到 GitHub Pages。
 
 ## 工作区结构
 
@@ -50,12 +57,12 @@ photos/                   # 私有照片仓库 checkout，主仓库不追踪
 
 ## 数据流
 
-1. 私有照片仓库提供照片源文件。
+1. 私有照片仓库（`Hayden0226/Photography-Photos`）提供照片源文件。
 2. `pnpm run photos:standardize` 读取 EXIF 时间，将 `photos/incoming/` 中的新文件重命名为 `YYYYMMDDHHmmss.ext` 并移动到分类目录。
 3. `pnpm run build:manifest` 读取 `builder.config.ts`，扫描 `photos/`，排除 `incoming`，生成缩略图、Thumbhash、EXIF/GPS/设备信息和 manifest。
 4. 构建器写入 `apps/web/src/data/photos-manifest.json`；`packages/data/src/photos-manifest.json` 是指向该文件的 symlink，供 `@afilmory/data` 和 Vite 插件读取。
 5. `pnpm build` 输出静态站点到 `apps/web/dist/`，并生成 sitemap、RSS、PWA 资源和照片级 HTML。
-6. GitHub Actions 检出私有照片仓库、执行 `pnpm run build`，把 `apps/web/dist/` 部署到 GitHub Pages。
+6. GitHub Actions（`.github/workflows/pages.yml`）检出私有照片仓库、执行构建，把 `apps/web/dist/` 部署到 GitHub Pages。
 
 ## 环境要求
 
@@ -68,7 +75,7 @@ photos/                   # 私有照片仓库 checkout，主仓库不追踪
 
 ```bash
 pnpm install
-git clone git@github.com:<你的账号>/<照片仓库>.git photos
+git clone git@github.com:Hayden0226/Photography-Photos.git photos
 pnpm run build:manifest
 pnpm dev
 ```
@@ -84,23 +91,10 @@ pnpm build
 pnpm --filter web type-check
 pnpm --filter web analyze
 
-# 文档站
-pnpm docs:dev
-pnpm docs:build
-pnpm docs:preview
-pnpm create:doc
-
 # 照片流水线
 pnpm run photos:standardize
 pnpm run build:manifest
-pnpm run build:manifest -- --force
-pnpm run build:manifest -- --force-thumbnails
-pnpm run build:manifest -- --force-manifest
-pnpm run build:manifest -- --config
-
-# 人工照片描述
 pnpm run photos:descriptions:sync
-pnpm run photos:descriptions:sync -- --prune
 
 # 质量检查
 pnpm run lint:check
@@ -140,7 +134,7 @@ export default defineBuilderConfig(() => ({
 }))
 ```
 
-`@afilmory/builder` 支持 `local`、`s3`、`github` 和 `eagle` 存储提供商。生产站点当前使用本地私有照片 checkout 生成 manifest，再由 CI 同步已发布照片到 Cloudflare R2。
+`@afilmory/builder` 支持 `local`、`s3`、`github` 和 `eagle` 存储提供商。当前部署由 GitHub Pages 直接发布 `apps/web/dist/`，原图随构建产物一起发布（见部署章节）。
 
 ## 照片维护流程
 
@@ -149,7 +143,7 @@ export default defineBuilderConfig(() => ({
 3. 运行 `pnpm run build:manifest`，生成最新 manifest 和缩略图。
 4. 运行 `pnpm run photos:descriptions:sync` 创建或刷新 `content/photo-descriptions.json` 条目。
 5. 填写 `title`、`descriptions.zh-CN`、`descriptions.en` 和精简标签后，再运行 `pnpm run build:manifest` 合并人工元数据。
-6. 运行 `pnpm dev` 本地检查，或运行 `pnpm build` 生成生产产物。
+6. 运行 `pnpm dev` 本地检查，或推送触发 GitHub Pages 部署。
 
 当缩略图策略、manifest 字段或照片处理逻辑变化时，建议完整刷新：
 
@@ -161,40 +155,21 @@ pnpm build
 
 ## 部署
 
-`.github/workflows/deploy.yml` 负责 PR 校验和生产部署。
+`.github/workflows/pages.yml` 负责 GitHub Pages 发布（推送 `main` 分支或手动触发）：
 
-PR 会执行：
+- 检出源码，安装 pnpm / Node.js 24 依赖
+- 用 `PHOTO_REPO_TOKEN` 检出私有照片仓库 `Hayden0226/Photography-Photos` 到 `photos/`
+- `pnpm run photos:standardize` 标准化照片
+- `pnpm run build` 生成 manifest、缩略图和静态站点
+- 将 `photos/*` 原图复制进 `apps/web/dist/photos/`，随站点一起发布
+- 写入 `CNAME`（`visuals.haydenweb.com`）和 `.nojekyll`
+- 通过 `actions/configure-pages` + `actions/upload-pages-artifact` + `actions/deploy-pages` 部署
 
-- 生成不含私有内容的公开合成照片 fixture
-- 用 fixture 验证照片标准化和严格模式 manifest 构建，不读取私有照片仓库或部署 secrets
-- `pnpm install --frozen-lockfile`
-- `pnpm run lint:check`
-- `pnpm run type-check`
-- `pnpm run test:coverage`
-- `pnpm run docs:build`
-- `pnpm run build`（跳过已经完成的 manifest 预检）
-- `pnpm run bundle:budget`
-- 构建产物检查和 Playwright Chromium 生产 E2E
+仓库需要配置的 secret：
 
-非 PR 部署还会：
+- `PHOTO_REPO_TOKEN`（访问私有照片仓库的 GitHub Token）
 
-- checkout 私有照片仓库、拒绝 symlink，并在严格模式下用真实照片构建 manifest
-- 在所有 lint、类型、覆盖率、文档、构建、预算和生产 E2E 检查通过后才开始外部写入
-- 将标准化后的照片变更 push 回你的私有照片仓库
-- 使用 `aws s3 sync --size-only --delete` 同步 `./photos` 到 Cloudflare R2 的 `photos/` prefix
-- 生成 `googlesitemap.xml` 和 README 预览图
-- 将 `apps/web/dist/` 发布到你的托管平台
-
-主仓库需要这些 secrets：
-
-- `PHOTO_REPO_TOKEN`
-- `DEPLOY_REPO_TOKEN`
-- `CLOUDFLARE_R2_ACCESS_KEY_ID`
-- `CLOUDFLARE_R2_SECRET_ACCESS_KEY`
-- `CLOUDFLARE_R2_ENDPOINT`
-- `CLOUDFLARE_R2_BUCKET`
-
-Vercel Preview 使用 `vercel.json` 中的 `pnpm run vercel:build`。Preview 只拉取私有照片仓库并构建静态预览，不同步 R2、不回写照片仓库、不同步生产部署仓库。不要授权不可信 fork 使用带私有 token 的 Preview 构建。
+域名绑定：在 GitHub 仓库 Settings → Pages 里把自定义域名指向 `visuals.haydenweb.com`（`CNAME` 文件已由流水线写入构建产物）。
 
 ## 仓库维护约定
 
@@ -207,6 +182,8 @@ Vercel Preview 使用 `vercel.json` 中的 `pnpm run vercel:build`。Preview 只
 
 本项目代码遵循 [Attribution Network License (ANL) v1.0](LICENSE)。
 
-私有照片仓库内容、生成缩略图、OG 图、README 预览图以及其他由个人照片生成的媒体资产不属于开源授权范围，详见 [LICENSE](LICENSE) 的 Documentation & Media 排除条款。
+- Copyright (c) 2026 Hayden0226. All rights reserved.
+- Portions Copyright (c) 2025-2026 Jackyhq. All rights reserved.
+- Portions Copyright (c) 2025 Afilmory Team & Contributors
 
-Copyright (c) 2026 Hayden0226. All rights reserved.
+私有照片仓库内容、生成缩略图、OG 图、README 预览图以及其他由个人照片生成的媒体资产不属于开源授权范围，详见 [LICENSE](LICENSE) 的 Documentation & Media 排除条款。

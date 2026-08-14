@@ -44,16 +44,16 @@ interface Social {
 }
 
 const defaultConfig: SiteConfig = {
-  name: "Innei's Afilmory",
-  title: "Innei's Afilmory",
+  name: "Hayden's Photography",
+  title: "Hayden's Photography",
   description:
-    'Capturing beautiful moments in life, documenting daily warmth and emotions through my lens.',
-  url: 'https://afilmory.innei.in',
+    'Hayden 的摄影画廊。用镜头记录光影与故事，在方寸之间留住值得纪念的瞬间。',
+  url: 'https://visuals.haydenweb.com',
   accentColor: '#007bff',
   author: {
-    name: 'Innei',
-    url: 'https://innei.in/',
-    avatar: 'https://cdn.jsdelivr.net/gh/Innei/static@master/avatar.png',
+    name: 'Hayden',
+    url: 'https://github.com/Hayden0226',
+    avatar: '/images/avatar.jpg',
   },
 }
 export const siteConfig: SiteConfig = merge(defaultConfig, userConfig) as any

@@ -173,6 +173,41 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
             </button>
           )}
         </div>
+        <div className="mt-1 flex flex-wrap items-center justify-center gap-x-1 gap-y-0.5 text-center text-xs text-gray-500 dark:text-gray-400">
+          <span>
+            Powered by{' '}
+            <a href="https://github.com/Afilmory/afilmory" target="_blank" rel="noreferrer" className="hover:underline">
+              Afilmory
+            </a>{' '}
+            &amp;{' '}
+            <a
+              href="https://github.com/Jackyhq/Photography"
+              target="_blank"
+              rel="noreferrer"
+              className="hover:underline"
+            >
+              Jacky&apos;s Photography
+            </a>{' '}
+            — Source:{' '}
+            <a
+              href={`${repository.url  }/tree/${  GIT_COMMIT_HASH ?? 'main'}`}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:underline"
+            >
+              {repository.url.replace('https://', '')}
+            </a>{' '}
+            — License:{' '}
+            <a
+              href={`${repository.url  }/blob/main/LICENSE`}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:underline"
+            >
+              AGPL-3.0-or-later
+            </a>
+          </span>
+        </div>
       </div>
     </div>
   )
