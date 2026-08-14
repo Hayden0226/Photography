@@ -131,7 +131,7 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
         <ActionGroup keyboardNavigationGroup />
       </div>
 
-      {/* Footer with build date and ICP */}
+      {/* Footer with build date */}
       <div className="border-t border-gray-100 bg-gray-50 px-6 py-4 dark:border-gray-800 dark:bg-gray-800/50">
         <div
           className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs text-gray-500 dark:text-gray-400"
@@ -172,16 +172,6 @@ export const MasonryHeaderMasonryItem = ({ style, className }: { style?: React.C
               <span>{t('gallery.update.available')}</span>
             </button>
           )}
-        </div>
-        <div className="mt-1 flex items-center justify-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-          <a
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-            rel="noreferrer"
-            className="hover:text-gray-700 dark:hover:text-gray-300"
-          >
-            粤ICP备2025447157号
-          </a>
         </div>
       </div>
     </div>
