@@ -2,6 +2,24 @@
   "version": 1,
   "photos": [
     {
+      "key": "风景/20260814145824.jpg",
+      "title": "",
+      "descriptions": {
+        "zh-CN": "",
+        "en": ""
+      },
+      "tags": [],
+      "aiContext": {
+        "currentTitle": "20260814145824",
+        "dateTaken": "2026-08-14T14:58:24.000Z",
+        "camera": "",
+        "lens": "",
+        "categoryTags": [
+          "风景"
+        ]
+      }
+    },
+    {
       "key": "随手/20260812123736.jpg",
       "title": "",
       "descriptions": {
@@ -2516,6 +2534,24 @@
         "lens": "",
         "categoryTags": [
           "随手"
+        ]
+      }
+    },
+    {
+      "key": "人像/20250328181204.jpg",
+      "title": "",
+      "descriptions": {
+        "zh-CN": "",
+        "en": ""
+      },
+      "tags": [],
+      "aiContext": {
+        "currentTitle": "20250328181204",
+        "dateTaken": "2025-03-28T18:12:04.000Z",
+        "camera": "",
+        "lens": "",
+        "categoryTags": [
+          "人像"
         ]
       }
     },
