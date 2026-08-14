@@ -1,7 +1,5 @@
 # <p align="center">Hayden's Photography</p>
 
-![Hayden's Photography preview](https://visuals.haydenweb.com/readme-og-image.png)
-
 > [!IMPORTANT]
 > 本项目是 [Jackyhq/Photography](https://github.com/Jackyhq/Photography)（原作者 [Jackyhq](https://github.com/Jackyhq)）的 **fork / 克隆版本**；而 Jackyhq 的项目又是基于 [Afilmory](https://github.com/Afilmory/afilmory)（作者 [Innei](https://github.com/Innei)）深度定制的。本仓库完整继承了上游的代码、构建器、文档和工程配置，并在此基础上替换为 Hayden 的个人摄影内容。感谢上游作者的开源贡献。
 >
