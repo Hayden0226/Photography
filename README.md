@@ -23,7 +23,7 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 ## 主要能力
 
 - 响应式瀑布流：基于 Masonic，移动端和桌面端使用同一套照片索引。
-- 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，移动端可回退到 DOM 查看器。
+- 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，支持一键全屏沉浸浏览（点击照片全屏，`Esc` 或单击退出），移动端可回退到 DOM 查看器。
 - 照片详情：展示 EXIF、直方图、相机、镜头、标签、GPS、Live Photo、HDR 和 Fujifilm 信息。
 - 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览。
 - 键盘与无障碍：方向键可从页面空白焦点进入导航，在社交链接、工具按钮和瀑布流照片之间移动；对话框限制焦点并在关闭后恢复触发位置。
@@ -31,6 +31,12 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 - 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
 - 自动部署：GitHub Actions 检出私有照片仓库、标准化照片、构建静态站点并部署到 GitHub Pages。
+
+## 最近更新（v0.2.0）
+
+- **全屏查看**：照片查看器新增全屏模式，点击照片即可全屏沉浸浏览，`Esc` 或单击照片退出。
+- **网站页脚**：画廊底部新增页脚 `© 2026 Hayden · Built with 📷 · GitHub`，附项目仓库链接。
+- **照片集更新**：持续收录新照片，并同步维护中文/英文描述与标签。
 
 ## 工作区结构
 
