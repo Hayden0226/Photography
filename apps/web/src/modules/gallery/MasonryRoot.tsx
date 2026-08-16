@@ -297,6 +297,21 @@ export const MasonryRoot = () => {
           />
         </MasonryKeyboardNavigationContext>
       </div>
+
+      <footer className="pointer-events-auto flex items-center justify-center gap-1 px-4 py-6 text-xs text-white/40">
+        <span>© {new Date().getFullYear()} Hayden</span>
+        <span aria-hidden="true">·</span>
+        <span>Built with 📷</span>
+        <span aria-hidden="true">·</span>
+        <a
+          href="https://github.com/Hayden0226/Photography"
+          target="_blank"
+          rel="noreferrer"
+          className="transition-colors hover:text-white/70"
+        >
+          GitHub
+        </a>
+      </footer>
     </>
   )
 }
