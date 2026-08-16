@@ -375,6 +375,8 @@
   "photo.video.badge": "Video",
   "photo.viewer.close": "Close photo viewer",
   "photo.viewer.closeInfo": "Close photo information",
+  "photo.viewer.exitFullscreen": "Exit fullscreen",
+  "photo.viewer.fullscreen": "Enter fullscreen",
   "photo.viewer.next": "Next photo",
   "photo.viewer.previous": "Previous photo",
   "photo.viewer.toggleInfo": "Toggle photo information",

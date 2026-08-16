@@ -374,6 +374,8 @@
   "photo.video.badge": "비디오",
   "photo.viewer.close": "사진 뷰어 닫기",
   "photo.viewer.closeInfo": "사진 정보 닫기",
+  "photo.viewer.exitFullscreen": "전체 화면 종료",
+  "photo.viewer.fullscreen": "전체 화면",
   "photo.viewer.next": "다음 사진",
   "photo.viewer.previous": "이전 사진",
   "photo.viewer.toggleInfo": "사진 정보 전환",

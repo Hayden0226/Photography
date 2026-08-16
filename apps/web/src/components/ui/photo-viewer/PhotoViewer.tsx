@@ -58,6 +58,7 @@ export const PhotoViewer = ({
   const [currentBlobSrc, setCurrentBlobSrc] = useState<string | null>(null)
   const [photoDetails, setPhotoDetails] = useState<Record<string, FullPhotoManifest>>({})
   const [loadingPhotoDetailId, setLoadingPhotoDetailId] = useState<string | null>(null)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const isMobile = useMobile()
   const currentPhoto = photos[currentIndex]
@@ -98,8 +99,38 @@ export const PhotoViewer = ({
       setIsImageZoomed(false)
       setShowExifPanel(false)
       setCurrentBlobSrc(null)
+      setIsFullscreen(false)
     }
   }, [isOpen])
+
+  const handleToggleFullscreen = useCallback(() => {
+    setIsFullscreen((previous) => !previous)
+  }, [])
+
+  const photoClickTimerRef = useRef<number | null>(null)
+
+  const handlePhotoClick = useCallback(() => {
+    if (!isFullscreen) return
+
+    if (photoClickTimerRef.current !== null) {
+      window.clearTimeout(photoClickTimerRef.current)
+      photoClickTimerRef.current = null
+      return
+    }
+
+    photoClickTimerRef.current = window.setTimeout(() => {
+      setIsFullscreen(false)
+      photoClickTimerRef.current = null
+    }, 250)
+  }, [isFullscreen])
+
+  useEffect(() => {
+    return () => {
+      if (photoClickTimerRef.current !== null) {
+        window.clearTimeout(photoClickTimerRef.current)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!currentPhoto || !shouldLoadCurrentPhotoDetail || detailedCurrentPhoto) return
@@ -257,6 +288,12 @@ export const PhotoViewer = ({
               event.preventDefault()
               closeButtonRef.current?.focus()
             }}
+            onEscapeKeyDown={(event) => {
+              if (isFullscreen) {
+                event.preventDefault()
+                setIsFullscreen(false)
+              }
+            }}
             onCloseAutoFocus={(event) => {
               event.preventDefault()
               const requestedTrigger = triggerElementRef.current
@@ -316,6 +353,7 @@ export const PhotoViewer = ({
                       exit={{ opacity: 0 }}
                       transition={Spring.presets.snappy}
                       className={`pointer-events-none absolute ${isMobile ? 'top-2 right-2 left-2' : 'top-4 right-4 left-4'} z-30 flex items-center justify-between`}
+                      style={{ visibility: isFullscreen ? 'hidden' : 'visible' }}
                     >
                       {/* 左侧工具按钮 */}
                       <div className="flex items-center gap-2">
@@ -335,6 +373,22 @@ export const PhotoViewer = ({
 
                       {/* 右侧按钮组 */}
                       <div className="flex items-center gap-2">
+                        {!isMobile && (
+                          <button
+                            type="button"
+                            className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
+                            aria-label={t(isFullscreen ? 'photo.viewer.exitFullscreen' : 'photo.viewer.fullscreen')}
+                            title={t(isFullscreen ? 'photo.viewer.exitFullscreen' : 'photo.viewer.fullscreen')}
+                            onClick={handleToggleFullscreen}
+                          >
+                            <i
+                              className={
+                                isFullscreen ? 'i-mingcute-fullscreen-exit-line' : 'i-mingcute-fullscreen-line'
+                              }
+                            />
+                          </button>
+                        )}
+
                         {/* 分享按钮 */}
                         <SharePanel
                           photo={currentPhoto}
@@ -370,9 +424,10 @@ export const PhotoViewer = ({
                           photoId={currentPhoto.id}
                           className="absolute right-4 bottom-4"
                           style={{
-                            opacity: isViewerContentVisible ? 1 : 0,
+                            opacity: isViewerContentVisible && !isFullscreen ? 1 : 0,
                             transition: 'opacity 180ms ease',
-                            pointerEvents: !isViewerContentVisible || isEntryAnimating ? 'none' : 'auto',
+                            pointerEvents:
+                              !isViewerContentVisible || isEntryAnimating || isFullscreen ? 'none' : 'auto',
                           }}
                         />
                       </Suspense>
@@ -413,6 +468,7 @@ export const PhotoViewer = ({
                               style={{
                                 visibility: hideCurrentImage ? 'hidden' : 'visible',
                               }}
+                              onClick={isFullscreen ? handlePhotoClick : undefined}
                             >
                               {shouldRenderSlideMedia && photo.mediaType === 'video' ? (
                                 <VideoViewer
@@ -465,7 +521,7 @@ export const PhotoViewer = ({
 
                     {/* 自定义导航按钮 */}
 
-                    {!isMobile && (
+                    {!isMobile && !isFullscreen && (
                       <Fragment>
                         {currentIndex > 0 && (
                           <button
@@ -492,21 +548,23 @@ export const PhotoViewer = ({
                     )}
                   </m.div>
 
-                  <Suspense>
-                    <GalleryThumbnail
-                      currentIndex={currentIndex}
-                      photos={photos}
-                      onIndexChange={onIndexChange}
-                      visible={isViewerContentVisible}
-                    />
-                  </Suspense>
+                  {!isFullscreen && (
+                    <Suspense>
+                      <GalleryThumbnail
+                        currentIndex={currentIndex}
+                        photos={photos}
+                        onIndexChange={onIndexChange}
+                        visible={isViewerContentVisible}
+                      />
+                    </Suspense>
+                  )}
                 </div>
 
                 {/* ExifPanel - 在桌面端始终显示，在移动端根据状态显示 */}
 
                 <Suspense>
                   <AnimatePresenceOnlyMobile>
-                    {(!isMobile || showExifPanel) && (
+                    {!isFullscreen && (!isMobile || showExifPanel) && (
                       <ExifPanel
                         currentPhoto={detailedCurrentPhoto ?? currentPhoto}
                         exifData={detailedCurrentPhoto?.exif ?? null}

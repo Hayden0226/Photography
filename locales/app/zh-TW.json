@@ -373,6 +373,8 @@
   "photo.video.badge": "影片",
   "photo.viewer.close": "關閉照片檢視器",
   "photo.viewer.closeInfo": "關閉照片資訊",
+  "photo.viewer.exitFullscreen": "退出全屏",
+  "photo.viewer.fullscreen": "進入全屏",
   "photo.viewer.next": "下一張照片",
   "photo.viewer.previous": "上一張照片",
   "photo.viewer.toggleInfo": "切換照片資訊",

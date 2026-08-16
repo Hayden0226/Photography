@@ -374,6 +374,8 @@
   "photo.video.badge": "Video",
   "photo.viewer.close": "写真ビューアを閉じる",
   "photo.viewer.closeInfo": "写真情報を閉じる",
+  "photo.viewer.exitFullscreen": "全画面を終了",
+  "photo.viewer.fullscreen": "全画面表示",
   "photo.viewer.next": "次の写真",
   "photo.viewer.previous": "前の写真",
   "photo.viewer.toggleInfo": "写真情報を切り替え",
