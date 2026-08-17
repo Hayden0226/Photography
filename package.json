@@ -23,6 +23,7 @@
     "lint": "eslint --fix",
     "lint:check": "eslint .",
     "photos:descriptions:sync": "tsx scripts/sync-photo-descriptions.ts",
+    "photos:privacy": "tsx scripts/privacy-photos.ts",
     "photos:standardize": "tsx scripts/standardize-photos.ts",
     "preinstall": "sh scripts/preinstall.sh",
     "prepare": "simple-git-hooks",

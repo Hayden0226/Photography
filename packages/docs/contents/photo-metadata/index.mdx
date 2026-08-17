@@ -2,7 +2,7 @@
 title: Photo Metadata
 description: Manual photo descriptions, tags, manifest merge behavior, and SEO metadata workflow.
 createdAt: 2026-05-09T00:00:00+01:00
-lastModified: 2026-08-13T16:58:55+08:00
+lastModified: 2026-08-17T17:23:45+08:00
 ---
 
 # Photo Metadata
@@ -98,11 +98,11 @@ interface PhotoInfo {
 
 ## Location Privacy
 
-This site intentionally publishes the exact GPS coordinates stored in photo EXIF. Production builds emit those coordinates in the public, content-hashed full manifest, and the map downloads that manifest to place photos at their precise locations. Coordinates are not blurred or rounded; this is a deliberate publication policy for Hayden's Photography.
+Photos keep the exact GPS coordinates stored in their EXIF unless the author explicitly protects them. `pnpm run photos:privacy` scans the library — newly added (untracked) photos by default, or the full library with `--all` — and lets the author pick which photos to obfuscate. Selected coordinates are rounded onto a ~0.05° (~5 km) grid with a small random offset, altitude is rounded to 50 m, and directional GPS helper tags (for example `GPSImgDirection` and `GPSSpeed`) are removed. Obfuscation is irreversible and keeps no backup; processed photos are skipped via a `GPSProcessingMethod` marker and can be reprocessed with `--force`. Videos are not handled yet.
+
+The map keeps working but only at city-level precision for protected photos. Unprotected photos still publish their exact coordinates in the public, content-hashed full manifest, and the deployment bundles the original photo files, so run `photos:privacy` before pushing photos whose exact location must stay private.
 
 The human-readable `/manifest` inspection page is disabled in production and remains available only during development. That route restriction reduces accidental discovery of a debugging interface but does not protect manifest data: runtime features can still request the hashed full-manifest asset directly.
-
-Deployers who do not accept that policy must add a builder-stage sanitizer that removes the complete GPS field set before the manifest is saved and before the web build runs. Disabling or hiding the map is not sufficient because the full manifest remains a directly downloadable public asset. After sanitizing, verify both the generated source manifest and the emitted `assets/photos-manifest.<hash>.json` before deployment.
 
 ## Frontend Usage
 
