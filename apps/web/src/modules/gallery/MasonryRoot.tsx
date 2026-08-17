@@ -196,15 +196,18 @@ export const MasonryRoot = () => {
     const availableWidth = containerWidth - (isMobile ? 8 : 32) // 移动端和桌面端的 padding 不同
 
     if (columns === 'auto') {
-      const autoWidth = isMobile ? auto.mobile : auto.desktop
-      if (!isMobile) {
-        const { maxColumns } = auto
-        // 当屏幕宽度超过一定阈值时，通过计算动态列宽来限制最大列数
-        const colCount = Math.floor((availableWidth + gutter) / (autoWidth + gutter))
+      if (isMobile) {
+        // 移动端默认固定三列，保证一打开就是三列效果
+        return (availableWidth - 2 * gutter) / 3
+      }
 
-        if (colCount > maxColumns) {
-          return (availableWidth - (maxColumns - 1) * gutter) / maxColumns
-        }
+      const autoWidth = auto.desktop
+      const { maxColumns } = auto
+      // 当屏幕宽度超过一定阈值时，通过计算动态列宽来限制最大列数
+      const colCount = Math.floor((availableWidth + gutter) / (autoWidth + gutter))
+
+      if (colCount > maxColumns) {
+        return (availableWidth - (maxColumns - 1) * gutter) / maxColumns
       }
 
       return autoWidth
