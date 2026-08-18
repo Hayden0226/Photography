@@ -48,17 +48,8 @@ const MasonryKeyboardNavigationContext = createContext<MasonryKeyboardNavigation
 
 const COLUMN_WIDTH_CONFIG = {
   auto: {
-    mobile: 150,
     desktop: 250,
     maxColumns: 8,
-  },
-  min: {
-    mobile: 120,
-    desktop: 200,
-  },
-  max: {
-    mobile: 250,
-    desktop: 500,
   },
 }
 
@@ -199,36 +190,29 @@ export const MasonryRoot = () => {
 
   // 动态计算列宽
   const columnWidth = useMemo(() => {
-    const { auto, min, max } = COLUMN_WIDTH_CONFIG
+    const { auto } = COLUMN_WIDTH_CONFIG
     const gutter = 4 // 列间距
-    const availableWidth = containerWidth - (isMobile ? 8 : 32) // 移动端和桌面端的 padding 不同
+    // 容器尚未测量时回退到视口宽度，保证初始渲染列数正确
+    const measuredWidth = containerWidth || (typeof window === 'undefined' ? 0 : window.innerWidth)
+    const availableWidth = measuredWidth - (isMobile ? 8 : 32) // 移动端和桌面端的 padding 不同
 
     if (columns === 'auto') {
       if (isMobile) {
         // 移动端默认固定三列，保证一打开就是三列效果
-        return Math.max((availableWidth - 2 * gutter) / 3, min.mobile)
+        return Math.max((availableWidth - 2 * gutter) / 3, 1)
       }
 
-      const autoWidth = auto.desktop
-      const { maxColumns } = auto
-      // 当屏幕宽度超过一定阈值时，通过计算动态列宽来限制最大列数
-      const colCount = Math.floor((availableWidth + gutter) / (autoWidth + gutter))
+      const colCount = Math.floor((availableWidth + gutter) / (auto.desktop + gutter))
 
-      if (colCount > maxColumns) {
-        return (availableWidth - (maxColumns - 1) * gutter) / maxColumns
+      if (colCount > auto.maxColumns) {
+        return (availableWidth - (auto.maxColumns - 1) * gutter) / auto.maxColumns
       }
 
-      return autoWidth
+      return auto.desktop
     }
 
-    // 自定义列数模式：根据容器宽度和列数计算列宽
-    const calculatedWidth = (availableWidth - (columns - 1) * gutter) / columns
-
-    // 根据设备类型设置最小和最大列宽
-    const minWidth = isMobile ? min.mobile : min.desktop
-    const maxWidth = isMobile ? max.mobile : max.desktop
-
-    return Math.max(Math.min(calculatedWidth, maxWidth), minWidth)
+    // 自定义列数模式：按选择的列数反推列宽，不做上下限压缩
+    return Math.max((availableWidth - (columns - 1) * gutter) / columns, 1)
   }, [isMobile, columns, containerWidth])
   const prefetchUpcomingThumbnails = useUpcomingThumbnailPrefetch(columnWidth)
 
