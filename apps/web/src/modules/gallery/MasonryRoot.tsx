@@ -206,7 +206,7 @@ export const MasonryRoot = () => {
     if (columns === 'auto') {
       if (isMobile) {
         // 移动端默认固定三列，保证一打开就是三列效果
-        return (availableWidth - 2 * gutter) / 3
+        return Math.max((availableWidth - 2 * gutter) / 3, min.mobile)
       }
 
       const autoWidth = auto.desktop
