@@ -1,6 +1,6 @@
 import { useScrollViewElement } from '@afilmory/ui/scroll-areas'
 import { clsxm, Spring } from '@afilmory/utils'
-import { useAtomValue } from 'jotai'
+import { useAtomValue, useSetAtom } from 'jotai'
 import { AnimatePresence, m } from 'motion/react'
 import type { KeyboardEvent, RefObject } from 'react'
 import { createContext, memo, use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -64,6 +64,7 @@ const COLUMN_WIDTH_CONFIG = {
 
 export const MasonryRoot = () => {
   const { columns } = useAtomValue(gallerySettingAtom)
+  const setGallerySetting = useSetAtom(gallerySettingAtom)
   const hasAnimatedRef = useRef(false)
   const [showFloatingActions, setShowFloatingActions] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -81,6 +82,13 @@ export const MasonryRoot = () => {
     hasAnimatedRef.current = true
   }, [])
   const isMobile = useMobile()
+
+  // 移动端默认三列：把 auto 归一化为 3，让列数面板显示"三列"而非"自动"
+  useEffect(() => {
+    if (isMobile && columns === 'auto') {
+      setGallerySetting((prev) => ({ ...prev, columns: 3 }))
+    }
+  }, [isMobile, columns, setGallerySetting])
 
   const masonryItems = useMemo(() => (isMobile ? photos : [MasonryHeaderItem.default, ...photos]), [photos, isMobile])
   const resolvedTabStopPhotoId = useMemo(() => {
