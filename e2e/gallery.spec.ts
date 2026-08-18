@@ -118,27 +118,37 @@ test('enters and traverses header keyboard navigation with arrow keys', async ({
   await page.goto('/')
 
   const firstPhoto = page.locator('[data-photo-id]').first()
-  const instagram = page.getByRole('link', { name: 'Instagram' })
-  const github = page.getByRole('link', { name: 'GitHub' })
-  const map = page.getByTestId('map-explore-trigger').first()
+  const socialGroup = page.getByRole('group', {
+    name: /social media links|社交媒体链接|社交媒體連結|ソーシャルメディアリンク|소셜 미디어 링크/i,
+  })
+  const socialLinks = socialGroup.locator('a')
+  const actionsGroup = page.locator('[data-gallery-keyboard-group="actions"]')
   const search = page.getByTestId('command-palette-trigger').first()
 
   await expect(firstPhoto).toBeVisible()
-  await page.keyboard.press('ArrowDown')
-  await expect(instagram).toBeFocused()
+  await expect(socialLinks.first()).toBeVisible()
 
+  // 文档聚焦 → ArrowDown 进入社交链接组第一个链接
+  await page.keyboard.press('ArrowDown')
+  await expect(socialLinks.first()).toBeFocused()
+
+  // 社交组内 ArrowRight 循环导航（只有一个链接时回到自身）
   await page.keyboard.press('ArrowRight')
-  await expect(github).toBeFocused()
+  await expect(socialGroup.locator('a:focus')).toHaveCount(1)
 
+  // ArrowDown 从社交组进入操作组（对齐当前索引）
   await page.keyboard.press('ArrowDown')
-  await expect(map).toBeFocused()
+  await expect(actionsGroup.locator('button:focus, a:focus')).toHaveCount(1)
 
+  // 操作组内 ArrowLeft 循环导航
   await page.keyboard.press('ArrowLeft')
-  await expect(search).toBeFocused()
+  await expect(actionsGroup.locator('button:focus, a:focus')).toHaveCount(1)
 
+  // ArrowDown 从操作组进入第一个照片
   await page.keyboard.press('ArrowDown')
   await expect(firstPhoto).toBeFocused()
 
+  // 照片 ArrowUp 回到操作组第一个控件
   await page.keyboard.press('ArrowUp')
   await expect(search).toBeFocused()
 })
@@ -200,16 +210,14 @@ test('keeps the preview visible and reports when the original image is blocked',
   const firstPhoto = page.locator('[data-photo-id]').first()
   await expect(firstPhoto).toBeVisible()
   const photoId = await firstPhoto.getAttribute('data-photo-id')
-  const originalUrl = await page.evaluate((id) => {
-    const runtime = window as typeof window & {
-      __MANIFEST__?: { data?: Array<{ id: string; originalUrl: string }> }
-    }
-    return runtime.__MANIFEST__?.data?.find((photo) => photo.id === id)?.originalUrl
-  }, photoId)
-  expect(originalUrl).toBeTruthy()
+  expect(photoId).toBeTruthy()
 
-  await page.route(originalUrl!, (route) => route.abort('blockedbyclient'))
-  await page.goto(`/photos/${encodeURIComponent(photoId!)}/`)
+  // 原图可能位于中文分类目录（如 photos/随手/…），浏览器请求会对路径做 URL 编码，
+  // 因此用正则匹配路径，而不是 manifest 中未编码的 originalUrl 精确字符串。
+  await page.route(new RegExp(`/photos/.*${photoId}\\.(?:jpe?g|webp)(?:\\?|$)`), (route) =>
+    route.abort('blockedbyclient'),
+  )
+  await page.goto(`/photos/${encodeURIComponent(photoId)}/`)
 
   const viewer = page.getByRole('dialog')
   await expect(viewer).toBeVisible()
