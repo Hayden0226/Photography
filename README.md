@@ -23,15 +23,20 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 ## 主要能力
 
 - 响应式瀑布流：基于 Masonic，移动端和桌面端使用同一套照片索引。
-- 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，支持一键全屏沉浸浏览（点击照片全屏，`Esc` 或单击退出），移动端可回退到 DOM 查看器。
+- 高性能查看器：`@afilmory/webgl-viewer` 提供缩放和平移，支持一键全屏沉浸浏览（桌面端与移动端均有全屏按钮，点击照片全屏，`Esc` 或单击退出），移动端可回退到 DOM 查看器。
 - 照片详情：展示 EXIF、直方图、相机、镜头、标签、GPS、Live Photo、HDR 和 Fujifilm 信息。
-- 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览；经 `photos:privacy` 保护的照片只显示约 5km 城市级点位。
+- 地图探索：MapLibre 聚合带 GPS 的照片，并支持缩略图预览；经 `photos:privacy` 保护的照片只显示约 5km 城市级点位。底图由 CARTO 公共瓦片 CDN 提供，大陆网络下偶发加载缓慢或空白，属第三方网络问题，暂保持现状。
 - 键盘与无障碍：方向键可从页面空白焦点进入导航，在社交链接、工具按钮和瀑布流照片之间移动；对话框限制焦点并在关闭后恢复触发位置。
 - 照片分享：Instagram 位于社交分享首位；支持 Web Share API 时打开系统分享面板，否则先复制照片链接再打开 Instagram。
 - 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - GPS 隐私保护：`pnpm run photos:privacy` 手动挑选照片，将精确坐标模糊化到约 5km 城市级（0.05° 网格 + 随机偏移）并删除方向类辅助字段，保护拍摄位置隐私。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
 - 自动部署：GitHub Actions 检出私有照片仓库、标准化照片、构建静态站点并部署到 GitHub Pages。
+
+## 最近更新（v0.3.0）
+
+- **移动端全屏查看**：照片查看器的全屏按钮现在在移动端同样可用，与桌面端一致，点击即可全屏沉浸浏览，`Esc` 或单击退出。
+- **地图加载说明**：地图底图由 CARTO 公共瓦片 CDN 提供，大陆网络下偶发超时会导致底图空白（页面与照片点位不受影响），属第三方网络问题，暂保持现状。
 
 ## 最近更新（v0.2.2）
 
