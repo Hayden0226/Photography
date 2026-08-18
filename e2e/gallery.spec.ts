@@ -52,6 +52,35 @@ test('renders the masonry gallery and opens the photo viewer', async ({ page }, 
   }
 })
 
+test('enters fullscreen and exits it by tapping the photo on mobile', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'mobile', 'Mobile-only interaction')
+
+  await page.goto('/')
+  const firstPhoto = page.locator('[data-photo-id]').first()
+  await expect(firstPhoto).toBeVisible()
+  await firstPhoto.click()
+
+  const viewer = page.getByRole('dialog')
+  await expect(viewer).toBeVisible()
+
+  const enterFullscreen = page.getByRole('button', { name: /enter fullscreen|进入全屏/i })
+  const exitFullscreen = page.getByRole('button', { name: /exit fullscreen|退出全屏/i })
+  const closeButton = page.getByRole('button', { name: /close photo viewer|关闭/i })
+  const infoButton = page.getByRole('button', { name: /toggle photo information|切换照片信息/i })
+
+  await expect(enterFullscreen).toBeVisible()
+  await enterFullscreen.click()
+
+  // 全屏状态下顶部工具栏与缩略图隐藏
+  await expect(exitFullscreen).toBeHidden()
+  await expect(closeButton).toBeHidden()
+  await expect(infoButton).toBeHidden()
+
+  // 轻点照片（高分辨率 WebGL 画布）退出全屏
+  await viewer.locator('canvas').first().click()
+  await expect(enterFullscreen).toBeVisible()
+})
+
 test('shows Instagram as the first social sharing option', async ({ page }) => {
   await page.goto('/')
 

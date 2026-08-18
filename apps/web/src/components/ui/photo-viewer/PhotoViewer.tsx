@@ -373,21 +373,17 @@ export const PhotoViewer = ({
 
                       {/* 右侧按钮组 */}
                       <div className="flex items-center gap-2">
-                        {!isMobile && (
-                          <button
-                            type="button"
-                            className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
-                            aria-label={t(isFullscreen ? 'photo.viewer.exitFullscreen' : 'photo.viewer.fullscreen')}
-                            title={t(isFullscreen ? 'photo.viewer.exitFullscreen' : 'photo.viewer.fullscreen')}
-                            onClick={handleToggleFullscreen}
-                          >
-                            <i
-                              className={
-                                isFullscreen ? 'i-mingcute-fullscreen-exit-line' : 'i-mingcute-fullscreen-line'
-                              }
-                            />
-                          </button>
-                        )}
+                        <button
+                          type="button"
+                          className="bg-material-ultra-thick pointer-events-auto flex size-8 items-center justify-center rounded-full text-white backdrop-blur-2xl duration-200 hover:bg-black/40"
+                          aria-label={t(isFullscreen ? 'photo.viewer.exitFullscreen' : 'photo.viewer.fullscreen')}
+                          title={t(isFullscreen ? 'photo.viewer.exitFullscreen' : 'photo.viewer.fullscreen')}
+                          onClick={handleToggleFullscreen}
+                        >
+                          <i
+                            className={isFullscreen ? 'i-mingcute-fullscreen-exit-line' : 'i-mingcute-fullscreen-line'}
+                          />
+                        </button>
 
                         {/* 分享按钮 */}
                         <SharePanel
