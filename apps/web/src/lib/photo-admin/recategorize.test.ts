@@ -2,8 +2,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
   buildNewS3Key,
+  buildRenamedS3Key,
   getPhotoCategory,
   recategorizePhoto,
+  renamePhoto,
   updateDescriptionsCategory,
   updateDescriptionsText,
   updatePhotoDescriptions,
@@ -364,5 +366,122 @@ describe('updatePhotoDescriptions', () => {
     const result = await updatePhotoDescriptions(token, '随手/A.jpg', { title: '新标题' })
     expect(result.ok).toBe(false)
     expect(result.error).toBeTruthy()
+  })
+})
+
+describe('buildRenamedS3Key', () => {
+  it('replaces the file name and keeps the category', () => {
+    expect(buildRenamedS3Key('随手/A.jpg', '狗.jpg')).toBe('随手/狗.jpg')
+  })
+
+  it('appends the original extension when the new name has none', () => {
+    expect(buildRenamedS3Key('随手/A.jpg', '狗')).toBe('随手/狗.jpg')
+  })
+
+  it('keeps the provided extension over the original one', () => {
+    expect(buildRenamedS3Key('随手/A.jpg', '狗.png')).toBe('随手/狗.png')
+  })
+
+  it('strips path separators from the new name', () => {
+    expect(buildRenamedS3Key('随手/A.jpg', ' 狗/ ')).toBe('随手/狗.jpg')
+  })
+
+  it('throws on empty file name', () => {
+    expect(() => buildRenamedS3Key('随手/A.jpg', '   ')).toThrow('新文件名不能为空')
+  })
+
+  it('throws when the key has no folder', () => {
+    expect(() => buildRenamedS3Key('A.jpg', '狗')).toThrow('无法从照片路径解析文件名')
+  })
+})
+
+describe('renamePhoto', () => {
+  const token = 'test-token'
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('renames the photo file and updates the descriptions key', async () => {
+    const calls: Array<{ method: string; url: string; body?: string }> = []
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      calls.push({ method, url, body: typeof init?.body === 'string' ? init.body : undefined })
+
+      if (url.includes('/contents/随手/20250901221543.jpg')) {
+        if (method === 'GET') return fileResponse({ content: 'aGVsbG8=' })
+        if (method === 'DELETE') return jsonResponse({})
+      }
+      if (url.includes('/contents/随手/狗.jpg')) {
+        if (method === 'GET') return notFoundResponse()
+        if (method === 'PUT') return jsonResponse({})
+      }
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        if (method === 'GET') {
+          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+        }
+        if (method === 'PUT') return jsonResponse({})
+      }
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await renamePhoto(token, '随手/20250901221543.jpg', '狗')
+
+    expect(result.ok).toBe(true)
+    expect(result.oldS3Key).toBe('随手/20250901221543.jpg')
+    expect(result.newS3Key).toBe('随手/狗.jpg')
+    expect(result.steps.map((step) => step.status)).toEqual(['ok', 'ok', 'ok', 'ok'])
+
+    const photoPut = calls.find((call) => call.method === 'PUT' && call.url.includes('/contents/随手/狗.jpg'))
+    expect(JSON.parse(photoPut?.body ?? '{}').content).toBe('aGVsbG8=')
+    expect(JSON.parse(photoPut?.body ?? '{}').message).toBe(
+      'chore: rename photo 随手/20250901221543.jpg -> 随手/狗.jpg',
+    )
+
+    const descriptionsPut = calls.find((call) => call.method === 'PUT' && call.url.includes('photo-descriptions.json'))
+    const decoded = Buffer.from(JSON.parse(descriptionsPut?.body ?? '{}').content, 'base64').toString('utf-8')
+    expect(decoded).toContain('"key": "随手/狗.jpg"')
+    expect(decoded).not.toContain('"key": "随手/20250901221543.jpg"')
+  })
+
+  it('fails when the new file name equals the current one', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new Error('unexpected request')
+      }),
+    )
+    const result = await renamePhoto(token, '随手/A.jpg', 'A.jpg')
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('相同')
+  })
+
+  it('fails when the target already exists', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      if (url.includes('/contents/随手/A.jpg') && method === 'GET') return fileResponse()
+      if (url.includes('/contents/随手/狗.jpg') && method === 'GET') return fileResponse()
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await renamePhoto(token, '随手/A.jpg', '狗')
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('已存在')
+  })
+
+  it('fails when the source photo is missing', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      if (decodeURIComponent(String(input)).includes('/contents/随手/A.jpg')) return notFoundResponse()
+      throw new Error('unexpected request')
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await renamePhoto(token, '随手/A.jpg', '狗')
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('找不到')
   })
 })

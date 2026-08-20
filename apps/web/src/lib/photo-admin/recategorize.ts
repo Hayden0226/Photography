@@ -188,6 +188,7 @@ const movePhotoFile = async (
   newS3Key: string,
   oldCategory: string,
   newCategory: string,
+  verb = 'recategorize',
 ): Promise<RecategorizeResult> => {
   const steps: RecategorizeStep[] = []
 
@@ -216,7 +217,7 @@ const movePhotoFile = async (
   // 3. 写入新路径
   try {
     await createOrUpdateRepoFile(token, PHOTO_REPO_NAME, newS3Key, {
-      message: `chore: move photo ${oldS3Key} -> ${newS3Key}`,
+      message: `chore: ${verb} photo ${oldS3Key} -> ${newS3Key}`,
       content: file.content,
     })
     steps.push({ step: 'move-photo', status: 'ok' })
@@ -240,7 +241,7 @@ const movePhotoFile = async (
     const { json, updated } = updateDescriptionsCategory(rawJson, oldS3Key, newS3Key, oldCategory, newCategory)
     if (updated) {
       await createOrUpdateRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH, {
-        message: `chore: recategorize photo ${oldS3Key} -> ${newS3Key}`,
+        message: `chore: ${verb} photo ${oldS3Key} -> ${newS3Key}`,
         content: utf8ToBase64(json),
         sha: descriptionsFile.sha,
       })
@@ -303,4 +304,39 @@ export const updatePhotoDescriptions = async (
     const detail = error instanceof Error ? error.message : '更新描述文件失败'
     return fail(normalizedKey, normalizedKey, steps, detail)
   }
+}
+
+export const buildRenamedS3Key = (s3Key: string, newFileName: string): string => {
+  const normalizedName = newFileName.trim().replaceAll('\\', '').replaceAll('/', '')
+  if (!normalizedName) {
+    throw new Error('新文件名不能为空')
+  }
+  const parts = s3Key.replaceAll('\\', '/').split('/').filter(Boolean)
+  if (parts.length < 2) {
+    throw new Error(`无法从照片路径解析文件名：${s3Key}`)
+  }
+  const oldFileName = parts.at(-1) ?? ''
+  const extensionMatch = /(\.[a-z0-9]+)$/i.exec(oldFileName)
+  const extension = extensionMatch?.[1] ?? ''
+  const hasOwnExtension = /\.[a-z0-9]+$/i.test(normalizedName)
+  const finalName = hasOwnExtension ? normalizedName : `${normalizedName}${extension}`
+  return [...parts.slice(0, -1), finalName].join('/')
+}
+
+export const renamePhoto = async (token: string, s3Key: string, newFileName: string): Promise<RecategorizeResult> => {
+  const oldS3Key = s3Key.replaceAll('\\', '/')
+  let newS3Key: string
+  try {
+    newS3Key = buildRenamedS3Key(oldS3Key, newFileName)
+  } catch (error) {
+    return fail(oldS3Key, oldS3Key, [], error instanceof Error ? error.message : '新文件名无效')
+  }
+  if (newS3Key === oldS3Key) {
+    return fail(oldS3Key, newS3Key, [], '新文件名与当前文件名相同')
+  }
+  const oldCategory = getPhotoCategory(oldS3Key)
+  if (!oldCategory) {
+    return fail(oldS3Key, newS3Key, [], '无法从照片路径解析分类')
+  }
+  return movePhotoFile(token, oldS3Key, newS3Key, oldCategory, oldCategory, 'rename')
 }

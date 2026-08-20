@@ -6,8 +6,10 @@ import { clearAdminToken, getAdminToken, setAdminToken } from '~/lib/photo-admin
 import type { RecategorizeResult, RecategorizeStep } from '~/lib/photo-admin/recategorize'
 import {
   buildNewS3Key,
+  buildRenamedS3Key,
   getPhotoCategory,
   recategorizePhoto,
+  renamePhoto,
   updatePhotoDescriptions,
 } from '~/lib/photo-admin/recategorize'
 
@@ -20,7 +22,7 @@ interface ManagePanelProps {
 }
 
 type ExecutionStatus = 'idle' | 'running' | 'done'
-type ManageAction = 'move' | 'describe'
+type ManageAction = 'move' | 'rename' | 'describe'
 
 export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   const [searchParams] = useSearchParams()
@@ -29,6 +31,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   const [token, setTokenState] = useState<string | null>(() => getAdminToken())
   const [tokenInput, setTokenInput] = useState('')
   const [categoryInput, setCategoryInput] = useState('')
+  const [renameInput, setRenameInput] = useState('')
   const [titleInput, setTitleInput] = useState('')
   const [zhInput, setZhInput] = useState('')
   const [enInput, setEnInput] = useState('')
@@ -67,6 +70,15 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
     }
   }, [categoryInput, s3Key])
 
+  const renamedS3KeyPreview = useMemo(() => {
+    if (!renameInput.trim() || !s3Key) return null
+    try {
+      return buildRenamedS3Key(s3Key, renameInput)
+    } catch {
+      return null
+    }
+  }, [renameInput, s3Key])
+
   const hasDescriptionChanges =
     titleInput.trim() !== (currentPhoto.title ?? '') ||
     zhInput.trim() !== (currentPhoto.descriptions?.['zh-CN'] ?? '') ||
@@ -91,6 +103,8 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
     let recategorizeResult: RecategorizeResult
     if (action === 'move') {
       recategorizeResult = await recategorizePhoto(token, s3Key, categoryInput)
+    } else if (action === 'rename') {
+      recategorizeResult = await renamePhoto(token, s3Key, renameInput)
     } else {
       recategorizeResult = await updatePhotoDescriptions(token, s3Key, {
         title: titleInput,
@@ -100,11 +114,12 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
     }
     setResult(recategorizeResult)
     setExecutionStatus('done')
-  }, [token, s3Key, action, categoryInput, titleInput, zhInput, enInput])
+  }, [token, s3Key, action, categoryInput, renameInput, titleInput, zhInput, enInput])
 
   if (!isManageMode) return null
 
   const isSameCategory = newS3KeyPreview !== null && newS3KeyPreview === s3Key
+  const isSameFileName = renamedS3KeyPreview !== null && renamedS3KeyPreview === s3Key
   const isRunning = executionStatus === 'running'
 
   return (
@@ -184,6 +199,33 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
             ) : null}
           </div>
 
+          {/* 重命名文件 */}
+          <div className="space-y-2 border-t border-white/10 pt-3">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={renameInput}
+                onChange={(event) => setRenameInput(event.target.value)}
+                placeholder="输入新文件名，如：狗（可带或不带扩展名）"
+                className="min-w-0 flex-1 rounded-md border border-white/20 bg-black/25 px-2 py-1 text-xs text-white placeholder:text-white/30"
+              />
+              <button
+                type="button"
+                disabled={!renameInput.trim() || isSameFileName || isRunning}
+                onClick={() => openConfirm('rename')}
+                className="glassmorphic-btn rounded-md px-3 py-1 text-xs text-white disabled:opacity-40"
+              >
+                重命名
+              </button>
+            </div>
+            {renamedS3KeyPreview && renamedS3KeyPreview !== s3Key ? (
+              <p className="text-xs text-white/60">
+                重命名：<span className="text-white/80">{s3Key}</span> →{' '}
+                <span className="text-white/80">{renamedS3KeyPreview}</span>
+              </p>
+            ) : null}
+          </div>
+
           {/* 编辑标题与描述 */}
           <div className="space-y-2 border-t border-white/10 pt-3">
             <input
@@ -224,7 +266,11 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
           <DialogPrimitive.Overlay className="fixed inset-0 z-100000000 bg-black/70 backdrop-blur-sm" />
           <DialogPrimitive.Content className="border-accent/20 bg-material-thick fixed top-1/2 left-1/2 z-100000000 w-[min(90vw,420px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-4 text-white shadow-2xl">
             <DialogPrimitive.Title className="text-base font-semibold">
-              {action === 'move' ? '确认移动照片分类？' : '确认更新标题与描述？'}
+              {action === 'move'
+                ? '确认移动照片分类？'
+                : action === 'rename'
+                  ? '确认重命名照片文件？'
+                  : '确认更新标题与描述？'}
             </DialogPrimitive.Title>
             <DialogPrimitive.Description className="mt-2 space-y-2 text-sm text-white/80">
               <p>将执行以下操作：</p>
@@ -237,12 +283,22 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
                     <li>主仓库：同步更新 photo-descriptions.json（若有该照片条目）</li>
                     <li>旧链接将失效，且操作不可撤销</li>
                   </>
-                ) : (
+                ) : null}
+                {action === 'rename' ? (
+                  <>
+                    <li>
+                      <span>{`照片仓库：${s3Key} → ${renamedS3KeyPreview ?? ''}`}</span>
+                    </li>
+                    <li>主仓库：同步更新 photo-descriptions.json 中的 key</li>
+                    <li>旧链接将失效，且操作不可撤销</li>
+                  </>
+                ) : null}
+                {action === 'describe' ? (
                   <>
                     <li>主仓库：更新 photo-descriptions.json 的标题与中文/英文描述</li>
                     <li>不移动或重命名文件，照片 URL 不变</li>
                   </>
-                )}
+                ) : null}
               </ul>
               {executionStatus === 'done' && result ? <ResultView result={result} /> : null}
             </DialogPrimitive.Description>
