@@ -154,6 +154,42 @@ describe('recategorizePhoto', () => {
     const decoded = Buffer.from(putBodies[1].content, 'base64').toString('utf-8')
     expect(decoded).toContain('风景/20250901221543.jpg')
   })
+  it('fetches large photo content via the git blobs API', async () => {
+    const calls: Array<{ method: string; url: string; body?: string }> = []
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      calls.push({ method, url, body: typeof init?.body === 'string' ? init.body : undefined })
+
+      if (url.includes('/contents/随手/A.jpg')) {
+        if (method === 'GET') {
+          return jsonResponse({ path: 'x', sha: 'abc123', size: 5539552, content: '', encoding: 'base64' })
+        }
+        if (method === 'DELETE') return jsonResponse({})
+      }
+      if (url.includes('/git/blobs/abc123')) {
+        return jsonResponse({ sha: 'abc123', size: 5539552, content: 'aGVsbG8=', encoding: 'base64' })
+      }
+      if (url.includes('/contents/风景/A.jpg')) {
+        if (method === 'GET') return notFoundResponse()
+        if (method === 'PUT') return jsonResponse({})
+      }
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        if (method === 'GET') {
+          return fileResponse({ content: Buffer.from('{"version":1,"photos":[]}', 'utf-8').toString('base64') })
+        }
+        if (method === 'PUT') return jsonResponse({})
+      }
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await recategorizePhoto(token, '随手/A.jpg', '风景')
+    expect(result.ok).toBe(true)
+    expect(calls.some((call) => call.url.includes('/git/blobs/abc123'))).toBe(true)
+    const put = calls.find((call) => call.method === 'PUT' && call.url.includes('/contents/风景/A.jpg'))
+    expect(JSON.parse(put?.body ?? '{}').content).toBe('aGVsbG8=')
+  })
 
   it('fails when the target already exists', async () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {

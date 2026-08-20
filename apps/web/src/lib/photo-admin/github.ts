@@ -75,7 +75,16 @@ const githubFetch = async (token: string, path: string, init: RequestInit = {}):
 
 export const getRepoFile = async (token: string, repo: string, path: string): Promise<GitHubFile> => {
   const response = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/contents/${encodeRepoPath(path)}`)
-  return (await response.json()) as GitHubFile
+  const file = (await response.json()) as GitHubFile
+
+  // The contents API omits `content` for files larger than 1 MB; fetch the full blob via the git blobs API.
+  if (!file.content) {
+    const blobResponse = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/git/blobs/${file.sha}`)
+    const blob = (await blobResponse.json()) as { content: string; encoding: 'base64' }
+    file.content = blob.content
+  }
+
+  return file
 }
 
 export interface RepoFileCommit {
