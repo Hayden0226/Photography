@@ -146,8 +146,8 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
 
       <DialogPrimitive.Root open={confirmOpen} onOpenChange={(open) => (open ? setConfirmOpen(true) : closeConfirm())}>
         <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
-          <DialogPrimitive.Content className="border-accent/20 bg-material-thick fixed top-1/2 left-1/2 z-50 w-[min(90vw,420px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-4 text-white shadow-2xl">
+          <DialogPrimitive.Overlay className="fixed inset-0 z-100000000 bg-black/70 backdrop-blur-sm" />
+          <DialogPrimitive.Content className="border-accent/20 bg-material-thick fixed top-1/2 left-1/2 z-100000000 w-[min(90vw,420px)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-4 text-white shadow-2xl">
             <DialogPrimitive.Title className="text-base font-semibold">确认移动照片分类？</DialogPrimitive.Title>
             <DialogPrimitive.Description className="mt-2 space-y-2 text-sm text-white/80">
               <p>将执行以下操作：</p>
