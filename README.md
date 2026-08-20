@@ -34,31 +34,70 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
 - 自动部署：GitHub Actions 检出私有照片仓库、标准化照片、构建静态站点并部署到 GitHub Pages。
 
-## 最近更新（v0.4.0）
+## 最近更新
+
+<details open>
+<summary><strong>v0.4.1</strong> · 修复分类整理相关问题</summary>
+
+- **修复大文件移动写入空文件**：修复网页分类整理移动大于 1MB 的照片时会写入空文件并删除原图的严重问题。GitHub Contents API 对大于 1MB 的文件不返回内容，现已改为通过 Git Blobs API 拉取完整文件后再移动，照片字节级无损迁移。
+- **修复确认弹窗被遮挡**：修复「确认移动照片分类」弹窗被照片查看器全屏层遮挡、无法点击「确认执行」的问题，弹窗现在始终显示在最上层。
+- **修复 GitHub API 路径缺 owner**：修复分类整理请求路径缺少仓库所有者（`Photography-Photos` → `Hayden0226/Photography-Photos`）导致 404 的问题。
+
+</details>
+
+<details>
+<summary><strong>v0.4.0</strong> · 网页分类整理</summary>
 
 - **网页分类整理**：照片详情页新增隐藏管理模式（URL 加 `?manage=1`），输入新分类即可通过 GitHub API 把照片移动到新目录（如「随手」→「风景」），同步更新照片仓库文件与 `photo-descriptions.json`；Token 仅存浏览器本地，不经过服务器。
 
-## 最近更新（v0.3.0）
+</details>
+
+<details>
+<summary><strong>v0.3.0</strong> · 移动端全屏查看 · 地图说明</summary>
 
 - **移动端全屏查看**：照片查看器的全屏按钮现在在移动端同样可用，与桌面端一致，点击即可全屏沉浸浏览，`Esc` 或单击退出。
 - **地图加载说明**：地图底图由 CARTO 公共瓦片 CDN 提供，大陆网络下偶发超时会导致底图空白（页面与照片点位不受影响），属第三方网络问题，暂保持现状。
 
-## 最近更新（v0.2.2）
+</details>
+
+<details>
+<summary><strong>v0.2.2</strong> · 修复移动端布局问题</summary>
 
 - **修复移动端布局崩溃**：修复移动端默认三列布局在初始渲染时因列宽计算出非法数组长度（`Invalid array length`）导致页面打不开的问题；列宽现在有下限保护，任何情况下都能正常渲染三列。
 - **修复移动端列数设置不生效**：列宽下限压缩导致窄屏默认三列不生效、选择 4/5 列仍显示三列；列宽现在按所选列数精确计算，选 3/4/5 列立即生效。
 
-## 最近更新（v0.2.1）
+</details>
+
+<details>
+<summary><strong>v0.2.1</strong> · GPS 隐私保护 · 移动端三列</summary>
 
 - **GPS 隐私保护**：新增 `pnpm run photos:privacy`，交互式挑选照片并把 GPS 精确坐标模糊化到约 5km 城市级，删除方向类辅助字段；默认只列新增照片，`--all` 处理历史照片，`--force` 强制重跑。
 - **移动端三列布局**：手机端画廊默认固定三列瀑布流，替代原来打开即两列的效果。
 - **照片集更新**：持续收录新照片，并同步维护中文/英文描述与标签。
 
-## 最近更新（v0.2.0）
+</details>
+
+<details>
+<summary><strong>v0.2.0</strong> · 全屏查看 · 网站页脚</summary>
 
 - **全屏查看**：照片查看器新增全屏模式，点击照片即可全屏沉浸浏览，`Esc` 或单击照片退出。
 - **网站页脚**：画廊底部新增页脚 `© 2026 Hayden · Built with 📷 · GitHub`，附项目仓库链接。
 - **照片集更新**：持续收录新照片，并同步维护中文/英文描述与标签。
+
+</details>
+
+## 使用操作流程
+
+1. **浏览照片**：打开线上站点 [visuals.haydenweb.com](https://visuals.haydenweb.com)，首页为响应式瀑布流；点击任意照片进入详情页，可全屏沉浸查看，浏览 EXIF、直方图与 GPS 位置，或通过系统分享面板分享到 Instagram。
+2. **筛选与搜索**：支持按标签、分类、相机、镜头筛选，也可用命令面板搜索；地图页可浏览带 GPS 的照片点位。
+3. **网页分类整理**：在照片详情页 URL 末尾追加 `?manage=1` 进入隐藏管理模式，即可把照片移动到新分类（如「随手」→「风景」）：
+   - 首次使用先在面板粘贴 GitHub Token：需要 fine-grained PAT，为 `Hayden0226/Photography` 与 `Hayden0226/Photography-Photos` 两个仓库授予 **Contents read/write** 权限；Token 只保存在浏览器本地，不会发送到本网站服务器。
+   - 输入新分类后点击「应用」，在确认弹窗中核对移动路径，再点击「确认执行」。
+   - 面板会依次执行：读取照片（大于 1MB 的文件通过 Git Blobs API 获取完整内容）→ 写入新分类路径 → 删除旧分类路径 → 同步更新 `content/photo-descriptions.json`，并展示每一步的成功/跳过/失败状态。
+   - 操作成功会自动触发 GitHub Actions 重新构建部署（约 5~8 分钟），期间线上仍是旧状态；部署完成后强制刷新（`Ctrl+F5`）即可看到新分类下的照片。
+4. **发布新照片**：本地按「照片维护流程」执行 `photos:standardize`、`photos:privacy`、`build:manifest`、`photos:descriptions:sync` 后推送，GitHub Actions 会自动构建并部署到 GitHub Pages。
+
+注意事项：分类移动会改变照片 URL（`/photos/随手/A.jpg` → `/photos/风景/A.jpg`），旧分享链接、收藏夹和搜索引擎已收录的地址会 404，且操作不可撤销；目标路径已存在同名文件时会中止，不会覆盖；单文件最大支持 100MB（GitHub API 上限）。
 
 ## 工作区结构
 
@@ -190,18 +229,6 @@ pnpm run photos:privacy -- --all --force
 ```
 
 脚本列出所有带 GPS 的照片，输入编号选择（如 `1,3,5-7`）、`a` 全选、`c` 清除、`p3` 用系统看图器预览第 3 张，回车确认；执行前有一次不可逆确认。被保护照片的坐标落到 0.05°（约 5km）网格并叠加随机偏移，海拔取整到 50m，`GPSImgDirection`、`GPSSpeed` 等方向类辅助字段被删除；已处理标记写入 `GPSProcessingMethod`，默认跳过已处理的照片。该步骤只修改照片文件本身的 GPS 字段，不生成备份，也不会处理视频。
-
-### 分类整理（网页管理模式）
-
-照片也可以在网页端直接改分类（例如把「随手」里的照片改到「风景」）。入口是隐藏的：打开任意照片详情页后，在 URL 末尾追加 `?manage=1`（如 `https://visuals.haydenweb.com/photos/20260817093012?manage=1`）。
-
-1. 首次使用先在面板里粘贴 GitHub Token：需要 fine-grained PAT，为 `Hayden0226/Photography` 与 `Hayden0226/Photography-Photos` 两个仓库授予 **Contents read/write** 权限；Token 只保存在当前浏览器的 localStorage，不会发送到本网站服务器。
-2. 在「管理模式 · 分类整理」面板输入新分类（如 `风景`）并确认执行，脚本会：
-   - 在照片仓库中读取原文件 → 写入新分类路径 → 删除旧分类路径（等价于 `git mv`）。
-   - 在主仓库同步更新 `content/photo-descriptions.json` 中该照片的 `key` 与 `aiContext.categoryTags`。
-3. 执行完成后重新构建 manifest（`pnpm run build:manifest`），或等下次部署刷新站点数据。
-
-注意事项：分类移动会改变照片 URL（`/photos/随手/A.jpg` → `/photos/风景/A.jpg`），旧分享链接、收藏夹和搜索引擎已收录的地址会 404，且操作不可撤销；执行前会检查目标路径是否已存在同名文件，避免覆盖已有照片。
 
 当缩略图策略、manifest 字段或照片处理逻辑变化时，建议完整刷新：
 
