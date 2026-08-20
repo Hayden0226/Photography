@@ -42,12 +42,21 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
 
   const s3Key = currentPhoto.s3Key ?? ''
   const currentCategory = getPhotoCategory(s3Key)
+  const fileName =
+    s3Key
+      .split('/')
+      .at(-1)
+      ?.replace(/\.[a-z0-9]+$/i, '') ?? ''
+  const normalizeForCompare = (value: string) => value.replaceAll(' ', '').replaceAll('_', '').toLowerCase()
+  const titleLooksLikeFileName =
+    fileName.length > 0 && normalizeForCompare(currentPhoto.title ?? '') === normalizeForCompare(fileName)
+  const effectiveTitle = titleLooksLikeFileName ? '' : (currentPhoto.title ?? '')
 
   useEffect(() => {
-    setTitleInput(currentPhoto.title ?? '')
+    setTitleInput(effectiveTitle)
     setZhInput(currentPhoto.descriptions?.['zh-CN'] ?? '')
     setEnInput(currentPhoto.descriptions?.en ?? '')
-  }, [currentPhoto])
+  }, [currentPhoto, effectiveTitle])
 
   const saveToken = useCallback(() => {
     if (!tokenInput.trim()) return
@@ -80,7 +89,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   }, [renameInput, s3Key])
 
   const hasDescriptionChanges =
-    titleInput.trim() !== (currentPhoto.title ?? '') ||
+    titleInput.trim() !== effectiveTitle ||
     zhInput.trim() !== (currentPhoto.descriptions?.['zh-CN'] ?? '') ||
     enInput.trim() !== (currentPhoto.descriptions?.en ?? '')
 
@@ -200,6 +209,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
           </div>
 
           {/* 重命名文件 */}
+          <div className="text-xs text-white/50">重命名文件（真实文件名，改后 URL 变化）</div>
           <div className="space-y-2 border-t border-white/10 pt-3">
             <div className="flex gap-2">
               <input
@@ -227,6 +237,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
           </div>
 
           {/* 编辑标题与描述 */}
+          <div className="text-xs text-white/50">标题与描述（仅页面显示，不改文件名）</div>
           <div className="space-y-2 border-t border-white/10 pt-3">
             <input
               type="text"
