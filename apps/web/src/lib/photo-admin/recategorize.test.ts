@@ -1,6 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { buildNewS3Key, getPhotoCategory, recategorizePhoto, updateDescriptionsCategory } from './recategorize'
+import {
+  buildNewS3Key,
+  getPhotoCategory,
+  recategorizePhoto,
+  updateDescriptionsCategory,
+  updateDescriptionsText,
+  updatePhotoDescriptions,
+} from './recategorize'
 
 describe('getPhotoCategory', () => {
   it('extracts the first path segment as category', () => {
@@ -247,5 +254,115 @@ describe('recategorizePhoto', () => {
       status: 'skipped',
       detail: expect.stringContaining('没有'),
     })
+  })
+})
+
+describe('updateDescriptionsText', () => {
+  it('updates the title and zh/en descriptions of the matching entry', () => {
+    const { json, updated } = updateDescriptionsText(sampleDescriptions, '随手/20250901221543.jpg', {
+      title: '草地上的狗',
+      zhCN: '阳光下的草地与狗',
+      en: 'A dog on the grass',
+    })
+    expect(updated).toBe(true)
+    const parsed = JSON.parse(json) as {
+      photos: Array<{ key: string; title?: string; descriptions?: Record<string, string> }>
+    }
+    expect(parsed.photos[0].title).toBe('草地上的狗')
+    expect(parsed.photos[0].descriptions).toEqual({ 'zh-CN': '阳光下的草地与狗', en: 'A dog on the grass' })
+    expect(parsed.photos[1].key).toBe('城市/IMG_20251031_173316.jpg')
+  })
+
+  it('removes title and descriptions when cleared', () => {
+    const input = {
+      key: '随手/20250901221543.jpg',
+      title: 'x',
+      descriptions: { 'zh-CN': '旧描述', en: 'old' },
+    }
+    const raw = JSON.stringify({ version: 1, photos: [input] })
+    const { json, updated } = updateDescriptionsText(raw, '随手/20250901221543.jpg', {
+      title: '',
+      zhCN: '',
+      en: '',
+    })
+    expect(updated).toBe(true)
+    const parsed = JSON.parse(json) as { photos: Array<{ title?: string; descriptions?: unknown }> }
+    expect(parsed.photos[0].title).toBeUndefined()
+    expect(parsed.photos[0].descriptions).toBeUndefined()
+  })
+
+  it('keeps the file unchanged when nothing differs', () => {
+    const { json, updated } = updateDescriptionsText(sampleDescriptions, '随手/20250901221543.jpg', {
+      title: 'x',
+    })
+    expect(updated).toBe(false)
+    expect(json.trimEnd()).toBe(sampleDescriptions.trimEnd())
+  })
+
+  it('throws on invalid format', () => {
+    expect(() => updateDescriptionsText('not-json', 'a.jpg', { title: 'x' })).toThrow()
+  })
+})
+
+describe('updatePhotoDescriptions', () => {
+  const token = 'test-token'
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('updates the descriptions file through GitHub', async () => {
+    const calls: Array<{ method: string; url: string; body?: string }> = []
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      calls.push({ method, url, body: typeof init?.body === 'string' ? init.body : undefined })
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        if (method === 'GET') {
+          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+        }
+        if (method === 'PUT') return jsonResponse({})
+      }
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await updatePhotoDescriptions(token, '随手/20250901221543.jpg', {
+      title: '草地上的狗',
+      zhCN: '中文描述',
+      en: 'A dog',
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.steps.map((step) => step.status)).toEqual(['ok'])
+    const put = calls.find((call) => call.method === 'PUT')
+    expect(put?.url).toContain('/repos/Hayden0226/Photography/contents/content/photo-descriptions.json')
+    const decoded = Buffer.from(JSON.parse(put?.body ?? '{}').content, 'base64').toString('utf-8')
+    expect(decoded).toContain('草地上的狗')
+    expect(decoded).toContain('A dog')
+  })
+
+  it('fails when nothing changed', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = decodeURIComponent(String(input))
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+      }
+      throw new Error(`unexpected request: ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await updatePhotoDescriptions(token, '随手/20250901221543.jpg', { title: 'x' })
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('没有检测到需要更新')
+  })
+
+  it('fails when the descriptions file cannot be read', async () => {
+    const fetchMock = vi.fn(async () => notFoundResponse())
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await updatePhotoDescriptions(token, '随手/A.jpg', { title: '新标题' })
+    expect(result.ok).toBe(false)
+    expect(result.error).toBeTruthy()
   })
 })

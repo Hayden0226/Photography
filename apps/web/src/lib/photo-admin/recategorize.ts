@@ -79,6 +79,73 @@ export const updateDescriptionsCategory = (
   return { json: `${JSON.stringify(parsed, null, 2)}\n`, updated }
 }
 
+export interface UpdateDescriptionsTextInput {
+  title?: string
+  zhCN?: string
+  en?: string
+}
+
+export const updateDescriptionsText = (
+  rawJson: string,
+  key: string,
+  input: UpdateDescriptionsTextInput,
+): UpdateDescriptionsResult => {
+  const parsed = JSON.parse(rawJson) as PhotoDescriptionsFile
+  if (!parsed || !Array.isArray(parsed.photos)) {
+    throw new Error('photo-descriptions.json 格式无效')
+  }
+
+  let updated = false
+  for (const entry of parsed.photos) {
+    const normalizedKey = (entry.key ?? '')
+      .replaceAll('\\', '/')
+      .replace(/^photos\//, '')
+      .trim()
+    if (normalizedKey !== key) continue
+
+    const nextTitle = input.title?.trim()
+    if (input.title !== undefined && nextTitle !== ((entry.title as string | undefined) ?? '')) {
+      if (nextTitle) {
+        entry.title = nextTitle
+      } else {
+        delete entry.title
+      }
+      updated = true
+    }
+
+    const descriptions = { ...(entry.descriptions as Record<string, string> | undefined) }
+    if (input.zhCN !== undefined) {
+      const next = input.zhCN.trim()
+      if (next !== (descriptions['zh-CN'] ?? '')) {
+        if (next) {
+          descriptions['zh-CN'] = next
+        } else {
+          delete descriptions['zh-CN']
+        }
+        updated = true
+      }
+    }
+    if (input.en !== undefined) {
+      const next = input.en.trim()
+      if (next !== (descriptions.en ?? '')) {
+        if (next) {
+          descriptions.en = next
+        } else {
+          delete descriptions.en
+        }
+        updated = true
+      }
+    }
+    if (Object.keys(descriptions).length > 0) {
+      entry.descriptions = descriptions
+    } else {
+      delete entry.descriptions
+    }
+  }
+
+  return { json: `${JSON.stringify(parsed, null, 2)}\n`, updated }
+}
+
 export interface RecategorizeStep {
   step: 'read-photo' | 'move-photo' | 'remove-photo' | 'update-descriptions'
   status: 'ok' | 'skipped' | 'failed'
@@ -91,6 +158,7 @@ export interface RecategorizeResult {
   newS3Key: string
   steps: RecategorizeStep[]
   error?: string
+  message?: string
 }
 
 const fail = (oldS3Key: string, newS3Key: string, steps: RecategorizeStep[], error: string): RecategorizeResult => ({
@@ -114,23 +182,14 @@ const base64ToUtf8 = (value: string): string => {
   return new TextDecoder().decode(bytes)
 }
 
-export const recategorizePhoto = async (
+const movePhotoFile = async (
   token: string,
-  s3Key: string,
+  oldS3Key: string,
+  newS3Key: string,
+  oldCategory: string,
   newCategory: string,
 ): Promise<RecategorizeResult> => {
-  const oldS3Key = s3Key.replaceAll('\\', '/')
-  const newS3Key = buildNewS3Key(oldS3Key, newCategory)
-  const oldCategory = getPhotoCategory(oldS3Key)
-  const newCategoryValue = getPhotoCategory(newS3Key) ?? newCategory
   const steps: RecategorizeStep[] = []
-
-  if (!oldCategory) {
-    return fail(oldS3Key, newS3Key, steps, '无法从照片路径解析当前分类')
-  }
-  if (oldCategory === newCategoryValue) {
-    return fail(oldS3Key, newS3Key, steps, '照片已经在该分类中')
-  }
 
   // 1. 读取照片仓库中的原文件
   let file: GitHubFile
@@ -171,14 +230,14 @@ export const recategorizePhoto = async (
     steps.push({ step: 'remove-photo', status: 'ok' })
   } catch (error) {
     const detail = error instanceof Error ? error.message : '删除旧文件失败'
-    return fail(oldS3Key, newS3Key, steps, `照片已复制到新分类，但删除旧文件失败：${detail}`)
+    return fail(oldS3Key, newS3Key, steps, `照片已复制到新路径，但删除旧文件失败：${detail}`)
   }
 
   // 5. 更新主仓库 descriptions.json
   try {
     const descriptionsFile = await getRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH)
     const rawJson = base64ToUtf8(descriptionsFile.content)
-    const { json, updated } = updateDescriptionsCategory(rawJson, oldS3Key, newS3Key, oldCategory, newCategoryValue)
+    const { json, updated } = updateDescriptionsCategory(rawJson, oldS3Key, newS3Key, oldCategory, newCategory)
     if (updated) {
       await createOrUpdateRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH, {
         message: `chore: recategorize photo ${oldS3Key} -> ${newS3Key}`,
@@ -195,4 +254,53 @@ export const recategorizePhoto = async (
   }
 
   return { ok: true, oldS3Key, newS3Key, steps }
+}
+
+export const recategorizePhoto = async (
+  token: string,
+  s3Key: string,
+  newCategory: string,
+): Promise<RecategorizeResult> => {
+  const oldS3Key = s3Key.replaceAll('\\', '/')
+  const newS3Key = buildNewS3Key(oldS3Key, newCategory)
+  const oldCategory = getPhotoCategory(oldS3Key)
+  const newCategoryValue = getPhotoCategory(newS3Key) ?? newCategory
+  const steps: RecategorizeStep[] = []
+
+  if (!oldCategory) {
+    return fail(oldS3Key, newS3Key, steps, '无法从照片路径解析当前分类')
+  }
+  if (oldCategory === newCategoryValue) {
+    return fail(oldS3Key, newS3Key, steps, '照片已经在该分类中')
+  }
+
+  return movePhotoFile(token, oldS3Key, newS3Key, oldCategory, newCategoryValue)
+}
+
+export const updatePhotoDescriptions = async (
+  token: string,
+  s3Key: string,
+  input: UpdateDescriptionsTextInput,
+): Promise<RecategorizeResult> => {
+  const normalizedKey = s3Key.replaceAll('\\', '/')
+  const steps: RecategorizeStep[] = []
+
+  try {
+    const descriptionsFile = await getRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH)
+    const rawJson = base64ToUtf8(descriptionsFile.content)
+    const { json, updated } = updateDescriptionsText(rawJson, normalizedKey, input)
+    if (!updated) {
+      return fail(normalizedKey, normalizedKey, steps, '没有检测到需要更新的字段')
+    }
+    await createOrUpdateRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH, {
+      message: `chore: update photo description ${normalizedKey}`,
+      content: utf8ToBase64(json),
+      sha: descriptionsFile.sha,
+    })
+    steps.push({ step: 'update-descriptions', status: 'ok' })
+    return { ok: true, oldS3Key: normalizedKey, newS3Key: normalizedKey, steps, message: '已更新标题与描述' }
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : '更新描述文件失败'
+    return fail(normalizedKey, normalizedKey, steps, detail)
+  }
 }
