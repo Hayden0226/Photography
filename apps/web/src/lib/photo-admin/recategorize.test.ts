@@ -143,6 +143,10 @@ describe('recategorizePhoto', () => {
     expect(result.oldS3Key).toBe('随手/20250901221543.jpg')
     expect(result.newS3Key).toBe('风景/20250901221543.jpg')
     expect(result.steps.map((step) => step.status)).toEqual(['ok', 'ok', 'ok', 'ok'])
+    expect(calls[0].url).toContain('/repos/Hayden0226/Photography-Photos/contents/随手/20250901221543.jpg')
+    expect(calls.find((call) => call.url.includes('photo-descriptions.json'))?.url).toContain(
+      '/repos/Hayden0226/Photography/contents/',
+    )
 
     const putBodies = calls.filter((call) => call.method === 'PUT').map((call) => JSON.parse(call.body ?? '{}'))
     expect(putBodies[0].content).toBe('aGVsbG8=')

@@ -5,6 +5,8 @@ export const PHOTO_REPO_OWNER = 'Hayden0226'
 export const PHOTO_REPO_NAME = 'Photography-Photos'
 export const MAIN_REPO_NAME = 'Photography'
 
+const qualifyRepoName = (repo: string): string => (repo.includes('/') ? repo : `${PHOTO_REPO_OWNER}/${repo}`)
+
 export interface GitHubFile {
   path: string
   sha: string
@@ -72,7 +74,7 @@ const githubFetch = async (token: string, path: string, init: RequestInit = {}):
 }
 
 export const getRepoFile = async (token: string, repo: string, path: string): Promise<GitHubFile> => {
-  const response = await githubFetch(token, `/repos/${repo}/contents/${encodeRepoPath(path)}`)
+  const response = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/contents/${encodeRepoPath(path)}`)
   return (await response.json()) as GitHubFile
 }
 
@@ -88,7 +90,7 @@ export const createOrUpdateRepoFile = async (
   path: string,
   options: RepoFileCommit,
 ): Promise<unknown> => {
-  const response = await githubFetch(token, `/repos/${repo}/contents/${encodeRepoPath(path)}`, {
+  const response = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/contents/${encodeRepoPath(path)}`, {
     method: 'PUT',
     body: JSON.stringify({
       message: options.message,
@@ -106,7 +108,7 @@ export const deleteRepoFile = async (
   sha: string,
   message: string,
 ): Promise<unknown> => {
-  const response = await githubFetch(token, `/repos/${repo}/contents/${encodeRepoPath(path)}`, {
+  const response = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/contents/${encodeRepoPath(path)}`, {
     method: 'DELETE',
     body: JSON.stringify({ message, sha }),
   })
