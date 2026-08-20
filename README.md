@@ -30,8 +30,13 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 - 照片分享：Instagram 位于社交分享首位；支持 Web Share API 时打开系统分享面板，否则先复制照片链接再打开 Instagram。
 - 人工元数据：`content/photo-descriptions.json` 维护标题、`zh-CN`/`en` 描述和编辑标签，构建时合并进 manifest。
 - GPS 隐私保护：`pnpm run photos:privacy` 手动挑选照片，将精确坐标模糊化到约 5km 城市级（0.05° 网格 + 随机偏移）并删除方向类辅助字段，保护拍摄位置隐私。
+- 网页分类整理：照片详情页的隐藏管理模式（URL 加 `?manage=1`）可直接把照片改到新分类（如「随手」→「风景」），通过 GitHub API 移动照片仓库文件并同步更新描述文件。
 - 静态 SEO：生产构建为 `/photos/:id` 输出独立 HTML，包含 canonical、OpenGraph、Twitter Card 和照片描述。
 - 自动部署：GitHub Actions 检出私有照片仓库、标准化照片、构建静态站点并部署到 GitHub Pages。
+
+## 最近更新（v0.4.0）
+
+- **网页分类整理**：照片详情页新增隐藏管理模式（URL 加 `?manage=1`），输入新分类即可通过 GitHub API 把照片移动到新目录（如「随手」→「风景」），同步更新照片仓库文件与 `photo-descriptions.json`；Token 仅存浏览器本地，不经过服务器。
 
 ## 最近更新（v0.3.0）
 
@@ -185,6 +190,18 @@ pnpm run photos:privacy -- --all --force
 ```
 
 脚本列出所有带 GPS 的照片，输入编号选择（如 `1,3,5-7`）、`a` 全选、`c` 清除、`p3` 用系统看图器预览第 3 张，回车确认；执行前有一次不可逆确认。被保护照片的坐标落到 0.05°（约 5km）网格并叠加随机偏移，海拔取整到 50m，`GPSImgDirection`、`GPSSpeed` 等方向类辅助字段被删除；已处理标记写入 `GPSProcessingMethod`，默认跳过已处理的照片。该步骤只修改照片文件本身的 GPS 字段，不生成备份，也不会处理视频。
+
+### 分类整理（网页管理模式）
+
+照片也可以在网页端直接改分类（例如把「随手」里的照片改到「风景」）。入口是隐藏的：打开任意照片详情页后，在 URL 末尾追加 `?manage=1`（如 `https://visuals.haydenweb.com/photos/20260817093012?manage=1`）。
+
+1. 首次使用先在面板里粘贴 GitHub Token：需要 fine-grained PAT，为 `Hayden0226/Photography` 与 `Hayden0226/Photography-Photos` 两个仓库授予 **Contents read/write** 权限；Token 只保存在当前浏览器的 localStorage，不会发送到本网站服务器。
+2. 在「管理模式 · 分类整理」面板输入新分类（如 `风景`）并确认执行，脚本会：
+   - 在照片仓库中读取原文件 → 写入新分类路径 → 删除旧分类路径（等价于 `git mv`）。
+   - 在主仓库同步更新 `content/photo-descriptions.json` 中该照片的 `key` 与 `aiContext.categoryTags`。
+3. 执行完成后重新构建 manifest（`pnpm run build:manifest`），或等下次部署刷新站点数据。
+
+注意事项：分类移动会改变照片 URL（`/photos/随手/A.jpg` → `/photos/风景/A.jpg`），旧分享链接、收藏夹和搜索引擎已收录的地址会 404，且操作不可撤销；执行前会检查目标路径是否已存在同名文件，避免覆盖已有照片。
 
 当缩略图策略、manifest 字段或照片处理逻辑变化时，建议完整刷新：
 

@@ -394,3 +394,22 @@ test('loads the map route', async ({ page }) => {
   await expect(page.locator('.maplibregl-marker[role="button"]')).toHaveCount(0)
   await expect(page.locator('.maplibregl-marker button').first()).toBeVisible()
 })
+
+test('keeps the web category management panel hidden without the manage flag', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop', 'Manage panel is a desktop admin surface')
+
+  await page.goto('/')
+  const firstPhoto = page.locator('[data-photo-id]').first()
+  await expect(firstPhoto).toBeVisible()
+  const photoId = await firstPhoto.getAttribute('data-photo-id')
+  expect(photoId).toBeTruthy()
+
+  const detailUrl = `/photos/${encodeURIComponent(photoId!)}/`
+  await page.goto(detailUrl)
+  await expect(page.getByRole('dialog')).toBeVisible()
+  await expect(page.getByText('管理模式 · 分类整理')).toHaveCount(0)
+
+  await page.goto(`${detailUrl}?manage=1`)
+  await expect(page.getByText('🛠 管理模式 · 分类整理')).toBeVisible()
+  await expect(page.getByText(/需要 GitHub Token/)).toBeVisible()
+})

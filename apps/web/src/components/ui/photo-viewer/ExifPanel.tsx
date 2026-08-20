@@ -31,6 +31,7 @@ import { HistogramChart } from './HistogramChart'
 
 const MiniMap = lazy(() => import('./MiniMap').then((module) => ({ default: module.MiniMap })))
 const RawExifViewer = lazy(() => import('./RawExifViewer').then((module) => ({ default: module.RawExifViewer })))
+const ManagePanel = lazy(() => import('./ManagePanel').then((module) => ({ default: module.ManagePanel })))
 
 export const ExifPanel: FC<{
   currentPhoto: PhotoManifest | PhotoManifestItem
@@ -214,6 +215,10 @@ export const ExifPanel: FC<{
                 </div>
               </div>
             )}
+
+            <Suspense fallback={null}>
+              <ManagePanel currentPhoto={currentPhoto} />
+            </Suspense>
           </div>
 
           {/* 影调分析和直方图 */}
