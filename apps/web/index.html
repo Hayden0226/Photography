@@ -91,9 +91,9 @@
 </head>
 
 <body>
-  <div id="root">
-    <!-- Splash Screen - 现代简洁设计 -->
-    <div id="splash-screen" style="
+  <div id="root"></div>
+  <!-- Splash Screen - 现代简洁设计 -->
+  <div id="splash-screen" style="
           position: fixed;
           top: 0;
           left: 0;
@@ -259,6 +259,12 @@
           }
         }
 
+        #splash-screen.splash-screen-exit {
+          opacity: 0;
+          transition: opacity 0.5s ease;
+          pointer-events: none;
+        }
+
         @media (prefers-reduced-motion: reduce) {
           #splash-screen [style*='animation:'] {
             animation: none !important;
@@ -286,7 +292,6 @@
           }
         }
       </style>
-    </div>
   </div>
   <script id="manifest"></script>
   <script type="module" src="/src/main.tsx"></script>
