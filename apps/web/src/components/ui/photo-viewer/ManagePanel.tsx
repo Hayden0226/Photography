@@ -209,8 +209,8 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
           </div>
 
           {/* 重命名文件 */}
-          <div className="text-xs text-white/50">重命名文件（真实文件名，改后 URL 变化）</div>
           <div className="space-y-2 border-t border-white/10 pt-3">
+            <div className="text-xs text-white/50">重命名文件（真实文件名，改后 URL 变化）</div>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -237,8 +237,8 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
           </div>
 
           {/* 编辑标题与描述 */}
-          <div className="text-xs text-white/50">标题与描述（仅页面显示，不改文件名）</div>
           <div className="space-y-2 border-t border-white/10 pt-3">
+            <div className="text-xs text-white/50">标题与描述（仅页面显示，不改文件名）</div>
             <input
               type="text"
               value={titleInput}
@@ -325,11 +325,11 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
               </DialogPrimitive.Close>
               <button
                 type="button"
-                onClick={handleApply}
+                onClick={executionStatus === 'done' ? closeConfirm : handleApply}
                 disabled={isRunning}
                 className="bg-accent rounded-md px-3 py-1 text-xs text-white disabled:opacity-40"
               >
-                {isRunning ? '执行中…' : '确认执行'}
+                {isRunning ? '执行中…' : executionStatus === 'done' ? '关闭' : '确认执行'}
               </button>
             </div>
           </DialogPrimitive.Content>
