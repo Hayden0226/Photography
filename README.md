@@ -37,6 +37,13 @@ Hayden's Photography 是一个静态发布的个人摄影画廊。构建器会�
 ## 最近更新
 
 <details open>
+<summary><strong>v0.4.3</strong> · 修复开场动画被跳过</summary>
+
+- **修复开场动画被 React 秒杀**：开场动画（Splash Screen）原先放在 React 挂载的 `#root` 容器内，应用一加载就被 `createRoot().render()` 整体替换，动画根本播不完；现已把 Splash 移出 `#root`，由 `main.tsx` 控制最小展示时长（默认约 2 秒，覆盖全部入场动画，`prefers-reduced-motion` 时缩短到 300ms），动画完整播完后平滑淡出再进入站点。
+
+</details>
+
+<details>
 <summary><strong>v0.4.2</strong> · 管理模式扩展：文件重命名与标题描述编辑</summary>
 
 - **照片文件重命名**：管理模式新增重命名功能，输入新文件名（可带或不带扩展名）即可真实重命名照片文件，旧 URL 失效且操作不可撤销；通过 Git Blobs API 读取文件后写入新路径并删除旧文件，同时同步更新描述文件中的 key。
