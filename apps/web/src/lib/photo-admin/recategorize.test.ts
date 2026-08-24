@@ -79,6 +79,25 @@ describe('updateDescriptionsCategory', () => {
     expect(parsed.photos[1].key).toBe('城市/IMG_20251031_173316.jpg')
   })
 
+  it('syncs the title and localized titles when renaming', () => {
+    const { json, updated } = updateDescriptionsCategory(
+      sampleDescriptions,
+      '随手/20250901221543.jpg',
+      '随手/狗.jpg',
+      '随手',
+      '随手',
+      '狗',
+    )
+    expect(updated).toBe(true)
+    const parsed = JSON.parse(json) as {
+      photos: Array<{ key: string; title: string; titles: Record<string, string> }>
+    }
+    expect(parsed.photos[0].key).toBe('随手/狗.jpg')
+    expect(parsed.photos[0].title).toBe('狗')
+    expect(parsed.photos[0].titles).toEqual({ 'zh-CN': '狗', en: '狗' })
+    expect(parsed.photos[1].key).toBe('城市/IMG_20251031_173316.jpg')
+  })
+
   it('keeps the file unchanged when no entry matches', () => {
     const { json, updated } = updateDescriptionsCategory(
       sampleDescriptions,
@@ -443,6 +462,8 @@ describe('renamePhoto', () => {
     const descriptionsPut = calls.find((call) => call.method === 'PUT' && call.url.includes('photo-descriptions.json'))
     const decoded = Buffer.from(JSON.parse(descriptionsPut?.body ?? '{}').content, 'base64').toString('utf-8')
     expect(decoded).toContain('"key": "随手/狗.jpg"')
+    expect(decoded).toContain('"title": "狗"')
+    expect(decoded).toContain('"zh-CN": "狗"')
     expect(decoded).not.toContain('"key": "随手/20250901221543.jpg"')
   })
 

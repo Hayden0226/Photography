@@ -300,7 +300,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
                     <li>
                       <span>{`照片仓库：${s3Key} → ${renamedS3KeyPreview ?? ''}`}</span>
                     </li>
-                    <li>主仓库：同步更新 photo-descriptions.json 中的 key</li>
+                    <li>主仓库：同步更新 photo-descriptions.json 中的 key 与标题</li>
                     <li>旧链接将失效，且操作不可撤销</li>
                   </>
                 ) : null}

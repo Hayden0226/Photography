@@ -30,6 +30,7 @@ export const buildNewS3Key = (s3Key: string, newCategory: string): string => {
 interface PhotoDescriptionEntry {
   key: string
   title?: unknown
+  titles?: Record<string, string>
   descriptions?: unknown
   tags?: unknown
   aiContext?: {
@@ -53,6 +54,7 @@ export const updateDescriptionsCategory = (
   newKey: string,
   oldCategory: string,
   newCategory: string,
+  syncTitleTo?: string,
 ): UpdateDescriptionsResult => {
   const parsed = JSON.parse(rawJson) as PhotoDescriptionsFile
   if (!parsed || !Array.isArray(parsed.photos)) {
@@ -67,6 +69,10 @@ export const updateDescriptionsCategory = (
       .trim()
     if (normalizedKey === oldKey) {
       entry.key = newKey
+      if (syncTitleTo) {
+        entry.title = syncTitleTo
+        entry.titles = { ...entry.titles, 'zh-CN': syncTitleTo, en: syncTitleTo }
+      }
       if (entry.aiContext && Array.isArray(entry.aiContext.categoryTags)) {
         entry.aiContext.categoryTags = entry.aiContext.categoryTags.map((tag) =>
           tag === oldCategory ? newCategory : tag,
@@ -238,7 +244,15 @@ const movePhotoFile = async (
   try {
     const descriptionsFile = await getRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH)
     const rawJson = base64ToUtf8(descriptionsFile.content)
-    const { json, updated } = updateDescriptionsCategory(rawJson, oldS3Key, newS3Key, oldCategory, newCategory)
+    const syncedTitle = verb === 'rename' ? getFileBaseName(newS3Key) : undefined
+    const { json, updated } = updateDescriptionsCategory(
+      rawJson,
+      oldS3Key,
+      newS3Key,
+      oldCategory,
+      newCategory,
+      syncedTitle,
+    )
     if (updated) {
       await createOrUpdateRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH, {
         message: `chore: ${verb} photo ${oldS3Key} -> ${newS3Key}`,
@@ -304,6 +318,11 @@ export const updatePhotoDescriptions = async (
     const detail = error instanceof Error ? error.message : '更新描述文件失败'
     return fail(normalizedKey, normalizedKey, steps, detail)
   }
+}
+
+export const getFileBaseName = (s3Key: string): string => {
+  const parts = s3Key.replaceAll('\\', '/').split('/').filter(Boolean)
+  return (parts.at(-1) ?? '').replace(/\.[a-z0-9]+$/i, '')
 }
 
 export const buildRenamedS3Key = (s3Key: string, newFileName: string): string => {
