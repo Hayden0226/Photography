@@ -40,6 +40,10 @@ export class GitHubApiError extends Error {
   }
 }
 
+const NETWORK_RETRY_ATTEMPTS = 3
+
+const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms))
+
 const encodeRepoPath = (path: string): string =>
   path
     .split('/')
@@ -48,29 +52,44 @@ const encodeRepoPath = (path: string): string =>
     .join('/')
 
 const githubFetch = async (token: string, path: string, init: RequestInit = {}): Promise<Response> => {
-  const response = await fetch(`https://api.github.com${path}`, {
-    ...init,
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      Authorization: `Bearer ${token}`,
-      ...init.headers,
-    },
-  })
+  let lastError: unknown
 
-  if (!response.ok) {
-    let detail = ''
+  for (let attempt = 1; attempt <= NETWORK_RETRY_ATTEMPTS; attempt++) {
     try {
-      const body = (await response.json()) as { message?: string }
-      detail = body.message ?? ''
-    } catch {
-      // ignore JSON parse failure
+      const response = await fetch(`https://api.github.com${path}`, {
+        ...init,
+        headers: {
+          Accept: 'application/vnd.github+json',
+          'X-GitHub-Api-Version': '2022-11-28',
+          Authorization: `Bearer ${token}`,
+          ...init.headers,
+        },
+      })
+
+      if (!response.ok) {
+        let detail = ''
+        try {
+          const body = (await response.json()) as { message?: string }
+          detail = body.message ?? ''
+        } catch {
+          // ignore JSON parse failure
+        }
+        const suffix = detail ? `: ${detail}` : ''
+        throw new GitHubApiError(`GitHub API ${response.status}${suffix}`, response.status)
+      }
+
+      return response
+    } catch (error) {
+      // 只重试网络层失败（fetch 被拒绝），HTTP 错误状态不重试
+      if (error instanceof GitHubApiError) throw error
+      lastError = error
+      if (attempt < NETWORK_RETRY_ATTEMPTS) {
+        await sleep(400 * 2 ** (attempt - 1))
+      }
     }
-    const suffix = detail ? `: ${detail}` : ''
-    throw new GitHubApiError(`GitHub API ${response.status}${suffix}`, response.status)
   }
 
-  return response
+  throw lastError instanceof Error ? lastError : new Error('GitHub API 请求失败')
 }
 
 export const getRepoFile = async (token: string, repo: string, path: string): Promise<GitHubFile> => {
