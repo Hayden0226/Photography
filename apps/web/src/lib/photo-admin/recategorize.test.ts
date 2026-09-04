@@ -3,8 +3,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   buildNewS3Key,
   buildRenamedS3Key,
+  deletePhoto,
   getPhotoCategory,
   recategorizePhoto,
+  removeDescriptionEntry,
   renamePhoto,
   updateDescriptionsCategory,
   updateDescriptionsText,
@@ -131,6 +133,26 @@ const fileResponse = (overrides: Partial<{ content: string; sha: string }> = {})
   })
 
 const notFoundResponse = () => jsonResponse({ message: 'Not Found' }, 404)
+
+describe('removeDescriptionEntry', () => {
+  it('removes the matching entry', () => {
+    const { json, updated } = removeDescriptionEntry(sampleDescriptions, '随手/20250901221543.jpg')
+    expect(updated).toBe(true)
+    const parsed = JSON.parse(json) as { photos: Array<{ key: string }> }
+    expect(parsed.photos).toHaveLength(1)
+    expect(parsed.photos[0].key).toBe('城市/IMG_20251031_173316.jpg')
+  })
+
+  it('keeps the file unchanged when no entry matches', () => {
+    const { json, updated } = removeDescriptionEntry(sampleDescriptions, '街拍/none.jpg')
+    expect(updated).toBe(false)
+    expect(json.trimEnd()).toBe(sampleDescriptions.trimEnd())
+  })
+
+  it('throws on invalid format', () => {
+    expect(() => removeDescriptionEntry('not-json', 'a.jpg')).toThrow()
+  })
+})
 
 describe('recategorizePhoto', () => {
   const token = 'test-token'
@@ -504,5 +526,100 @@ describe('renamePhoto', () => {
     const result = await renamePhoto(token, '随手/A.jpg', '狗')
     expect(result.ok).toBe(false)
     expect(result.error).toContain('找不到')
+  })
+})
+describe('deletePhoto', () => {
+  const token = 'test-token'
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('deletes the photo file and removes its description entry', async () => {
+    const calls: Array<{ method: string; url: string; body?: string }> = []
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      calls.push({ method, url, body: typeof init?.body === 'string' ? init.body : undefined })
+
+      if (url.includes('/contents/随手/20250901221543.jpg')) {
+        if (method === 'GET') return fileResponse({ content: 'aGVsbG8=' })
+        if (method === 'DELETE') return jsonResponse({})
+      }
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        if (method === 'GET') {
+          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+        }
+        if (method === 'PUT') return jsonResponse({})
+      }
+      throw new Error(`unexpected request: ${  method  } ${  url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await deletePhoto(token, '随手/20250901221543.jpg')
+
+    expect(result.ok).toBe(true)
+    expect(result.steps.map((step) => step.status)).toEqual(['ok', 'ok', 'ok'])
+    expect(result.message).toContain('已删除照片')
+
+    const deleteCall = calls.find(
+      (call) => call.method === 'DELETE' && call.url.includes('/contents/随手/20250901221543.jpg'),
+    )
+    expect(JSON.parse(deleteCall?.body ?? '{}').message).toBe('chore: delete photo 随手/20250901221543.jpg')
+
+    const descriptionsPut = calls.find((call) => call.method === 'PUT' && call.url.includes('photo-descriptions.json'))
+    const decoded = Buffer.from(JSON.parse(descriptionsPut?.body ?? '{}').content, 'base64').toString('utf-8')
+    expect(decoded).not.toContain('随手/20250901221543.jpg')
+    expect(decoded).toContain('城市/IMG_20251031_173316.jpg')
+  })
+
+  it('succeeds and skips descriptions when no entry matches', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      if (url.includes('/contents/随手/A.jpg')) {
+        if (method === 'GET') return fileResponse()
+        if (method === 'DELETE') return jsonResponse({})
+      }
+      if (url.includes('/contents/content/photo-descriptions.json') && method === 'GET') {
+          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+        }
+      throw new Error(`unexpected request: ${  method  } ${  url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await deletePhoto(token, '随手/A.jpg')
+
+    expect(result.ok).toBe(true)
+    expect(result.steps.map((step) => step.status)).toEqual(['ok', 'ok', 'skipped'])
+  })
+
+  it('fails when the source photo is missing', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      if (decodeURIComponent(String(input)).includes('/contents/随手/A.jpg')) return notFoundResponse()
+      throw new Error('unexpected request')
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await deletePhoto(token, '随手/A.jpg')
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('找不到')
+  })
+
+  it('fails when the photo file cannot be deleted', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      if (url.includes('/contents/随手/A.jpg')) {
+        if (method === 'GET') return fileResponse()
+        if (method === 'DELETE') return jsonResponse({ message: 'Conflict' }, 409)
+      }
+      throw new Error(`unexpected request: ${  method  } ${  url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await deletePhoto(token, '随手/A.jpg')
+    expect(result.ok).toBe(false)
+    expect(result.error).toContain('409')
   })
 })

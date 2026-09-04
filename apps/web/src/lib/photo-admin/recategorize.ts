@@ -152,8 +152,31 @@ export const updateDescriptionsText = (
   return { json: `${JSON.stringify(parsed, null, 2)}\n`, updated }
 }
 
+export const removeDescriptionEntry = (rawJson: string, key: string): UpdateDescriptionsResult => {
+  const parsed = JSON.parse(rawJson) as PhotoDescriptionsFile
+  if (!parsed || !Array.isArray(parsed.photos)) {
+    throw new Error('photo-descriptions.json 格式无效')
+  }
+
+  const before = parsed.photos.length
+  const normalizedTarget = key
+    .replaceAll('\\', '/')
+    .replace(/^photos\//, '')
+    .trim()
+  parsed.photos = parsed.photos.filter((entry) => {
+    const normalizedKey = (entry.key ?? '')
+      .replaceAll('\\', '/')
+      .replace(/^photos\//, '')
+      .trim()
+    return normalizedKey !== normalizedTarget
+  })
+
+  const updated = parsed.photos.length !== before
+  return { json: `${JSON.stringify(parsed, null, 2)}\n`, updated }
+}
+
 export interface RecategorizeStep {
-  step: 'read-photo' | 'move-photo' | 'remove-photo' | 'update-descriptions'
+  step: 'read-photo' | 'move-photo' | 'remove-photo' | 'delete-photo' | 'update-descriptions'
   status: 'ok' | 'skipped' | 'failed'
   detail?: string
 }
@@ -358,4 +381,51 @@ export const renamePhoto = async (token: string, s3Key: string, newFileName: str
     return fail(oldS3Key, newS3Key, [], '无法从照片路径解析分类')
   }
   return movePhotoFile(token, oldS3Key, newS3Key, oldCategory, oldCategory, 'rename')
+}
+
+export const deletePhoto = async (token: string, s3Key: string): Promise<RecategorizeResult> => {
+  const normalizedKey = s3Key.replaceAll('\\', '/')
+  const steps: RecategorizeStep[] = []
+
+  // 1. 读取照片仓库中的文件，确认存在并取得 sha
+  let file: GitHubFile
+  try {
+    file = await getRepoFile(token, PHOTO_REPO_NAME, normalizedKey)
+    steps.push({ step: 'read-photo', status: 'ok' })
+  } catch (error) {
+    if (isNotFound(error)) {
+      return fail(normalizedKey, normalizedKey, steps, `照片仓库中找不到 ${normalizedKey}（可能已被删除）`)
+    }
+    return fail(normalizedKey, normalizedKey, steps, error instanceof Error ? error.message : '读取照片失败')
+  }
+
+  // 2. 从照片仓库删除文件
+  try {
+    await deleteRepoFile(token, PHOTO_REPO_NAME, normalizedKey, file.sha, `chore: delete photo ${normalizedKey}`)
+    steps.push({ step: 'delete-photo', status: 'ok' })
+  } catch (error) {
+    return fail(normalizedKey, normalizedKey, steps, error instanceof Error ? error.message : '删除照片文件失败')
+  }
+
+  // 3. 移除主仓库 descriptions.json 中对应条目
+  try {
+    const descriptionsFile = await getRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH)
+    const rawJson = base64ToUtf8(descriptionsFile.content)
+    const { json, updated } = removeDescriptionEntry(rawJson, normalizedKey)
+    if (updated) {
+      await createOrUpdateRepoFile(token, MAIN_REPO_NAME, DESCRIPTIONS_FILE_PATH, {
+        message: `chore: remove description entry ${normalizedKey}`,
+        content: utf8ToBase64(json),
+        sha: descriptionsFile.sha,
+      })
+      steps.push({ step: 'update-descriptions', status: 'ok' })
+    } else {
+      steps.push({ step: 'update-descriptions', status: 'skipped', detail: 'descriptions.json 中没有该照片条目' })
+    }
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : '移除描述条目失败'
+    return fail(normalizedKey, normalizedKey, steps, `照片文件已删除，但描述条目移除失败：${detail}`)
+  }
+
+  return { ok: true, oldS3Key: normalizedKey, newS3Key: normalizedKey, steps, message: `已删除照片：${normalizedKey}` }
 }

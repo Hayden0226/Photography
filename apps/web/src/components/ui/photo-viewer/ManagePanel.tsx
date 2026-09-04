@@ -7,6 +7,7 @@ import type { RecategorizeResult, RecategorizeStep } from '~/lib/photo-admin/rec
 import {
   buildNewS3Key,
   buildRenamedS3Key,
+  deletePhoto,
   getPhotoCategory,
   recategorizePhoto,
   renamePhoto,
@@ -22,7 +23,7 @@ interface ManagePanelProps {
 }
 
 type ExecutionStatus = 'idle' | 'running' | 'done'
-type ManageAction = 'move' | 'rename' | 'describe'
+type ManageAction = 'move' | 'rename' | 'describe' | 'delete'
 
 export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   const [searchParams] = useSearchParams()
@@ -106,20 +107,54 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   }, [])
 
   const handleApply = useCallback(async () => {
-    if (!token || !s3Key || !action) return
+    if (!s3Key || !action) return
     setExecutionStatus('running')
     setResult(null)
-    let recategorizeResult: RecategorizeResult
-    if (action === 'move') {
-      recategorizeResult = await recategorizePhoto(token, s3Key, categoryInput)
-    } else if (action === 'rename') {
-      recategorizeResult = await renamePhoto(token, s3Key, renameInput)
-    } else {
-      recategorizeResult = await updatePhotoDescriptions(token, s3Key, {
-        title: titleInput,
-        zhCN: zhInput,
-        en: enInput,
+    if (!token) {
+      setResult({
+        ok: false,
+        oldS3Key: s3Key,
+        newS3Key: s3Key,
+        steps: [],
+        error: '请先粘贴并保存 GitHub Token',
       })
+      setExecutionStatus('done')
+      return
+    }
+    let recategorizeResult: RecategorizeResult
+    try {
+      switch (action) {
+      case 'move': {
+        recategorizeResult = await recategorizePhoto(token, s3Key, categoryInput)
+      
+      break;
+      }
+      case 'rename': {
+        recategorizeResult = await renamePhoto(token, s3Key, renameInput)
+      
+      break;
+      }
+      case 'delete': {
+        recategorizeResult = await deletePhoto(token, s3Key)
+      
+      break;
+      }
+      default: {
+        recategorizeResult = await updatePhotoDescriptions(token, s3Key, {
+          title: titleInput,
+          zhCN: zhInput,
+          en: enInput,
+        })
+      }
+      }
+    } catch (error) {
+      recategorizeResult = {
+        ok: false,
+        oldS3Key: s3Key,
+        newS3Key: s3Key,
+        steps: [],
+        error: error instanceof Error ? error.message : '执行失败',
+      }
     }
     setResult(recategorizeResult)
     setExecutionStatus('done')
@@ -269,6 +304,19 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
               保存标题与描述
             </button>
           </div>
+
+          {/* 危险操作：删除照片（从私人照片仓库永久删除） */}
+          <div className="space-y-2 border-t border-red-500/20 pt-3">
+            <div className="text-xs text-red-400/90">删除照片（从私人照片仓库永久删除，不可恢复）</div>
+            <button
+              type="button"
+              disabled={isRunning}
+              onClick={() => openConfirm('delete')}
+              className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs text-red-300 hover:bg-red-500/20 disabled:opacity-40"
+            >
+              删除该照片
+            </button>
+          </div>
         </div>
       )}
 
@@ -281,7 +329,9 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
                 ? '确认移动照片分类？'
                 : action === 'rename'
                   ? '确认重命名照片文件？'
-                  : '确认更新标题与描述？'}
+                  : action === 'delete'
+                    ? '确认删除照片？'
+                    : '确认更新标题与描述？'}
             </DialogPrimitive.Title>
             <DialogPrimitive.Description className="mt-2 space-y-2 text-sm text-white/80">
               <p>将执行以下操作：</p>
@@ -302,6 +352,18 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
                     </li>
                     <li>主仓库：同步更新 photo-descriptions.json 中的 key 与标题</li>
                     <li>旧链接将失效，且操作不可撤销</li>
+                  </>
+                ) : null}
+                {action === 'delete' ? (
+                  <>
+                    <li>
+                      <span>
+                        {'照片仓库：永久删除 '}
+                        {s3Key}
+                      </span>
+                    </li>
+                    <li>主仓库：移除 photo-descriptions.json 中对应条目（若有）</li>
+                    <li>照片与缩略图将一并移除，旧链接失效且不可恢复</li>
                   </>
                 ) : null}
                 {action === 'describe' ? (
@@ -343,6 +405,7 @@ const STEP_LABELS: Record<RecategorizeStep['step'], string> = {
   'read-photo': '读取照片文件',
   'move-photo': '写入新路径',
   'remove-photo': '删除旧文件',
+  'delete-photo': '删除照片文件',
   'update-descriptions': '更新描述文件',
 }
 
