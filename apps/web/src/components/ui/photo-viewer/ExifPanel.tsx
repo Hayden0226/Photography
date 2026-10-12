@@ -217,7 +217,7 @@ export const ExifPanel: FC<{
             )}
 
             <Suspense fallback={null}>
-              <ManagePanel currentPhoto={currentPhoto} />
+              <ManagePanel currentPhoto={currentPhoto} isLoadingDetails={isLoadingDetails} />
             </Suspense>
           </div>
 

@@ -20,12 +20,14 @@ interface ManagePanelProps {
     title?: string
     descriptions?: Record<string, string>
   }
+  /** 照片详情（完整 manifest）是否仍在加载，用于说明管理操作为什么暂不可用 */
+  isLoadingDetails?: boolean
 }
 
 type ExecutionStatus = 'idle' | 'running' | 'done'
 type ManageAction = 'move' | 'rename' | 'describe' | 'delete'
 
-export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
+export const ManagePanel = ({ currentPhoto, isLoadingDetails = false }: ManagePanelProps) => {
   const [searchParams] = useSearchParams()
   const isManageMode = searchParams.get('manage') === '1'
 
@@ -42,6 +44,8 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   const [result, setResult] = useState<RecategorizeResult | null>(null)
 
   const s3Key = currentPhoto.s3Key ?? ''
+  // 照片索引里没有文件路径，只有详情（完整 manifest）加载完才有；缺失时任何管理操作都无从下手
+  const isPhotoPathReady = s3Key.length > 0
   const currentCategory = getPhotoCategory(s3Key)
   const fileName =
     s3Key
@@ -107,9 +111,23 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
   }, [])
 
   const handleApply = useCallback(async () => {
-    if (!s3Key || !action) return
+    if (!action) return
     setExecutionStatus('running')
     setResult(null)
+    if (!s3Key) {
+      // 直接 return 会让「确认执行」看起来毫无反应，这里给出明确的失败原因
+      setResult({
+        ok: false,
+        oldS3Key: s3Key,
+        newS3Key: s3Key,
+        steps: [],
+        error: isLoadingDetails
+          ? '照片信息仍在读取中，请稍候再试'
+          : '没有读取到照片文件路径（照片信息加载失败），请刷新页面后重试',
+      })
+      setExecutionStatus('done')
+      return
+    }
     if (!token) {
       setResult({
         ok: false,
@@ -158,13 +176,14 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
     }
     setResult(recategorizeResult)
     setExecutionStatus('done')
-  }, [token, s3Key, action, categoryInput, renameInput, titleInput, zhInput, enInput])
+  }, [token, s3Key, action, isLoadingDetails, categoryInput, renameInput, titleInput, zhInput, enInput])
 
   if (!isManageMode) return null
 
   const isSameCategory = newS3KeyPreview !== null && newS3KeyPreview === s3Key
   const isSameFileName = renamedS3KeyPreview !== null && renamedS3KeyPreview === s3Key
   const isRunning = executionStatus === 'running'
+  const isActionDisabled = isRunning || !isPhotoPathReady
 
   return (
     <div className="border-accent/20 bg-accent/10 mt-3 rounded-xl border p-3">
@@ -210,6 +229,14 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
         </div>
       ) : (
         <div className="space-y-3">
+          {!isPhotoPathReady ? (
+            <p className="rounded-md border border-amber-400/30 bg-amber-400/10 px-2 py-1 text-xs text-amber-200/90">
+              {isLoadingDetails
+                ? '正在读取照片信息，稍后即可操作…'
+                : '照片信息加载失败，没有读取到照片文件路径，管理操作暂不可用，请刷新页面后重试'}
+            </p>
+          ) : null}
+
           {/* 分类整理 */}
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-xs text-white/80">
@@ -228,7 +255,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
               />
               <button
                 type="button"
-                disabled={!categoryInput.trim() || isSameCategory || isRunning}
+                disabled={!categoryInput.trim() || isSameCategory || isActionDisabled}
                 onClick={() => openConfirm('move')}
                 className="glassmorphic-btn rounded-md px-3 py-1 text-xs text-white disabled:opacity-40"
               >
@@ -256,7 +283,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
               />
               <button
                 type="button"
-                disabled={!renameInput.trim() || isSameFileName || isRunning}
+                disabled={!renameInput.trim() || isSameFileName || isActionDisabled}
                 onClick={() => openConfirm('rename')}
                 className="glassmorphic-btn rounded-md px-3 py-1 text-xs text-white disabled:opacity-40"
               >
@@ -297,7 +324,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
             />
             <button
               type="button"
-              disabled={!hasDescriptionChanges || isRunning}
+              disabled={!hasDescriptionChanges || isActionDisabled}
               onClick={() => openConfirm('describe')}
               className="glassmorphic-btn rounded-md px-3 py-1 text-xs text-white disabled:opacity-40"
             >
@@ -310,7 +337,7 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
             <div className="text-xs text-red-400/90">删除照片（从私人照片仓库永久删除，不可恢复）</div>
             <button
               type="button"
-              disabled={isRunning}
+              disabled={isActionDisabled}
               onClick={() => openConfirm('delete')}
               className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-1 text-xs text-red-300 hover:bg-red-500/20 disabled:opacity-40"
             >
