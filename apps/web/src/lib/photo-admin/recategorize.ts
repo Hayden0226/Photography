@@ -91,6 +91,33 @@ export interface UpdateDescriptionsTextInput {
   en?: string
 }
 
+const createDescriptionEntry = (key: string, input: UpdateDescriptionsTextInput): PhotoDescriptionEntry | null => {
+  const title = input.title?.trim()
+  const zhCN = input.zhCN?.trim()
+  const en = input.en?.trim()
+
+  const descriptions: Record<string, string> = {}
+  if (zhCN) {
+    descriptions['zh-CN'] = zhCN
+  }
+  if (en) {
+    descriptions.en = en
+  }
+
+  if (!title && Object.keys(descriptions).length === 0) {
+    return null
+  }
+
+  const entry: PhotoDescriptionEntry = { key }
+  if (title) {
+    entry.title = title
+  }
+  if (Object.keys(descriptions).length > 0) {
+    entry.descriptions = descriptions
+  }
+  return entry
+}
+
 export const updateDescriptionsText = (
   rawJson: string,
   key: string,
@@ -102,12 +129,15 @@ export const updateDescriptionsText = (
   }
 
   let updated = false
+  let matched = false
   for (const entry of parsed.photos) {
     const normalizedKey = (entry.key ?? '')
       .replaceAll('\\', '/')
       .replace(/^photos\//, '')
       .trim()
     if (normalizedKey !== key) continue
+
+    matched = true
 
     const nextTitle = input.title?.trim()
     if (input.title !== undefined && nextTitle !== ((entry.title as string | undefined) ?? '')) {
@@ -146,6 +176,14 @@ export const updateDescriptionsText = (
       entry.descriptions = descriptions
     } else {
       delete entry.descriptions
+    }
+  }
+
+  if (!matched) {
+    const createdEntry = createDescriptionEntry(key, input)
+    if (createdEntry) {
+      parsed.photos.push(createdEntry)
+      updated = true
     }
   }
 

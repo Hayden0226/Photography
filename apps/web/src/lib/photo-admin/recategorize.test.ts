@@ -342,6 +342,31 @@ describe('updateDescriptionsText', () => {
     expect(json.trimEnd()).toBe(sampleDescriptions.trimEnd())
   })
 
+  it('creates a new entry when the photo has no entry yet', () => {
+    const { json, updated } = updateDescriptionsText(sampleDescriptions, '随手/20260930193138.jpg', {
+      title: '新照片',
+      zhCN: '中文描述',
+      en: 'English description',
+    })
+    expect(updated).toBe(true)
+    const parsed = JSON.parse(json) as {
+      photos: Array<{ key: string; title?: string; descriptions?: Record<string, string> }>
+    }
+    const created = parsed.photos.find((entry) => entry.key === '随手/20260930193138.jpg')
+    expect(created?.title).toBe('新照片')
+    expect(created?.descriptions).toEqual({ 'zh-CN': '中文描述', en: 'English description' })
+    expect(parsed.photos).toHaveLength(3)
+  })
+
+  it('does not create an entry when the input is blank', () => {
+    const { json, updated } = updateDescriptionsText(sampleDescriptions, '随手/20260930193138.jpg', {
+      title: '   ',
+      zhCN: '',
+    })
+    expect(updated).toBe(false)
+    expect(json.trimEnd()).toBe(sampleDescriptions.trimEnd())
+  })
+
   it('throws on invalid format', () => {
     expect(() => updateDescriptionsText('not-json', 'a.jpg', { title: 'x' })).toThrow()
   })
@@ -383,6 +408,34 @@ describe('updatePhotoDescriptions', () => {
     const decoded = Buffer.from(JSON.parse(put?.body ?? '{}').content, 'base64').toString('utf-8')
     expect(decoded).toContain('草地上的狗')
     expect(decoded).toContain('A dog')
+  })
+
+  it('creates a new entry through GitHub when the photo has none', async () => {
+    const calls: Array<{ method: string; url: string; body?: string }> = []
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      calls.push({ method, url, body: typeof init?.body === 'string' ? init.body : undefined })
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        if (method === 'GET') {
+          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+        }
+        if (method === 'PUT') return jsonResponse({})
+      }
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await updatePhotoDescriptions(token, '随手/20260930193138.jpg', { title: '新照片' })
+
+    expect(result.ok).toBe(true)
+    const put = calls.find((call) => call.method === 'PUT')
+    const decoded = JSON.parse(Buffer.from(JSON.parse(put?.body ?? '{}').content, 'base64').toString('utf-8')) as {
+      photos: Array<{ key: string; title?: string }>
+    }
+    expect(decoded.photos.some((entry) => entry.key === '随手/20260930193138.jpg' && entry.title === '新照片')).toBe(
+      true,
+    )
   })
 
   it('fails when nothing changed', async () => {
@@ -552,7 +605,7 @@ describe('deletePhoto', () => {
         }
         if (method === 'PUT') return jsonResponse({})
       }
-      throw new Error(`unexpected request: ${  method  } ${  url}`)
+      throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
 
@@ -582,9 +635,9 @@ describe('deletePhoto', () => {
         if (method === 'DELETE') return jsonResponse({})
       }
       if (url.includes('/contents/content/photo-descriptions.json') && method === 'GET') {
-          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
-        }
-      throw new Error(`unexpected request: ${  method  } ${  url}`)
+        return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+      }
+      throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
 
@@ -614,7 +667,7 @@ describe('deletePhoto', () => {
         if (method === 'GET') return fileResponse()
         if (method === 'DELETE') return jsonResponse({ message: 'Conflict' }, 409)
       }
-      throw new Error(`unexpected request: ${  method  } ${  url}`)
+      throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
 
