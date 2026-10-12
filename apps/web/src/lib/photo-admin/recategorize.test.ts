@@ -126,13 +126,19 @@ const jsonResponse = (data: unknown, status = 200) => ({
 const fileResponse = (overrides: Partial<{ content: string; sha: string }> = {}) =>
   jsonResponse({
     path: 'x',
-    sha: 'abc123',
+    sha: overrides.sha ?? 'abc123',
     size: 10,
     content: overrides.content ?? 'aGVsbG8=',
     encoding: 'base64',
   })
 
 const notFoundResponse = () => jsonResponse({ message: 'Not Found' }, 404)
+
+const PAGES_DISPATCH_PATH = '/repos/Hayden0226/Photography/actions/workflows/pages.yml/dispatches'
+
+const dispatchResponse = () => jsonResponse({}, 204)
+
+const forbiddenResponse = () => jsonResponse({ message: 'Resource not accessible by personal access token' }, 403)
 
 describe('removeDescriptionEntry', () => {
   it('removes the matching entry', () => {
@@ -245,8 +251,8 @@ describe('recategorizePhoto', () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = decodeURIComponent(String(input))
       const method = init?.method ?? 'GET'
-      if (url.includes('/contents/随手/A.jpg') && method === 'GET') return fileResponse()
-      if (url.includes('/contents/风景/A.jpg') && method === 'GET') return fileResponse()
+      if (url.includes('/contents/随手/A.jpg') && method === 'GET') return fileResponse({ sha: 'source-sha' })
+      if (url.includes('/contents/风景/A.jpg') && method === 'GET') return fileResponse({ sha: 'target-sha' })
       throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
@@ -254,6 +260,41 @@ describe('recategorizePhoto', () => {
     const result = await recategorizePhoto(token, '随手/A.jpg', '风景')
     expect(result.ok).toBe(false)
     expect(result.error).toContain('已存在')
+  })
+
+  it('resumes a half-finished move instead of blocking on the existing target', async () => {
+    const calls: Array<{ method: string; url: string }> = []
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      calls.push({ method, url })
+      if (url.includes('/contents/随手/20250901221543.jpg')) {
+        if (method === 'GET') return fileResponse({ sha: 'same-sha' })
+        if (method === 'DELETE') return jsonResponse({})
+      }
+      if (url.includes('/contents/风景/20250901221543.jpg') && method === 'GET')
+        return fileResponse({ sha: 'same-sha' })
+      if (url.includes('/contents/content/photo-descriptions.json')) {
+        if (method === 'GET') {
+          return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
+        }
+        if (method === 'PUT') return jsonResponse({})
+      }
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await recategorizePhoto(token, '随手/20250901221543.jpg', '风景')
+
+    expect(result.ok).toBe(true)
+    expect(result.steps.map((step) => step.status)).toEqual(['ok', 'skipped', 'ok', 'ok'])
+    expect(result.steps[1]).toEqual({
+      step: 'move-photo',
+      status: 'skipped',
+      detail: expect.stringContaining('相同'),
+    })
+    expect(calls.some((call) => call.method === 'PUT' && call.url.includes('/contents/风景/'))).toBe(false)
+    expect(calls.some((call) => call.method === 'DELETE' && call.url.includes('/contents/随手/'))).toBe(true)
   })
 
   it('fails when the source photo is missing', async () => {
@@ -286,6 +327,7 @@ describe('recategorizePhoto', () => {
         }
         if (method === 'PUT') return jsonResponse({})
       }
+      if (url.includes(PAGES_DISPATCH_PATH)) return dispatchResponse()
       throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
@@ -296,6 +338,43 @@ describe('recategorizePhoto', () => {
       step: 'update-descriptions',
       status: 'skipped',
       detail: expect.stringContaining('没有'),
+    })
+    expect(result.steps[4]).toEqual({
+      step: 'trigger-deploy',
+      status: 'ok',
+      detail: expect.stringContaining('已触发'),
+    })
+    const dispatchCall = fetchMock.mock.calls.find((call) => String(call[0]).includes(PAGES_DISPATCH_PATH))
+    expect(dispatchCall?.[1]?.method).toBe('POST')
+    expect(JSON.parse(String(dispatchCall?.[1]?.body))).toEqual({ ref: 'main' })
+  })
+
+  it('keeps the move successful and warns when the deployment cannot be dispatched', async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = decodeURIComponent(String(input))
+      const method = init?.method ?? 'GET'
+      if (url.includes('/contents/随手/A.jpg')) {
+        if (method === 'GET') return fileResponse()
+        if (method === 'DELETE') return jsonResponse({})
+      }
+      if (url.includes('/contents/风景/A.jpg')) {
+        if (method === 'GET') return notFoundResponse()
+        if (method === 'PUT') return jsonResponse({})
+      }
+      if (url.includes('/contents/content/photo-descriptions.json') && method === 'GET') {
+        return fileResponse({ content: Buffer.from('{"version":1,"photos":[]}', 'utf-8').toString('base64') })
+      }
+      if (url.includes(PAGES_DISPATCH_PATH)) return forbiddenResponse()
+      throw new Error(`unexpected request: ${method} ${url}`)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    const result = await recategorizePhoto(token, '随手/A.jpg', '风景')
+    expect(result.ok).toBe(true)
+    expect(result.steps.at(-1)).toEqual({
+      step: 'trigger-deploy',
+      status: 'failed',
+      detail: expect.stringContaining('pages.yml'),
     })
   })
 })
@@ -559,7 +638,7 @@ describe('renamePhoto', () => {
       const url = decodeURIComponent(String(input))
       const method = init?.method ?? 'GET'
       if (url.includes('/contents/随手/A.jpg') && method === 'GET') return fileResponse()
-      if (url.includes('/contents/随手/狗.jpg') && method === 'GET') return fileResponse()
+      if (url.includes('/contents/随手/狗.jpg') && method === 'GET') return fileResponse({ sha: 'target-sha' })
       throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
@@ -624,12 +703,17 @@ describe('deletePhoto', () => {
     const decoded = Buffer.from(JSON.parse(descriptionsPut?.body ?? '{}').content, 'base64').toString('utf-8')
     expect(decoded).not.toContain('随手/20250901221543.jpg')
     expect(decoded).toContain('城市/IMG_20251031_173316.jpg')
+    expect(calls.some((call) => call.url.includes('/actions/workflows/'))).toBe(false)
   })
 
+  // Deleting a photo that has no description entry only changes the private photo repository, so
+  // the Pages workflow has to be dispatched by hand for the published site to drop the photo.
   it('succeeds and skips descriptions when no entry matches', async () => {
+    const calls: Array<{ method: string; url: string; body?: string }> = []
     const fetchMock = vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = decodeURIComponent(String(input))
       const method = init?.method ?? 'GET'
+      calls.push({ method, url, body: typeof init?.body === 'string' ? init.body : undefined })
       if (url.includes('/contents/随手/A.jpg')) {
         if (method === 'GET') return fileResponse()
         if (method === 'DELETE') return jsonResponse({})
@@ -637,6 +721,7 @@ describe('deletePhoto', () => {
       if (url.includes('/contents/content/photo-descriptions.json') && method === 'GET') {
         return fileResponse({ content: Buffer.from(sampleDescriptions, 'utf-8').toString('base64') })
       }
+      if (url.includes(PAGES_DISPATCH_PATH)) return dispatchResponse()
       throw new Error(`unexpected request: ${method} ${url}`)
     })
     vi.stubGlobal('fetch', fetchMock)
@@ -644,7 +729,15 @@ describe('deletePhoto', () => {
     const result = await deletePhoto(token, '随手/A.jpg')
 
     expect(result.ok).toBe(true)
-    expect(result.steps.map((step) => step.status)).toEqual(['ok', 'ok', 'skipped'])
+    expect(result.steps.map((step) => step.status)).toEqual(['ok', 'ok', 'skipped', 'ok'])
+    expect(result.steps[3]).toEqual({
+      step: 'trigger-deploy',
+      status: 'ok',
+      detail: expect.stringContaining('已触发'),
+    })
+    const dispatchCall = calls.find((call) => call.url.includes(PAGES_DISPATCH_PATH))
+    expect(dispatchCall?.method).toBe('POST')
+    expect(JSON.parse(dispatchCall?.body ?? '{}')).toEqual({ ref: 'main' })
   })
 
   it('fails when the source photo is missing', async () => {

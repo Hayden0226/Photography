@@ -3,9 +3,11 @@ import {
   createOrUpdateRepoFile,
   deleteRepoFile,
   getRepoFile,
+  getRepoFileMeta,
   isNotFound,
   MAIN_REPO_NAME,
   PHOTO_REPO_NAME,
+  triggerPagesDeploy,
 } from './github'
 
 export const DESCRIPTIONS_FILE_PATH = 'content/photo-descriptions.json'
@@ -214,7 +216,7 @@ export const removeDescriptionEntry = (rawJson: string, key: string): UpdateDesc
 }
 
 export interface RecategorizeStep {
-  step: 'read-photo' | 'move-photo' | 'remove-photo' | 'delete-photo' | 'update-descriptions'
+  step: 'read-photo' | 'move-photo' | 'remove-photo' | 'delete-photo' | 'update-descriptions' | 'trigger-deploy'
   status: 'ok' | 'skipped' | 'failed'
   detail?: string
 }
@@ -249,6 +251,24 @@ const base64ToUtf8 = (value: string): string => {
   return new TextDecoder().decode(bytes)
 }
 
+// Operations that touch only the private photo repository produce no commit in the main
+// repository, so the Pages workflow never runs and the published site keeps serving the old
+// manifest. Dispatch the deployment explicitly in that case; a token without the `workflow`
+// scope is reported as a warning step instead of failing the whole operation.
+const triggerDeployStep = async (token: string, steps: RecategorizeStep[]): Promise<void> => {
+  try {
+    await triggerPagesDeploy(token)
+    steps.push({ step: 'trigger-deploy', status: 'ok', detail: '已触发 Pages 重新部署' })
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : '触发部署失败'
+    steps.push({
+      step: 'trigger-deploy',
+      status: 'failed',
+      detail: `请到 GitHub Actions 手动运行 pages.yml（Token 需要 workflow 权限）：${detail}`,
+    })
+  }
+}
+
 const movePhotoFile = async (
   token: string,
   oldS3Key: string,
@@ -272,9 +292,16 @@ const movePhotoFile = async (
   }
 
   // 2. 检查目标路径是否已存在，避免覆盖
+  let targetExists = false
   try {
-    await getRepoFile(token, PHOTO_REPO_NAME, newS3Key)
-    return fail(oldS3Key, newS3Key, steps, `目标路径已存在同名文件：${newS3Key}`)
+    const existing = await getRepoFileMeta(token, PHOTO_REPO_NAME, newS3Key)
+    if (existing.sha !== file.sha) {
+      return fail(oldS3Key, newS3Key, steps, `目标路径已存在同名文件：${newS3Key}`)
+    }
+    // 上一次操作可能只写入了新文件、没来得及删除旧文件（例如网络中断）。内容一致时按
+    // “已经移动过”处理，直接补删旧路径，否则重试会永远卡在目标文件已存在。
+    targetExists = true
+    steps.push({ step: 'move-photo', status: 'skipped', detail: '目标路径已有相同文件，仅补删旧路径' })
   } catch (error) {
     if (!isNotFound(error)) {
       return fail(oldS3Key, newS3Key, steps, error instanceof Error ? error.message : '检查目标路径失败')
@@ -282,14 +309,16 @@ const movePhotoFile = async (
   }
 
   // 3. 写入新路径
-  try {
-    await createOrUpdateRepoFile(token, PHOTO_REPO_NAME, newS3Key, {
-      message: `chore: ${verb} photo ${oldS3Key} -> ${newS3Key}`,
-      content: file.content,
-    })
-    steps.push({ step: 'move-photo', status: 'ok' })
-  } catch (error) {
-    return fail(oldS3Key, newS3Key, steps, error instanceof Error ? error.message : '写入新路径失败')
+  if (!targetExists) {
+    try {
+      await createOrUpdateRepoFile(token, PHOTO_REPO_NAME, newS3Key, {
+        message: `chore: ${verb} photo ${oldS3Key} -> ${newS3Key}`,
+        content: file.content,
+      })
+      steps.push({ step: 'move-photo', status: 'ok' })
+    } catch (error) {
+      return fail(oldS3Key, newS3Key, steps, error instanceof Error ? error.message : '写入新路径失败')
+    }
   }
 
   // 4. 删除旧路径
@@ -323,6 +352,7 @@ const movePhotoFile = async (
       steps.push({ step: 'update-descriptions', status: 'ok' })
     } else {
       steps.push({ step: 'update-descriptions', status: 'skipped', detail: 'descriptions.json 中没有该照片条目' })
+      await triggerDeployStep(token, steps)
     }
   } catch (error) {
     const detail = error instanceof Error ? error.message : '更新描述文件失败'
@@ -459,6 +489,7 @@ export const deletePhoto = async (token: string, s3Key: string): Promise<Recateg
       steps.push({ step: 'update-descriptions', status: 'ok' })
     } else {
       steps.push({ step: 'update-descriptions', status: 'skipped', detail: 'descriptions.json 中没有该照片条目' })
+      await triggerDeployStep(token, steps)
     }
   } catch (error) {
     const detail = error instanceof Error ? error.message : '移除描述条目失败'

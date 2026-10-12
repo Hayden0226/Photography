@@ -4,6 +4,8 @@
 export const PHOTO_REPO_OWNER = 'Hayden0226'
 export const PHOTO_REPO_NAME = 'Photography-Photos'
 export const MAIN_REPO_NAME = 'Photography'
+export const MAIN_REPO_BRANCH = 'main'
+export const PAGES_WORKFLOW_FILE = 'pages.yml'
 
 const qualifyRepoName = (repo: string): string => (repo.includes('/') ? repo : `${PHOTO_REPO_OWNER}/${repo}`)
 
@@ -93,8 +95,7 @@ const githubFetch = async (token: string, path: string, init: RequestInit = {}):
 }
 
 export const getRepoFile = async (token: string, repo: string, path: string): Promise<GitHubFile> => {
-  const response = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/contents/${encodeRepoPath(path)}`)
-  const file = (await response.json()) as GitHubFile
+  const file = (await getRepoFileMeta(token, repo, path)) as GitHubFile
 
   // The contents API omits `content` for files larger than 1 MB; fetch the full blob via the git blobs API.
   if (!file.content) {
@@ -104,6 +105,13 @@ export const getRepoFile = async (token: string, repo: string, path: string): Pr
   }
 
   return file
+}
+
+// Metadata-only lookup. Comparing two photos only needs the blob sha, and the contents API
+// already returns it, so this avoids downloading multi-megabyte blobs just to check for equality.
+export const getRepoFileMeta = async (token: string, repo: string, path: string): Promise<GitHubFile> => {
+  const response = await githubFetch(token, `/repos/${qualifyRepoName(repo)}/contents/${encodeRepoPath(path)}`)
+  return (await response.json()) as GitHubFile
 }
 
 export interface RepoFileCommit {
@@ -144,3 +152,18 @@ export const deleteRepoFile = async (
 }
 
 export const isNotFound = (error: unknown): boolean => error instanceof GitHubApiError && error.status === 404
+
+// The site bundles photos at build time, so a change that lives only in the private photo
+// repository still needs a fresh Pages deployment. When an operation produces no commit in the
+// main repository (for example deleting a photo that has no description entry), trigger the
+// workflow explicitly so the published site cannot drift from the repository.
+export const triggerPagesDeploy = async (token: string): Promise<void> => {
+  await githubFetch(
+    token,
+    `/repos/${qualifyRepoName(MAIN_REPO_NAME)}/actions/workflows/${PAGES_WORKFLOW_FILE}/dispatches`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ ref: MAIN_REPO_BRANCH }),
+    },
+  )
+}

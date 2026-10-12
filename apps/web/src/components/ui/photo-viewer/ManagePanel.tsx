@@ -124,28 +124,28 @@ export const ManagePanel = ({ currentPhoto }: ManagePanelProps) => {
     let recategorizeResult: RecategorizeResult
     try {
       switch (action) {
-      case 'move': {
-        recategorizeResult = await recategorizePhoto(token, s3Key, categoryInput)
-      
-      break;
-      }
-      case 'rename': {
-        recategorizeResult = await renamePhoto(token, s3Key, renameInput)
-      
-      break;
-      }
-      case 'delete': {
-        recategorizeResult = await deletePhoto(token, s3Key)
-      
-      break;
-      }
-      default: {
-        recategorizeResult = await updatePhotoDescriptions(token, s3Key, {
-          title: titleInput,
-          zhCN: zhInput,
-          en: enInput,
-        })
-      }
+        case 'move': {
+          recategorizeResult = await recategorizePhoto(token, s3Key, categoryInput)
+
+          break
+        }
+        case 'rename': {
+          recategorizeResult = await renamePhoto(token, s3Key, renameInput)
+
+          break
+        }
+        case 'delete': {
+          recategorizeResult = await deletePhoto(token, s3Key)
+
+          break
+        }
+        default: {
+          recategorizeResult = await updatePhotoDescriptions(token, s3Key, {
+            title: titleInput,
+            zhCN: zhInput,
+            en: enInput,
+          })
+        }
       }
     } catch (error) {
       recategorizeResult = {
@@ -407,6 +407,7 @@ const STEP_LABELS: Record<RecategorizeStep['step'], string> = {
   'remove-photo': '删除旧文件',
   'delete-photo': '删除照片文件',
   'update-descriptions': '更新描述文件',
+  'trigger-deploy': '触发站点部署',
 }
 
 const ResultView = ({ result }: { result: RecategorizeResult }) => (
