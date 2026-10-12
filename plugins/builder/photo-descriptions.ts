@@ -4,23 +4,17 @@ import { fileURLToPath } from 'node:url'
 
 import type { BuilderPlugin, PhotoManifestItem } from '@afilmory/builder'
 
+import type {PhotoDescriptionEntry, PhotoDescriptionsFile} from './photo-description-entries.js';
+import {
+  addMissingDescriptionEntries,
+  normalizeStorageKey,
+  parsePhotoDescriptions,
+  serializePhotoDescriptions
+} from './photo-description-entries.js'
 import { composePhotoTags, getPhotoCategory } from './photo-description-tags.js'
 
 export interface PhotoDescriptionsPluginOptions {
   file?: string
-}
-
-interface PhotoDescriptionEntry {
-  key: string
-  title?: unknown
-  titles?: unknown
-  descriptions?: unknown
-  tags?: unknown
-}
-
-interface PhotoDescriptionsFile {
-  version?: unknown
-  photos?: unknown
 }
 
 const DEFAULT_DESCRIPTIONS_FILE = 'content/photo-descriptions.json'
@@ -35,14 +29,19 @@ export function createPhotoDescriptionsPlugin(options: PhotoDescriptionsPluginOp
     name: 'jacky:photo-descriptions',
     hooks: {
       beforeSaveManifest: async ({ logger, payload }) => {
-        const descriptions = await loadDescriptions(filePath)
-        if (!descriptions) {
-          logger.main.info(`[photo-descriptions] 未找到 ${path.relative(REPO_ROOT, filePath)}，跳过人工描述合并`)
-          return
+        const file = await loadDescriptions(filePath)
+
+        // 从照片仓库拉进来的新照片在 descriptions 文件里还没有条目时，构建阶段自动补上占位条目
+        // 并写回文件（CI 随后会提交），管理面板才编辑得了标题/描述，删除或改分类时也有条目可同步。
+        const { photos, createdKeys } = addMissingDescriptionEntries(file?.photos ?? [], payload.manifest)
+
+        if (createdKeys.length > 0) {
+          await fs.writeFile(filePath, serializePhotoDescriptions({ version: 1, photos }), 'utf-8')
+          logger.main.info(`[photo-descriptions] 自动补全 ${createdKeys.length} 条照片条目：${createdKeys.join('、')}`)
         }
 
         const entriesByKey = new Map<string, PhotoDescriptionEntry>()
-        for (const entry of descriptions.photos) {
+        for (const entry of photos) {
           const key = normalizeStorageKey(entry.key)
           if (!key) continue
           entriesByKey.set(key, entry)
@@ -69,7 +68,7 @@ export function createPhotoDescriptionsPlugin(options: PhotoDescriptionsPluginOp
 
 export default createPhotoDescriptionsPlugin
 
-async function loadDescriptions(filePath: string): Promise<{ photos: PhotoDescriptionEntry[] } | null> {
+async function loadDescriptions(filePath: string): Promise<PhotoDescriptionsFile | null> {
   let raw: string
   try {
     raw = await fs.readFile(filePath, 'utf-8')
@@ -80,14 +79,7 @@ async function loadDescriptions(filePath: string): Promise<{ photos: PhotoDescri
     throw error
   }
 
-  const parsed = JSON.parse(raw) as PhotoDescriptionsFile
-  if (!parsed || !Array.isArray(parsed.photos)) {
-    throw new Error(`Invalid photo descriptions file: expected "photos" to be an array in ${filePath}`)
-  }
-
-  return {
-    photos: parsed.photos.filter(isPhotoDescriptionEntry),
-  }
+  return parsePhotoDescriptions(raw, filePath)
 }
 
 function applyDescriptionEntry(item: PhotoManifestItem, entry: PhotoDescriptionEntry): boolean {
@@ -134,14 +126,6 @@ function applyDescriptionEntry(item: PhotoManifestItem, entry: PhotoDescriptionE
   return changed
 }
 
-function normalizeStorageKey(key: string): string {
-  return key
-    .replaceAll('\\', '/')
-    .replace(/^\/+/, '')
-    .replace(/^photos\//, '')
-    .trim()
-}
-
 function readNonEmptyString(value: unknown): string | null {
   if (typeof value !== 'string') return null
 
@@ -178,10 +162,6 @@ function areDescriptionMapsEqual(left: Record<string, string> | undefined, right
     leftEntries.length === rightEntries.length &&
     rightEntries.every(([language, description]) => left[language] === description)
   )
-}
-
-function isPhotoDescriptionEntry(value: unknown): value is PhotoDescriptionEntry {
-  return Boolean(value && typeof value === 'object' && typeof (value as PhotoDescriptionEntry).key === 'string')
 }
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {

@@ -6,7 +6,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  # The build job writes back description entries created for new photos, so it needs push access.
+  contents: write
   pages: write
   id-token: write
 
@@ -51,6 +52,22 @@ jobs:
 
       - name: Build site (generates manifest, thumbnails and static pages)
         run: pnpm run build
+
+      - name: Commit description entries auto-created for new photos
+        run: |
+          if git diff --quiet -- content/photo-descriptions.json; then
+            echo "No new description entries to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/photo-descriptions.json
+          git commit -m "chore: add description entries for new photos"
+
+          # Pushes made with the workflow GITHUB_TOKEN do not start another run, so this cannot
+          # cancel or loop into the deploy that is already running.
+          git push origin HEAD:main || echo "::warning::提交描述条目失败，请手动提交 content/photo-descriptions.json"
 
       - name: Bundle original photos into the deployment
         run: |

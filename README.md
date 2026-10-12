@@ -161,7 +161,7 @@ photos/                   # 私有照片仓库 checkout，主仓库不追踪
 4. `pnpm run build:manifest` 读取 `builder.config.ts`，扫描 `photos/`，排除 `incoming`，生成缩略图、Thumbhash、EXIF/GPS/设备信息和 manifest。
 5. 构建器写入 `apps/web/src/data/photos-manifest.json`；`packages/data/src/photos-manifest.json` 是指向该文件的 symlink，供 `@afilmory/data` 和 Vite 插件读取。
 6. `pnpm build` 输出静态站点到 `apps/web/dist/`，并生成 sitemap、RSS、PWA 资源和照片级 HTML。
-7. GitHub Actions（`.github/workflows/pages.yml`）检出私有照片仓库、执行构建，把 `apps/web/dist/` 部署到 GitHub Pages。
+7. GitHub Actions（`.github/workflows/pages.yml`）检出私有照片仓库、执行构建，把 `apps/web/dist/` 部署到 GitHub Pages；构建时若发现照片还没有描述条目，会自动补上占位条目并提交回 `main`。
 
 ## 环境要求
 
@@ -242,7 +242,7 @@ export default defineBuilderConfig(() => ({
 2. 运行 `pnpm run photos:standardize`。直接放在 `incoming` 根目录的文件会进入默认分类 `随手/`。
 3. （可选）运行 `pnpm run photos:privacy`，交互式选择要保护的照片，GPS 将被模糊化到约 5km 城市级。
 4. 运行 `pnpm run build:manifest`，生成最新 manifest 和缩略图。
-5. 运行 `pnpm run photos:descriptions:sync` 创建或刷新 `content/photo-descriptions.json` 条目。
+5. （可选）运行 `pnpm run photos:descriptions:sync` 创建或刷新 `content/photo-descriptions.json` 条目；推送后 GitHub Actions 构建时也会为新照片自动补上占位条目并提交回仓库，本地不跑这一步也不会漏条目。
 6. 填写 `title`、`descriptions.zh-CN`、`descriptions.en` 和精简标签后，再运行 `pnpm run build:manifest` 合并人工元数据。
 7. 运行 `pnpm dev` 本地检查，或推送触发 GitHub Pages 部署。
 

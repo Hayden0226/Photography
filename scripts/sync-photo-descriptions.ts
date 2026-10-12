@@ -1,55 +1,25 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import type {PhotoDescriptionEntry, PhotoDescriptionsFile, PhotoDescriptionSource} from '../plugins/builder/photo-description-entries.js';
 import {
-  composePhotoTags,
-  getPhotoCategory,
-  normalizeCustomPhotoTags,
-} from '../plugins/builder/photo-description-tags.js'
+  createAIContext,
+  createDescriptionEntry,
+  isPhotoDescriptionEntry,
+  normalizeOptionalTranslations,
+  normalizeStorageKey,
+  normalizeTranslations,
+  parsePhotoDescriptions,
+  serializePhotoDescriptions
+} from '../plugins/builder/photo-description-entries.js'
+import { getPhotoCategory, normalizeCustomPhotoTags } from '../plugins/builder/photo-description-tags.js'
 
 interface ManifestFile {
   data?: ManifestPhoto[]
 }
 
-interface ManifestPhoto {
-  title?: string
-  titles?: PhotoDescriptionTranslations
-  dateTaken?: string
-  tags?: string[]
-  s3Key?: string
-  exif?: {
-    Make?: string
-    Model?: string
-    LensMake?: string
-    LensModel?: string
-  } | null
-}
-
-interface PhotoDescriptionsFile {
-  version: 1
-  photos: PhotoDescriptionEntry[]
-}
-
-interface PhotoDescriptionEntry {
-  key: string
-  title: string
-  titles?: PhotoDescriptionTranslations
-  descriptions: PhotoDescriptionTranslations
-  tags: string[]
-  aiContext: PhotoDescriptionAIContext
-}
-
-interface PhotoDescriptionTranslations {
-  'zh-CN': string
-  en: string
-}
-
-interface PhotoDescriptionAIContext {
-  currentTitle: string
-  dateTaken: string
-  camera: string
-  lens: string
-  categoryTags: string[]
+interface ManifestPhoto extends PhotoDescriptionSource {
+  titles?: Record<string, string>
 }
 
 const DESCRIPTIONS_PATH = path.resolve(process.cwd(), 'content/photo-descriptions.json')
@@ -80,7 +50,7 @@ async function main() {
     photos: [...activeEntries, ...staleEntries],
   }
 
-  await fs.writeFile(DESCRIPTIONS_PATH, `${JSON.stringify(next, null, 2)}\n`)
+  await fs.writeFile(DESCRIPTIONS_PATH, serializePhotoDescriptions(next))
 
   const staleSummary = staleEntries.length > 0 ? ` and kept ${staleEntries.length} stale entries` : ''
   console.info(
@@ -107,11 +77,11 @@ async function readManifest(): Promise<{ data: ManifestPhoto[] }> {
 async function readExistingDescriptions(): Promise<PhotoDescriptionsFile> {
   try {
     const raw = await fs.readFile(DESCRIPTIONS_PATH, 'utf-8')
-    const parsed = JSON.parse(raw) as Partial<PhotoDescriptionsFile>
+    const parsed = parsePhotoDescriptions(raw, path.relative(process.cwd(), DESCRIPTIONS_PATH))
 
     return {
       version: 1,
-      photos: Array.isArray(parsed.photos) ? parsed.photos.map(normalizeEntry).filter(isPresent) : [],
+      photos: parsed.photos.map(normalizeEntry).filter(isPresent),
     }
   } catch (error) {
     if (isNodeError(error) && error.code === 'ENOENT') {
@@ -127,38 +97,24 @@ function mergeEntry(
   photo: ManifestPhoto & { s3Key: string },
   key: string,
 ): PhotoDescriptionEntry {
-  const titles = existing?.titles ?? normalizeOptionalTranslations(photo.titles)
+  const base = existing ?? createDescriptionEntry(photo, key)
   const category = getPhotoCategory(key)
   const automaticTags = category ? [category] : []
 
   return {
+    ...base,
     key,
-    title: existing?.title ?? '',
-    ...(titles ? { titles } : {}),
-    descriptions: existing?.descriptions ?? createEmptyTranslations(),
-    tags: normalizeCustomPhotoTags(existing?.tags ?? [], automaticTags),
+    tags: normalizeCustomPhotoTags(base.tags, automaticTags),
     aiContext: createAIContext(photo),
   }
 }
 
-function createAIContext(photo: ManifestPhoto): PhotoDescriptionAIContext {
-  const manifestTags = Array.isArray(photo.tags) ? photo.tags : []
-
-  return {
-    currentTitle: photo.title ?? '',
-    dateTaken: photo.dateTaken ?? '',
-    camera: formatCamera(photo),
-    lens: formatLens(photo),
-    categoryTags: composePhotoTags(manifestTags.slice(0, 1), manifestTags.slice(1)),
-  }
-}
-
 function normalizeEntry(entry: unknown): PhotoDescriptionEntry | null {
-  if (!entry || typeof entry !== 'object') return null
+  if (!isPhotoDescriptionEntry(entry)) return null
 
-  const candidate = entry as Partial<PhotoDescriptionEntry>
-  const key = typeof candidate.key === 'string' ? normalizeStorageKey(candidate.key) : ''
+  const key = normalizeStorageKey(entry.key)
   if (!key) return null
+  const candidate = entry as Partial<PhotoDescriptionEntry>
   const titles = normalizeOptionalTranslations(candidate.titles)
   const category = getPhotoCategory(key)
 
@@ -176,56 +132,6 @@ function normalizeEntry(entry: unknown): PhotoDescriptionEntry | null {
       categoryTags: [],
     },
   }
-}
-
-function normalizeTranslations(value: unknown): PhotoDescriptionTranslations {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return createEmptyTranslations()
-  }
-
-  const candidate = value as Partial<Record<keyof PhotoDescriptionTranslations, unknown>>
-  return {
-    'zh-CN': typeof candidate['zh-CN'] === 'string' ? candidate['zh-CN'] : '',
-    en: typeof candidate.en === 'string' ? candidate.en : '',
-  }
-}
-
-function normalizeOptionalTranslations(value: unknown): PhotoDescriptionTranslations | null {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return null
-  }
-
-  const translations = normalizeTranslations(value)
-  return translations['zh-CN'] || translations.en ? translations : null
-}
-
-function createEmptyTranslations(): PhotoDescriptionTranslations {
-  return {
-    'zh-CN': '',
-    en: '',
-  }
-}
-
-function formatCamera(photo: ManifestPhoto): string {
-  const make = photo.exif?.Make?.trim()
-  const model = photo.exif?.Model?.trim()
-  return make && model ? `${make} ${model}` : ''
-}
-
-function formatLens(photo: ManifestPhoto): string {
-  const lensMake = photo.exif?.LensMake?.trim()
-  const lensModel = photo.exif?.LensModel?.trim()
-  if (!lensModel) return ''
-
-  return lensMake ? `${lensMake} ${lensModel}` : lensModel
-}
-
-function normalizeStorageKey(key: string): string {
-  return key
-    .replaceAll('\\', '/')
-    .replace(/^\/+/, '')
-    .replace(/^photos\//, '')
-    .trim()
 }
 
 function isNodeError(error: unknown): error is NodeJS.ErrnoException {
