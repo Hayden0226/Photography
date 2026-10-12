@@ -17,6 +17,7 @@ import { ActionGroup } from './ActionGroup'
 import { handleGalleryArrowNavigation } from './gallery-keyboard-navigation'
 import type { MasonryRef } from './Masonic'
 import { Masonry } from './Masonic'
+import { getPhotoColumnSpan, resolveMasonryItemWidth } from './masonry-column-span'
 import type { MasonryNavigationDirection } from './masonry-keyboard-navigation'
 import { findNextMasonryItemIndex } from './masonry-keyboard-navigation'
 import { MasonryHeaderMasonryItem } from './MasonryHeaderMasonryItem'
@@ -53,6 +54,8 @@ const COLUMN_WIDTH_CONFIG = {
   },
 }
 
+const MASONRY_GUTTER = 4
+
 export const MasonryRoot = () => {
   const { columns } = useAtomValue(gallerySettingAtom)
   const setGallerySetting = useSetAtom(gallerySettingAtom)
@@ -82,6 +85,16 @@ export const MasonryRoot = () => {
   }, [isMobile, columns, setGallerySetting])
 
   const masonryItems = useMemo(() => (isMobile ? photos : [MasonryHeaderItem.default, ...photos]), [photos, isMobile])
+  // 超宽照片（全景）横跨多列，让它们不再被挤成窄条
+  const getColumnSpan = useCallback(
+    (index: number) => {
+      const item = masonryItems[index]
+      if (!item || item instanceof MasonryHeaderItem) return 1
+
+      return getPhotoColumnSpan(item.aspectRatio)
+    },
+    [masonryItems],
+  )
   const resolvedTabStopPhotoId = useMemo(() => {
     if (tabStopPhotoId && photos.some((photo) => photo.id === tabStopPhotoId)) return tabStopPhotoId
     return photos[0]?.id ?? null
@@ -191,7 +204,7 @@ export const MasonryRoot = () => {
   // 动态计算列宽
   const columnWidth = useMemo(() => {
     const { auto } = COLUMN_WIDTH_CONFIG
-    const gutter = 4 // 列间距
+    const gutter = MASONRY_GUTTER // 列间距
     // 容器尚未测量时回退到视口宽度，保证初始渲染列数正确
     const measuredWidth = containerWidth || (typeof window === 'undefined' ? 0 : window.innerWidth)
     const availableWidth = measuredWidth - (isMobile ? 8 : 32) // 移动端和桌面端的 padding 不同
@@ -266,6 +279,7 @@ export const MasonryRoot = () => {
               (props) => (
                 <MasonryItem
                   {...props}
+                  columnGutter={MASONRY_GUTTER}
                   hasAnimated={hasAnimatedRef.current}
                   onAnimationComplete={handleAnimationComplete}
                 />
@@ -279,9 +293,10 @@ export const MasonryRoot = () => {
               },
               [handleRender, prefetchUpcomingThumbnails],
             )}
+            getColumnSpan={getColumnSpan}
             columnWidth={columnWidth}
-            columnGutter={4}
-            rowGutter={4}
+            columnGutter={MASONRY_GUTTER}
+            rowGutter={MASONRY_GUTTER}
             itemHeightEstimate={400}
             itemKey={useCallback((data, _index) => {
               if (data instanceof MasonryHeaderItem) {
@@ -316,6 +331,8 @@ export const MasonryItem = memo(
     data,
     width,
     index,
+    columnGutter,
+    columnSpan,
 
     hasAnimated,
     onAnimationComplete,
@@ -323,6 +340,8 @@ export const MasonryItem = memo(
     data: MasonryItemType
     width: number
     index: number
+    columnGutter: number
+    columnSpan: number
     hasAnimated: boolean
     onAnimationComplete: () => void
   }) => {
@@ -339,6 +358,9 @@ export const MasonryItem = memo(
 
     // 只对第一屏的 items 做动画，且只在首次加载时
     const shouldAnimate = !hasAnimated && index < FIRST_SCREEN_ITEMS_COUNT
+
+    // 跨列照片按占用的列数铺满，其余照片保持单列宽度
+    const itemWidth = resolveMasonryItemWidth({ columnWidth: width, columnGutter, columnSpan })
 
     // 计算动画延迟
     const delay = shouldAnimate ? (data instanceof MasonryHeaderItem ? 0 : Math.min(index * 0.05, 0.3)) : 0
@@ -364,7 +386,7 @@ export const MasonryItem = memo(
     }
 
     if (data instanceof MasonryHeaderItem) {
-      return <MasonryHeaderMasonryItem style={{ width }} key={itemKey} />
+      return <MasonryHeaderMasonryItem style={{ width: itemWidth }} key={itemKey} />
     } else {
       return (
         <m.div
@@ -376,7 +398,8 @@ export const MasonryItem = memo(
         >
           <MasonryPhotoItem
             data={data as PhotoManifest}
-            width={width}
+            width={itemWidth}
+            columnSpan={columnSpan}
             index={index}
             tabIndex={(data as PhotoManifest).id === keyboardNavigation.tabStopPhotoId ? 0 : -1}
             onFocus={keyboardNavigation.onPhotoFocus}

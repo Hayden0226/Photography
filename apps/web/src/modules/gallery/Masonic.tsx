@@ -4,17 +4,37 @@ import { clearRequestTimeout, requestTimeout } from '@essentials/request-timeout
 import { useWindowSize } from '@react-hook/window-size'
 import { throttle } from 'es-toolkit/function'
 import { isEqual } from 'es-toolkit/predicate'
-import type { ContainerPosition, MasonryProps, MasonryScrollerProps, Positioner } from 'masonic'
-import { createResizeObserver, useMasonry, usePositioner, useScrollToIndex } from 'masonic'
+import type {
+  ContainerPosition,
+  MasonryProps as MasonryBaseProps,
+  MasonryScrollerProps,
+  Positioner,
+  RenderComponentProps,
+} from 'masonic'
+import { createResizeObserver, useMasonry, useScrollToIndex } from 'masonic'
 import { useForceUpdate } from 'motion/react'
 import * as React from 'react'
 
+import { clampMasonryColumnSpan } from './masonry-column-span'
+import type { ColumnSpanPositioner } from './masonry-positioner'
+import { createColumnSpanPositioner } from './masonry-positioner'
 import { createIndexOrderedRange } from './masonry-range'
 
 export interface MasonryRef {
   reposition: () => void
   scrollToIndex: (index: number) => void
   getPositioner: () => Positioner
+}
+
+export interface MasonryRenderProps<Item> extends RenderComponentProps<Item> {
+  /** 该项占用的列数，超宽照片为 2 */
+  columnSpan: number
+}
+
+export interface MasonryProps<Item> extends Omit<MasonryBaseProps<Item>, 'render'> {
+  /** 返回每一项希望占用的列数，用于让超宽照片横跨多列 */
+  getColumnSpan?: (index: number) => number
+  render: (props: MasonryRenderProps<Item>) => React.ReactElement
 }
 
 /**
@@ -95,7 +115,7 @@ export const Masonry = <Item,>(props: MasonryProps<Item> & { ref?: React.Ref<Mas
     itemCounter.current = props.items.length
   }
 
-  nextProps.positioner = usePositioner(nextProps, [shrunk ? Math.random() + positionIndex : positionIndex])
+  nextProps.positioner = useColumnSpanPositioner(nextProps, [shrunk ? Math.random() + positionIndex : positionIndex])
 
   nextProps.resizeObserver = useResizeObserver(nextProps.positioner)
   nextProps.scrollTop = scrollTop
@@ -134,6 +154,7 @@ function MasonryScroller<Item>(
   props: MasonryScrollerProps<Item> & {
     scrollTop: number
     isScrolling: boolean
+    getColumnSpan?: (index: number) => number
   },
 ) {
   const positioner = React.useMemo<Positioner>(
@@ -143,6 +164,7 @@ function MasonryScroller<Item>(
     }),
     [props.positioner],
   )
+  const renderItem = useColumnSpanRender(props.render, props.getColumnSpan, positioner.columnCount)
 
   // We put this in its own layer because it's the thing that will trigger the most updates
   // and we don't want to slower ourselves by cycling through all the functions, objects, and effects
@@ -172,8 +194,137 @@ function MasonryScroller<Item>(
     itemKey: props.itemKey,
     overscanBy: props.overscanBy,
     height: props.height,
-    render: props.render,
+    render: renderItem,
   })
+}
+
+/**
+ * Resolves the column span of every rendered cell. The returned component keeps a stable identity
+ * so cells are reused when the positioner changes, while the latest `render` and span resolver are
+ * always read from the current props.
+ */
+function useColumnSpanRender<Item>(
+  render: React.ComponentType<RenderComponentProps<Item>>,
+  getColumnSpan: ((index: number) => number) | undefined,
+  columnCount: number,
+): React.ComponentType<RenderComponentProps<Item>> {
+  const latest = React.useRef({ render, getColumnSpan, columnCount })
+  latest.current = { render, getColumnSpan, columnCount }
+
+  return React.useRef((itemProps: RenderComponentProps<Item>) => {
+    const { render: RenderItem, getColumnSpan: resolveColumnSpan, columnCount: columns } = latest.current
+    const columnSpan = resolveColumnSpan ? clampMasonryColumnSpan(resolveColumnSpan(itemProps.index), columns) : 1
+    const RenderItemWithColumnSpan = RenderItem as React.ComponentType<MasonryRenderProps<Item>>
+
+    return <RenderItemWithColumnSpan {...itemProps} columnSpan={columnSpan} />
+  }).current
+}
+
+interface UseColumnSpanPositionerOptions {
+  width: number
+  columnWidth?: number
+  columnGutter?: number
+  rowGutter?: number
+  columnCount?: number
+  maxColumnCount?: number
+  maxColumnWidth?: number
+  getColumnSpan?: (index: number) => number
+}
+
+/**
+ * @copy internal masonic usePositioner hook, wired to the column span aware positioner. It creates
+ * the grid cell positioner and cache required by `useMasonry()`.
+ *
+ * @param options - Properties that determine the number of columns in the grid, as well as their widths.
+ * @param deps - This hook will create a new positioner, clearing all existing cached positions,
+ *  whenever the dependencies in this list change.
+ */
+function useColumnSpanPositioner(
+  {
+    width,
+    columnWidth = 200,
+    columnGutter = 0,
+    rowGutter,
+    columnCount,
+    maxColumnCount,
+    maxColumnWidth,
+    getColumnSpan,
+  }: UseColumnSpanPositionerOptions,
+  deps: React.DependencyList = [],
+): ColumnSpanPositioner {
+  const initPositioner = (): ColumnSpanPositioner => {
+    const [computedColumnWidth, computedColumnCount] = getColumns(
+      width,
+      columnWidth,
+      columnGutter,
+      columnCount,
+      maxColumnCount,
+      maxColumnWidth,
+    )
+
+    return createColumnSpanPositioner({
+      columnCount: computedColumnCount,
+      columnWidth: computedColumnWidth,
+      columnGutter,
+      rowGutter: rowGutter ?? columnGutter,
+      getColumnSpan: getColumnSpan ?? (() => 1),
+    })
+  }
+
+  const positionerRef = React.useRef<ColumnSpanPositioner | undefined>(undefined)
+  const prevDeps = React.useRef(deps)
+  const opts = [width, columnWidth, columnGutter, rowGutter, columnCount, maxColumnCount, maxColumnWidth, getColumnSpan]
+  const prevOpts = React.useRef(opts)
+  const optsChanged = !opts.every((item, index) => prevOpts.current[index] === item)
+  const depsChanged = !deps.every((item, index) => prevDeps.current[index] === item)
+  let positioner = positionerRef.current ?? initPositioner()
+
+  // Create a new positioner when the dependencies or sizes change
+  if (optsChanged || depsChanged) {
+    const previousPositioner = positioner
+    positioner = initPositioner()
+    prevDeps.current = deps
+    prevOpts.current = opts
+
+    if (optsChanged) {
+      // Keep the already measured heights so the grid doesn't jump back to its estimated layout
+      const previousItems = previousPositioner.all()
+      for (const [index, previousItem] of previousItems.entries()) {
+        if (!previousItem) continue
+
+        positioner.set(index, previousItem.height)
+      }
+    }
+  }
+
+  positionerRef.current = positioner
+
+  return positioner
+}
+
+/**
+ * @copy internal masonic getColumns utility. It resolves the column count from the container width
+ * and the minimum column width, then fills the remaining width evenly.
+ */
+function getColumns(
+  width: number,
+  minimumWidth: number,
+  gutter: number,
+  columnCount?: number,
+  maxColumnCount?: number,
+  maxColumnWidth?: number,
+): [number, number] {
+  const resolvedColumnCount =
+    columnCount ||
+    Math.min(Math.floor((width + gutter) / (minimumWidth + gutter)), maxColumnCount || Number.POSITIVE_INFINITY) ||
+    1
+  let resolvedColumnWidth = Math.floor((width - gutter * (resolvedColumnCount - 1)) / resolvedColumnCount)
+
+  if (maxColumnWidth !== undefined && resolvedColumnWidth > maxColumnWidth) {
+    resolvedColumnWidth = maxColumnWidth
+  }
+
+  return [resolvedColumnWidth, resolvedColumnCount]
 }
 
 function useContainerPosition(

@@ -20,8 +20,9 @@ import { getImageFormat } from '~/lib/image-utils'
 import { getLocalizedPhotoTitle, getPhotoAltText } from '~/lib/photo-description'
 import type { PhotoManifest } from '~/types/photo'
 
+import { resolveMasonryThumbnailSizes } from './masonry-column-span'
+
 const PRIORITY_IMAGE_COUNT = 6
-const THUMBNAIL_SIZES = '(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 350px'
 const TOUCH_LONG_PRESS_DELAY = 450
 
 type VideoSource = Parameters<ImageLoaderManager['processVideo']>[0]
@@ -109,13 +110,22 @@ const LivePhotoIndicator = ({
 interface MasonryPhotoItemProps {
   data: PhotoManifest
   width: number
+  columnSpan: number
   index: number
   tabIndex: number
   onFocus: (photoId: string) => void
   onKeyDown: (event: KeyboardEvent<HTMLButtonElement>, index: number) => void
 }
 
-const MasonryPhotoItemBase = ({ data, width, index, tabIndex, onFocus, onKeyDown }: MasonryPhotoItemProps) => {
+const MasonryPhotoItemBase = ({
+  data,
+  width,
+  columnSpan,
+  index,
+  tabIndex,
+  onFocus,
+  onKeyDown,
+}: MasonryPhotoItemProps) => {
   const { i18n } = useTranslation()
   const { openViewerByPhotoId } = useOpenPhotoViewer()
   const [imageLoaded, setImageLoaded] = useState(false)
@@ -209,6 +219,8 @@ const MasonryPhotoItemBase = ({ data, width, index, tabIndex, onFocus, onKeyDown
 
   // 使用通用的图片格式提取函数
   const imageFormat = getImageFormat(data.originalUrl || data.s3Key || '')
+
+  const thumbnailSizes = resolveMasonryThumbnailSizes(columnSpan)
 
   const isVideoMedia = data.mediaType === 'video'
   const formattedDuration = isVideoMedia && data.duration ? formatDuration(data.duration) : null
@@ -462,9 +474,9 @@ const MasonryPhotoItemBase = ({ data, width, index, tabIndex, onFocus, onKeyDown
       {!imageError && (
         <picture className="absolute inset-0 block h-full w-full">
           {data.thumbnailWebpSrcSet && (
-            <source type="image/webp" srcSet={data.thumbnailWebpSrcSet} sizes={THUMBNAIL_SIZES} />
+            <source type="image/webp" srcSet={data.thumbnailWebpSrcSet} sizes={thumbnailSizes} />
           )}
-          {data.thumbnailSrcSet && <source srcSet={data.thumbnailSrcSet} sizes={THUMBNAIL_SIZES} />}
+          {data.thumbnailSrcSet && <source srcSet={data.thumbnailSrcSet} sizes={thumbnailSizes} />}
           <img
             src={data.thumbnailUrl}
             alt={photoAlt}
@@ -474,7 +486,7 @@ const MasonryPhotoItemBase = ({ data, width, index, tabIndex, onFocus, onKeyDown
             loading={isPriorityImage ? 'eager' : 'lazy'}
             fetchPriority={isPriorityImage ? 'high' : 'auto'}
             decoding="async"
-            sizes={THUMBNAIL_SIZES}
+            sizes={thumbnailSizes}
           />
         </picture>
       )}
@@ -592,6 +604,7 @@ export const MasonryPhotoItem = memo(
   (previous, next) =>
     previous.data === next.data &&
     previous.width === next.width &&
+    previous.columnSpan === next.columnSpan &&
     previous.index === next.index &&
     previous.tabIndex === next.tabIndex &&
     previous.onFocus === next.onFocus &&
