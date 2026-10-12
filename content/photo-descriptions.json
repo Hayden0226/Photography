@@ -5800,6 +5800,24 @@
           "随手"
         ]
       }
+    },
+    {
+      "key": "随手/20260930185423.jpg",
+      "title": "",
+      "descriptions": {
+        "zh-CN": "",
+        "en": ""
+      },
+      "tags": [],
+      "aiContext": {
+        "currentTitle": "20260930185423",
+        "dateTaken": "2026-09-30T10:54:23.849Z",
+        "camera": "vivo vivo X200 Pro",
+        "lens": "",
+        "categoryTags": [
+          "随手"
+        ]
+      }
     }
   ]
 }
