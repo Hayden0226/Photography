@@ -5824,6 +5824,24 @@
       "descriptions": {
         "en": "West Lake by Night, from Above"
       }
+    },
+    {
+      "key": "随手/DSC_0381.jpg",
+      "title": "",
+      "descriptions": {
+        "zh-CN": "",
+        "en": ""
+      },
+      "tags": [],
+      "aiContext": {
+        "currentTitle": "DSC 0381",
+        "dateTaken": "2026-02-12T14:09:20.670Z",
+        "camera": "NIKON CORPORATION NIKON Z50_2",
+        "lens": "NIKON NIKKOR Z DX 12-28mm f/3.5-5.6 PZ VR",
+        "categoryTags": [
+          "随手"
+        ]
+      }
     }
   ]
 }
