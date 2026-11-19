@@ -2,7 +2,7 @@ import * as DialogPrimitive from '@afilmory/ui/dialog/radix'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 
-import { clearAdminToken, getAdminToken, setAdminToken } from '~/lib/photo-admin/github'
+import { clearAdminToken, getAdminToken, GitHubApiError, setAdminToken } from '~/lib/photo-admin/github'
 import type { RecategorizeResult, RecategorizeStep } from '~/lib/photo-admin/recategorize'
 import {
   buildNewS3Key,
@@ -166,12 +166,22 @@ export const ManagePanel = ({ currentPhoto, isLoadingDetails = false }: ManagePa
         }
       }
     } catch (error) {
+      // token 过期/被撤销时 GitHub 只会回一句 Bad credentials，顺手清掉并提示重新输入
+      const tokenRejected = error instanceof GitHubApiError && error.status === 401
+      if (tokenRejected) {
+        clearAdminToken()
+        setTokenState(null)
+      }
       recategorizeResult = {
         ok: false,
         oldS3Key: s3Key,
         newS3Key: s3Key,
         steps: [],
-        error: error instanceof Error ? error.message : '执行失败',
+        error: tokenRejected
+          ? 'GitHub Token 已失效或权限不足，已自动清除，请重新粘贴一个有效的 Token'
+          : error instanceof Error
+            ? error.message
+            : '执行失败',
       }
     }
     setResult(recategorizeResult)
